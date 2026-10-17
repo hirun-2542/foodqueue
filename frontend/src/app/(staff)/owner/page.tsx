@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
-import { EmptyState } from "@/components/empty-state";
-import { LayoutGridIcon } from "lucide-react";
+import { OpenTableFlow } from "./open-table-flow";
 
 export const metadata: Metadata = {
   title: "ภาพรวม · FoodQueue",
 };
 
+/**
+ * `/owner` — today it carries the open-table flow (ticket 07: frames `o02-open` and `o03-qr`).
+ * The KPI band, the occupancy cards with ใช้ไป N นาที and ยอดสะสม come from ticket 08's overview
+ * endpoint and ticket 23's reports, so they are not faked here.
+ */
 export default function OwnerHomePage() {
   return (
-    <div className="flex min-h-20 flex-col justify-center gap-0.5 lg:py-5">
-      <h1 className="text-headline">ภาพรวม</h1>
-      <span className="text-label font-normal text-muted-foreground">เจ้าของร้าน</span>
-
-      <div className="pt-5">
-        <EmptyState
-          icon={<LayoutGridIcon className="size-5" strokeWidth={1.75} aria-hidden />}
-          title="ยังไม่มีข้อมูลให้แสดง"
-          description="หน้านี้จะแสดงภาพรวมโต๊ะและยอดขาย เมื่อส่วนจัดการโต๊ะและแพ็กเกจพร้อมใช้งาน"
-        />
+    <div className="flex flex-col gap-5 lg:py-5">
+      <div className="flex min-h-20 flex-col justify-center gap-0.5">
+        <h1 className="text-headline">ภาพรวม</h1>
+        <span className="text-label font-normal text-muted-foreground">เจ้าของร้าน</span>
       </div>
+
+      <OpenTableFlow />
     </div>
   );
 }
