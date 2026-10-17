@@ -1,6 +1,6 @@
 "use client";
 
-import { ChefHatIcon, LayoutGridIcon, Loader2Icon, LogOutIcon, SoupIcon } from "lucide-react";
+import { ChefHatIcon, LayoutGridIcon, Loader2Icon, LogOutIcon, SettingsIcon, SoupIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
@@ -19,6 +19,7 @@ const roleLabel: Record<StaffRole, string> = { Owner: "เจ้าของร�
 const navItems = [
   { href: staffRoutes.owner, label: "ภาพรวม", icon: LayoutGridIcon, ownerOnly: true },
   { href: staffRoutes.kitchen, label: "จอครัว", icon: ChefHatIcon, ownerOnly: false },
+  { href: staffRoutes.settings, label: "ตั้งค่า", icon: SettingsIcon, ownerOnly: true },
 ];
 
 function Brand() {
