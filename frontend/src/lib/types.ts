@@ -263,3 +263,64 @@ export interface MenuItemInput {
   isActive?: boolean;
   sortOrder?: number;
 }
+
+/**
+ * The round a customer QR points at (`GET /api/s/{token}`, ticket 09) — no auth, the token is the
+ * identity. `serverNow` is the reference clock: the screen stores `serverNow - Date.now()` once and
+ * adds that offset to every time it shows, so a phone with a wrong clock still agrees with the shop.
+ * `endsAt`/`lastOrderWarningMinutes` drive the text-only Last order notice and the "หมดเวลาสั่งอาหาร"
+ * state — never a countdown.
+ */
+export interface CustomerSessionDto {
+  tableName: string;
+  zone: string | null;
+  packageName: string;
+  packageRank: number;
+  adults: number;
+  children: number;
+  openedAt: string;
+  endsAt: string;
+  lastOrderWarningMinutes: number;
+  maxQtyPerItemPerOrder: number;
+  maxItemsPerOrder: number;
+  serverNow: string;
+  bannerImagePath?: string | null;
+  shopName: string;
+}
+
+/** `GET /api/s/{token}/menu` — only the categories this package can actually order from. */
+export interface CustomerMenuDto {
+  categories: CustomerCategoryDto[];
+}
+
+export interface CustomerCategoryDto {
+  id: number;
+  name: string;
+  sortOrder: number;
+  items: CustomerMenuItemDto[];
+}
+
+/** A row of the customer menu; `price` is 0 for buffet items (they are inside the package price). */
+export interface CustomerMenuItemDto {
+  id: number;
+  name: string;
+  imagePath?: string | null;
+  kind: MenuItemKind;
+  price: number;
+  minPackageRank?: number | null;
+  isAvailable: boolean;
+}
+
+/** `GET /api/s/{token}/orders` (ticket 13): the whole table's items, no rounds and no status. */
+export interface CustomerOrdersDto {
+  items: CustomerOrderItemDto[];
+}
+
+export interface CustomerOrderItemDto {
+  menuItemId: number;
+  name: string;
+  kind: MenuItemKind;
+  quantity: number;
+  note: string | null;
+  imagePath?: string | null;
+}
