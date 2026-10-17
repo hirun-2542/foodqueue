@@ -175,3 +175,17 @@ export interface LiveEvents {
   menuItemChanged: MenuItemChangedEvent;
   sessionClosed: SessionClosedEvent;
 }
+
+/** A buffet tier (`GET /api/packages`). */
+export interface PackageDto {
+  id: number;
+  name: string;
+  rank: number;
+  adultPrice: number;
+  childPrice: number;
+  durationMinutes: number;
+  isActive: boolean;
+}
+
+/** Body of `POST /api/packages` and `PUT /api/packages/{id}`. */
+export type PackageInput = Omit<PackageDto, "id">;

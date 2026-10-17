@@ -49,3 +49,18 @@ export function minutesUsed(openedAt: Instant, now: Instant): number {
 export function clockRange(start: Instant, end: Instant): string {
   return `${formatTime(start)}–${formatTime(end)}`;
 }
+
+const bahtWhole = new Intl.NumberFormat("th-TH", {
+  style: "currency",
+  currency: "THB",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+});
+
+/**
+ * `299` → `฿299` — the design sets package tier prices in whole baht, where `formatBaht`'s
+ * trailing `.00` is noise. Satang still show when a price has them.
+ */
+export function formatBahtWhole(amount: number): string {
+  return bahtWhole.format(amount);
+}
