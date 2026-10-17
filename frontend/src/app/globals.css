@@ -1,0 +1,151 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Dark mode is not part of FoodQueue; this variant never matches because no `.dark` class is ever set. */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * FoodQueue tokens. Source of truth: DESIGN.md frontmatter (colors / typography / rounded).
+ * The default Tailwind palette is removed on purpose: every colour utility must resolve to a token below.
+ * Orange has four jobs only: primary action, selection, the staff time rail, the customer shop banner.
+ */
+@theme {
+  --color-*: initial;
+
+  /* ground */
+  --color-ground: #fafaf9;
+  --color-surface: #ffffff;
+  --color-sunken: #f5f4f2;
+  --color-hairline: #e7e5e4;
+  --color-control-border: #8e8883;
+  --color-line-strong: #d6d3d1;
+
+  /* ink (DESIGN `muted` is exposed as `muted-foreground`, see the shadcn aliases below) */
+  --color-ink: #1c1917;
+  --color-ink-2: #44403c;
+  --color-on-accent: #ffffff;
+
+  /* orange: one hue, stops by job */
+  --color-orange: #f97316;
+  --color-orange-strong: #cc4a0a;
+  --color-orange-hover: #b33f08;
+  --color-orange-soft: #fff3e8;
+  --color-orange-ink: #a83a06;
+  --color-orange-line: #fdba74;
+
+  /* order status: ink on its own soft fill, all >= 5.6:1 (WCAG AA) */
+  --color-pending-ink: #8a4b00;
+  --color-pending-soft: #fef3d9;
+  --color-pending-dot: #e8a100;
+  --color-preparing-ink: #1d4ed8;
+  --color-preparing-soft: #eaf1ff;
+  --color-preparing-dot: #3b82f6;
+  --color-ready-ink: #166534;
+  --color-ready-soft: #e8f7ec;
+  --color-ready-dot: #22a04b;
+  --color-served-ink: #57534e;
+  --color-served-soft: #f0eeec;
+  --color-served-dot: #a8a29e;
+  --color-cancel-ink: #b91c1c;
+  --color-cancel-soft: #fdecec;
+  --color-cancel-line: #f3c4c4;
+  --color-cancel-dot: #e5484d;
+
+  /* fill only, never text on white */
+  --color-alert: #e8a100;
+
+  /* thermal print: monochrome */
+  --color-paper-ink: #111111;
+  --color-paper-rule: #8d8d8d;
+
+  /* the dim layer behind any floating surface (DESIGN "Scrim") */
+  --color-scrim: rgb(28 25 23 / 0.38);
+
+  /* typography scale (DESIGN typography) */
+  --text-display: 36px;
+  --text-display--line-height: 1.2;
+  --text-display--letter-spacing: -0.01em;
+  --text-display--font-weight: 600;
+  --text-headline: 24px;
+  --text-headline--line-height: 1.35;
+  --text-headline--letter-spacing: -0.01em;
+  --text-headline--font-weight: 600;
+  --text-title: 18px;
+  --text-title--line-height: 1.45;
+  --text-title--font-weight: 600;
+  --text-body: 15px;
+  --text-body--line-height: 1.6;
+  --text-label: 13px;
+  --text-label--line-height: 1.55;
+  --text-label--font-weight: 600;
+  --text-clock: 28px;
+  --text-clock--line-height: 1.15;
+  --text-clock--font-weight: 500;
+
+  /*
+   * Radius. shadcn components use rounded-md/lg/xl, so the scale is aligned to DESIGN `rounded`:
+   * xs 6 = rounded.xs, sm 8 = rounded.sm, md 10 = inputs, lg 12 = rounded.md (controls),
+   * xl 16 = rounded.lg (cards, dialogs), 2xl 20 = bottom-sheet top corners, full = rounded.pill.
+   */
+  --radius-*: initial;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  /* elevation: flat by default; only floating layers get the Float shadow */
+  --shadow-*: initial;
+  --shadow-float: 0 1px 2px rgb(28 25 23 / 0.06), 0 12px 32px -4px rgb(28 25 23 / 0.14);
+}
+
+/* Fonts come from next/font in src/app/layout.tsx (no CDN). */
+@theme inline {
+  --font-sans: var(--font-plex-thai), system-ui, sans-serif;
+  --font-heading: var(--font-plex-thai), system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, monospace;
+
+  /* shadcn semantic aliases, all pointing at FoodQueue tokens */
+  --color-background: var(--color-ground);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-surface);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-orange-strong);
+  --color-primary-foreground: var(--color-on-accent);
+  --color-secondary: var(--color-surface);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-sunken);
+  --color-muted-foreground: #6b6560;
+  --color-accent: var(--color-sunken);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: var(--color-cancel-ink);
+  --color-border: var(--color-hairline);
+  --color-input: var(--color-control-border);
+  --color-ring: var(--color-orange-strong);
+}
+
+/* Plain CSS variables for code that cannot use utilities (sonner, inline styles). */
+:root {
+  --background: var(--color-ground);
+  --foreground: var(--color-ink);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-ink);
+  --border: var(--color-hairline);
+  --radius: var(--radius-lg);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply bg-background text-body text-foreground antialiased;
+  }
+}

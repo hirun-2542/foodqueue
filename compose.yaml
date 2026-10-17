@@ -1,0 +1,62 @@
+name: foodqueue
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: foodqueue
+      POSTGRES_USER: foodqueue
+      POSTGRES_PASSWORD: foodqueue
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U foodqueue -d foodqueue"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: src/FoodQueue.Api/Dockerfile
+    environment:
+      ConnectionStrings__Default: Host=db;Database=foodqueue;Username=foodqueue;Password=foodqueue
+      Demo__Enabled: ${DEMO_ENABLED:-true}
+      App__PublicBaseUrl: ${PUBLIC_BASE_URL:-http://localhost:8080}
+      App__UploadsPath: /app/uploads
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  web:
+    build:
+      context: ./frontend
+    depends_on:
+      - api
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "8080:8080"
+    environment:
+      API_UPSTREAM: api:8080
+      WEB_UPSTREAM: web:3000
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+    depends_on:
+      - api
+      - web
+
+volumes:
+  pgdata:
+  uploads:
+  caddydata:
