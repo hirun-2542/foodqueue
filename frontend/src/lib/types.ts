@@ -217,3 +217,49 @@ export interface SettingsDto {
   maxItemsPerOrder: number;
   lastOrderWarningMinutes: number;
 }
+
+/** A menu category (`GET /api/categories`); `itemCount` counts every item in it. */
+export interface CategoryDto {
+  id: number;
+  name: string;
+  sortOrder: number;
+  itemCount: number;
+}
+
+/** Body of `POST /api/categories` and `PUT /api/categories/{id}`. */
+export interface CategoryInput {
+  name: string;
+  sortOrder?: number;
+}
+
+/**
+ * A menu item (`GET /api/menu-items`). `kind` is `Buffet` (needs `minPackageRank`, price 0) or
+ * `AlaCarte` (no `minPackageRank`, price > 0) — the API enforces both.
+ */
+export interface MenuItemDto {
+  id: number;
+  categoryId: number;
+  categoryName: string;
+  name: string;
+  description?: string | null;
+  imagePath?: string | null;
+  kind: MenuItemKind;
+  minPackageRank?: number | null;
+  price: number;
+  isAvailable: boolean;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+/** Body of `POST /api/menu-items` and `PUT /api/menu-items/{id}`; the image has its own endpoint. */
+export interface MenuItemInput {
+  name: string;
+  categoryId: number;
+  description?: string | null;
+  kind: MenuItemKind;
+  minPackageRank?: number | null;
+  price: number;
+  isAvailable?: boolean;
+  isActive?: boolean;
+  sortOrder?: number;
+}
