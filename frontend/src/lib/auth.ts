@@ -8,7 +8,7 @@ import type { MeDto, StaffRole } from "@/lib/types";
 export const meQueryKey = ["auth", "me"] as const;
 
 /** Every staff route that exists today, in one place so the guard and the login form agree. */
-export const staffRoutes = { owner: "/owner", kitchen: "/kitchen" } as const;
+export const staffRoutes = { owner: "/owner", kitchen: "/kitchen", packages: "/owner/packages" } as const;
 
 /** Home screen of each staff role — the one place this mapping is written down. */
 export function staffHome(role: StaffRole): string {
