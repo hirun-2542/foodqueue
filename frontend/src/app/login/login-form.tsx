@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ApiError, apiFetch } from "@/lib/api";
+import { staffHome } from "@/lib/auth";
 import type { MeDto } from "@/lib/types";
 
 const loginSchema = z.object({
@@ -46,8 +47,8 @@ export function LoginForm() {
         body: JSON.stringify(values),
       });
       const me = await apiFetch<MeDto>("/api/auth/me");
-      // Owner lands on the dashboard, Kitchen on the board (the guards arrive in ticket 02).
-      router.replace(me.role === "Kitchen" ? "/kitchen" : "/owner");
+      // Owner lands on the dashboard, Kitchen on the board; the guard in (staff)/layout enforces it.
+      router.replace(staffHome(me.role));
     } catch (err) {
       if (err instanceof ApiError) {
         setFormError(err.status === 401 ? "อีเมลหรือรหัสผ่านไม่ถูกต้อง" : err.message);
