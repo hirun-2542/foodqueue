@@ -14,6 +14,13 @@ using Microsoft.Extensions.DependencyInjection;
 namespace FoodQueue.Api.Tests;
 
 /// <summary>
+/// ออเดอร์ใหม่หนึ่งครั้งที่ระบบส่งออก: <see cref="SessionId"/> คือรอบที่ออเดอร์เป็นของ และ
+/// <see cref="PrimarySessionId"/> คือรอบหลักเมื่อรอบนั้นถูกรวมเข้าบิลอื่น (null = ไม่ได้ถูกรวม)
+/// การกระจายไป group ครัว/เจ้าของร้าน/รอบนั้นอยู่ใน <see cref="LiveNotifier"/> จุดเดียว
+/// </summary>
+public sealed record OrderCreatedCall(object Order, int SessionId, int? PrimarySessionId);
+
+/// <summary>
 /// ตัวบันทึก event realtime แทน <see cref="LiveNotifier"/> เพื่อให้เห็น "สิ่งที่ถูกส่งออกจากระบบ"
 /// หลังบันทึกฐานข้อมูลสำเร็จ โดยไม่ต้องมีไคลเอนต์ SignalR จริงในเทสต์
 /// </summary>
@@ -21,7 +28,11 @@ public sealed class RecordingNotifier : ILiveNotifier
 {
     public ConcurrentQueue<(string Event, object Payload)> Events { get; } = new();
 
-    public Task OrderCreated(object order, int sessionId, int? primarySessionId = null) => Task.CompletedTask;
+    public Task OrderCreated(object order, int sessionId, int? primarySessionId = null)
+    {
+        Events.Enqueue(("orderCreated", new OrderCreatedCall(order, sessionId, primarySessionId)));
+        return Task.CompletedTask;
+    }
 
     public Task OrderStatusChanged(object order) => Task.CompletedTask;
 
