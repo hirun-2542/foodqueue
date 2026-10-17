@@ -5,6 +5,7 @@ using System.Text.Json;
 using FoodQueue.Api.Common;
 using FoodQueue.Api.Data;
 using FoodQueue.Api.Data.Entities;
+using FoodQueue.Api.Features.Sessions;
 using FoodQueue.Api.Realtime;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -640,5 +641,52 @@ public class SessionTests(PostgresFixture postgres)
 
         Assert.Equal(HttpStatusCode.OK, (await client.PostAsync($"/api/sessions/{sessionId}/void", null)).StatusCode);
         Assert.Contains(notifier.Events, e => e.Event == "sessionClosed" && (int)e.Payload == sessionId);
+    }
+
+    /// <summary>
+    /// เส้นทางที่หน้าลูกค้าใช้: token → session (ticket 09) — seam ไม่ตัดสินรหัสข้อผิดพลาดเอง
+    /// จึงคืนแถวของ token ที่ปิดแล้วด้วย และคืน null เฉพาะ token ที่ไม่มีอยู่จริง
+    /// </summary>
+    [Fact]
+    public async Task Find_by_token_returns_the_row_for_open_and_closed_tokens_but_null_for_garbage()
+    {
+        using var app = new TestApp(postgres);
+        var client = await OwnerClientAsync(app);
+        var packageId = await SeedPackageAsync(app);
+
+        var openTable = await CreateTableAsync(client, "X");
+        var openSessionId = await OpenSessionAsync(client, openTable, packageId, adults: 3, children: 2);
+        var openToken = (await SessionRowAsync(app, openSessionId)).Token;
+
+        var closedTable = await CreateTableAsync(client, "Y");
+        var closedSessionId = await OpenSessionAsync(client, closedTable, packageId);
+        var closedToken = (await SessionRowAsync(app, closedSessionId)).Token;
+        Assert.Equal(HttpStatusCode.OK,
+            (await client.PostAsync($"/api/sessions/{closedSessionId}/void", null)).StatusCode);
+
+        using var scope = app.NewScope();
+        var sessions = SessionService.From(scope.ServiceProvider);
+
+        var open = await sessions.FindByTokenAsync(openToken);
+        Assert.NotNull(open);
+        Assert.Equal(openSessionId, open!.Id);
+        Assert.Equal(SessionStatus.Open, open.Status);
+        Assert.Equal(3, open.AdultCount);
+        Assert.Equal(2, open.ChildCount);
+        // navigation ที่ ticket 09 ใช้แมป CustomerSessionDto ติดมาด้วย ไม่ต้องยิงคำขอเพิ่ม
+        Assert.Equal(openTable, open.TableId);
+        Assert.NotNull(open.Table);
+        Assert.NotNull(open.Package);
+        Assert.Equal(packageId, open.PackageId);
+        Assert.Equal((await SessionRowAsync(app, openSessionId)).Token, open.Token);
+
+        // token ที่ถูกยกเลิกแล้วยังเป็นแถวที่มีอยู่ — ผู้เรียกจึงแยก SESSION_CLOSED จาก SESSION_NOT_FOUND ได้
+        var closed = await sessions.FindByTokenAsync(closedToken);
+        Assert.NotNull(closed);
+        Assert.Equal(closedSessionId, closed!.Id);
+        Assert.Equal(SessionStatus.Voided, closed.Status);
+
+        Assert.Null(await sessions.FindByTokenAsync("ไม่มีtokenนี้อยู่จริง"));
+        Assert.Null(await sessions.FindByTokenAsync(""));
     }
 }

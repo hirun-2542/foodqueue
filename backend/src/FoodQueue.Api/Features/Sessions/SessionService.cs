@@ -28,6 +28,14 @@ public interface ISessionService
     /// <summary>session หรือ <c>SESSION_NOT_FOUND</c> (404) พร้อม Table/Orders/Adjustments/Payment ที่โหลดแล้ว</summary>
     Task<TableSession> RequireAsync(int sessionId, CancellationToken ct);
 
+    /// <summary>
+    /// โหลด session จาก token — token ที่ไม่พบคืน null ให้ caller ตัดสินใจรหัสข้อผิดพลาดเอง
+    /// ไม่กรองด้วย <c>Status == Open</c>: token ที่ปิดแล้วยังเป็นแถวที่มีอยู่ ผู้เรียกจึงแยกได้ระหว่าง
+    /// "ไม่พบ" (<c>SESSION_NOT_FOUND</c>) กับ "ปิดแล้ว" (<c>SESSION_CLOSED</c>) — งานของหน้าลูกค้า (ticket 09)
+    /// พร้อม <c>Table</c>/<c>Package</c> ติดมาให้แมปเป็น <c>CustomerSessionDto</c> ได้ในครั้งเดียว
+    /// </summary>
+    Task<TableSession?> FindByTokenAsync(string token, CancellationToken ct = default);
+
     /// <summary>รายละเอียดพร้อมบิล (รวม session ที่ถูกรวมเข้าบิลนี้แล้ว) หรือ <c>SESSION_NOT_FOUND</c></summary>
     Task<SessionDetailDto> GetDetailAsync(int sessionId, CancellationToken ct);
 
@@ -118,6 +126,16 @@ public sealed class SessionService(AppDbContext db, IConfiguration config, ILive
 
     public async Task<TableSession> RequireAsync(int sessionId, CancellationToken ct) =>
         await LoadAsync(sessionId, ct) ?? throw NotFound();
+
+    /// <summary>
+    /// ตามรอย (tracking) โดยเจตนา: ลูกค้าที่เปิดหน้าด้วย token อาจถูกเลื่อนสถานะ/แก้รายการในคำขอเดียวกัน
+    /// ในอนาคต (ticket 10/13) และการอ่านตาราง/แพ็กเกจแนบมาก็เพื่อแมปเป็น DTO ได้โดยไม่ต้องยิงคำขอเพิ่ม
+    /// </summary>
+    public Task<TableSession?> FindByTokenAsync(string token, CancellationToken ct = default) =>
+        db.TableSessions
+            .Include(s => s.Table)
+            .Include(s => s.Package)
+            .FirstOrDefaultAsync(s => s.Token == token, ct);
 
     public async Task<SessionDetailDto> GetDetailAsync(int sessionId, CancellationToken ct) =>
         await MapDetailAsync(await RequireAsync(sessionId, ct), ct);
