@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+build
+coverage
+.git
+.gitignore
+Dockerfile
+.dockerignore
+e2e
+playwright.config.ts
+README.md
+test-results
+playwright-report
+*.log
+.env*

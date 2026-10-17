@@ -1,0 +1,26 @@
+# รันเฉพาะ db + caddy บน Docker ส่วน api/web รันบนเครื่อง (hot reload)
+#   docker compose -f compose.yaml -f compose.dev.yaml up db caddy
+#   cd backend/src/FoodQueue.Api && dotnet run      (http://localhost:5080)
+#   cd frontend && pnpm dev                          (http://localhost:3000)
+services:
+  db:
+    ports:
+      - "5432:5432"
+
+  api:
+    profiles: ["full"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  web:
+    profiles: ["full"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  caddy:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      API_UPSTREAM: host.docker.internal:5080
+      WEB_UPSTREAM: host.docker.internal:3000
+    depends_on: !reset []
