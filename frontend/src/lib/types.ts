@@ -189,3 +189,22 @@ export interface PackageDto {
 
 /** Body of `POST /api/packages` and `PUT /api/packages/{id}`. */
 export type PackageInput = Omit<PackageDto, "id">;
+
+/**
+ * Shop-wide settings (`GET /api/settings`). `bannerImagePath` is a public path under `/api/uploads/`
+ * (or null = the built-in banner); it is never settable through the PUT, only through the banner upload.
+ * `serviceChargePercent` / `vatPercent` are 0–30, the limits are 1–99.
+ */
+export interface SettingsDto {
+  name: string;
+  address: string;
+  phone: string;
+  taxId?: string | null;
+  promptPayId?: string | null;
+  bannerImagePath?: string | null;
+  serviceChargePercent: number;
+  vatPercent: number;
+  maxQtyPerItemPerOrder: number;
+  maxItemsPerOrder: number;
+  lastOrderWarningMinutes: number;
+}
