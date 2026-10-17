@@ -21,7 +21,11 @@ const date = new Intl.DateTimeFormat("th-TH", {
 
 type Instant = string | number | Date;
 
-function toMs(value: Instant): number {
+/**
+ * Milliseconds since the epoch for any instant the API hands over (ISO-8601 string, epoch number or `Date`).
+ * Exported so the cart compares `endsAt` against server time without a second parser.
+ */
+export function toMs(value: Instant): number {
   return value instanceof Date ? value.getTime() : typeof value === "number" ? value : Date.parse(value);
 }
 

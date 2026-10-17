@@ -79,6 +79,12 @@ public record CustomerMenuItemDto(int Id, string Name, string? ImagePath, string
 
 public record CustomerOrdersDto(IReadOnlyList<CustomerOrderItemDto> Items);
 
+/// <summary>
+/// คำตอบของ <c>POST /api/s/{token}/orders</c> — คำยืนยันว่าส่งแล้ว ไม่มีเลขรอบและไม่มีสถานะ
+/// โดยเจตนา: ลูกค้าไม่เห็นเลขรอบ (spec "ลูกค้าไม่เห็นบิล ยอดรวม สถานะรายรอบ หรือเลขรอบ")
+/// </summary>
+public record CustomerOrderResultDto(DateTimeOffset SubmittedAt, int ItemCount);
+
 public record CustomerOrderItemDto(int MenuItemId, string Name, string Kind, int Quantity, string? Note, string? ImagePath);
 
 public record ReportSummaryDto(
