@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArmchairIcon,
   ChefHatIcon,
   LayoutGridIcon,
   Loader2Icon,
@@ -28,8 +29,22 @@ const navItems = [
   { href: staffRoutes.owner, label: "ภาพรวม", icon: LayoutGridIcon, ownerOnly: true },
   { href: staffRoutes.kitchen, label: "จอครัว", icon: ChefHatIcon, ownerOnly: false },
   { href: staffRoutes.packages, label: "แพ็กเกจ", icon: PackageIcon, ownerOnly: true },
+  { href: staffRoutes.tables, label: "โต๊ะ", icon: ArmchairIcon, ownerOnly: true },
   { href: staffRoutes.settings, label: "ตั้งค่า", icon: SettingsIcon, ownerOnly: true },
 ];
+
+/**
+ * `/owner` is a prefix of every owner sub-route, so a plain `startsWith` lights up ภาพรวม on
+ * `/owner/tables` as well. Only the longest matching route counts as current.
+ */
+function isCurrentRoute(pathname: string, href: string): boolean {
+  if (!pathname.startsWith(href)) return false;
+  const longest = navItems
+    .map((item) => item.href)
+    .filter((candidate) => pathname.startsWith(candidate))
+    .reduce((a, b) => (a.length >= b.length ? a : b));
+  return href === longest;
+}
 
 function Brand() {
   return (
@@ -113,7 +128,7 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
         </div>
 
         {visibleNav.map(({ href, label, icon: Icon }) => {
-          const active = pathname.startsWith(href);
+          const active = isCurrentRoute(pathname, href);
           return (
             <Link
               key={href}
@@ -169,7 +184,7 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
       <nav className="fixed inset-x-0 bottom-0 z-10 grid border-t border-border bg-surface pb-2 lg:hidden">
         <div className="grid" style={{ gridTemplateColumns: `repeat(${visibleNav.length}, 1fr)` }}>
           {visibleNav.map(({ href, label, icon: Icon }) => {
-            const active = pathname.startsWith(href);
+            const active = isCurrentRoute(pathname, href);
             return (
               <Link
                 key={href}
