@@ -1,6 +1,6 @@
 "use client";
 
-import { ChefHatIcon, LayoutGridIcon, Loader2Icon, LogOutIcon, SoupIcon } from "lucide-react";
+import { ArmchairIcon, ChefHatIcon, LayoutGridIcon, Loader2Icon, LogOutIcon, SoupIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
@@ -19,7 +19,21 @@ const roleLabel: Record<StaffRole, string> = { Owner: "เจ้าของร�
 const navItems = [
   { href: staffRoutes.owner, label: "ภาพรวม", icon: LayoutGridIcon, ownerOnly: true },
   { href: staffRoutes.kitchen, label: "จอครัว", icon: ChefHatIcon, ownerOnly: false },
+  { href: staffRoutes.tables, label: "โต๊ะ", icon: ArmchairIcon, ownerOnly: true },
 ];
+
+/**
+ * `/owner` is a prefix of every owner sub-route, so a plain `startsWith` lights up ภาพรวม on
+ * `/owner/tables` as well. Only the longest matching route counts as current.
+ */
+function isCurrentRoute(pathname: string, href: string): boolean {
+  if (!pathname.startsWith(href)) return false;
+  const longest = navItems
+    .map((item) => item.href)
+    .filter((candidate) => pathname.startsWith(candidate))
+    .reduce((a, b) => (a.length >= b.length ? a : b));
+  return href === longest;
+}
 
 function Brand() {
   return (
@@ -103,7 +117,7 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
         </div>
 
         {visibleNav.map(({ href, label, icon: Icon }) => {
-          const active = pathname.startsWith(href);
+          const active = isCurrentRoute(pathname, href);
           return (
             <Link
               key={href}
@@ -159,7 +173,7 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
       <nav className="fixed inset-x-0 bottom-0 z-10 grid border-t border-border bg-surface pb-2 lg:hidden">
         <div className="grid" style={{ gridTemplateColumns: `repeat(${visibleNav.length}, 1fr)` }}>
           {visibleNav.map(({ href, label, icon: Icon }) => {
-            const active = pathname.startsWith(href);
+            const active = isCurrentRoute(pathname, href);
             return (
               <Link
                 key={href}

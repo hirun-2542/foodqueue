@@ -137,6 +137,15 @@ export interface SessionSummaryDto {
   status: SessionStatus;
 }
 
+export interface TableDto {
+  id: number;
+  name: string;
+  seats: number;
+  zone: string | null;
+  sortOrder: number;
+  isActive: boolean;
+}
+
 export interface TableOverviewDto {
   id: number;
   name: string;
