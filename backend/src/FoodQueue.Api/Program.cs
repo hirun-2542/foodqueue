@@ -68,7 +68,11 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 
 // ไฟล์อัปโหลด (รูปเมนู/แบนเนอร์) เสิร์ฟใต้ /api/uploads
-var uploadsPath = builder.Configuration["App:UploadsPath"] ?? Path.Combine(app.Environment.ContentRootPath, "uploads");
+// PhysicalFileProvider ต้องการพาธแบบ absolute จึง resolve ค่าที่ตั้งไว้เทียบกับ content root
+var configuredUploads = builder.Configuration["App:UploadsPath"];
+var uploadsPath = string.IsNullOrWhiteSpace(configuredUploads)
+    ? Path.Combine(app.Environment.ContentRootPath, "uploads")
+    : Path.GetFullPath(configuredUploads, app.Environment.ContentRootPath);
 Directory.CreateDirectory(uploadsPath);
 app.UseStaticFiles(new StaticFileOptions
 {
