@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1380x900@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .c6-board { width: 1380px; height: 900px; background: var(--bg); display: flex; gap: 32px; justify-content: center; padding-top: 22px; }
+  .c6-col { width: 390px; flex: none; display: flex; flex-direction: column; gap: 8px; }
+  .c6-phone { position: relative; width: 390px; height: 844px; flex: none; background: var(--bg); border: 1px solid var(--line); border-radius: 28px; overflow: hidden; }
+  .c6-cap { font-size: 13px; line-height: 1.55; color: var(--muted); padding-left: 4px; }
+
+
+  /* full-screen states */
+  .c6-full { width: 390px; height: 844px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 0 32px; text-align: center; }
+  .c6-ic { width: 72px; height: 72px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+  .c6-ic.ok { background: var(--ready-soft); color: var(--ready-ink); }
+  .c6-ic.q { background: var(--sunken); color: var(--ink-2); }
+  .c6-sum { width: 100%; margin-top: 8px; text-align: left; }
+</style></head>
+<body class="frame">
+<div class="c6-board">
+
+  <!-- 2 · the session was paid, the QR is dead -->
+  <div class="c6-col">
+    <div class="c6-phone">
+      <div class="c6-full">
+        <span class="c6-ic ok"><svg class="i i-xl"><use href="#i-check"/></svg></span>
+        <h1 class="t-h1" style="margin-top:4px">ขอบคุณที่ใช้บริการ</h1>
+        <span class="t-body ink-2">ชำระเงินเรียบร้อยแล้ว</span>
+        <div class="t-h3" style="margin-top:8px">ชาบูเดโม่</div>
+        <span class="t-small muted">QR นี้ปิดใช้งานแล้ว</span>
+      </div>
+    </div>
+    <div class="c6-cap">ปิดโต๊ะแล้ว · โต๊ะ B2</div>
+  </div>
+
+  <!-- 3 · a token that does not exist -->
+  <div class="c6-col">
+    <div class="c6-phone">
+      <div class="c6-full">
+        <span class="c6-ic q"><svg class="i i-xl"><use href="#i-scan-qr-code"/></svg></span>
+        <h1 class="t-h1" style="margin-top:4px">QR ไม่ถูกต้อง</h1>
+        <span class="t-body ink-2">กรุณาแจ้งพนักงานเพื่อรับ QR ใหม่</span>
+        <span class="t-small muted">ชาบูเดโม่</span>
+      </div>
+    </div>
+    <div class="c6-cap">QR ไม่ถูกต้อง</div>
+  </div>
+
+</div>
+</body></html>

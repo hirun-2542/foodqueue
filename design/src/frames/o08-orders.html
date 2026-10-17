@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1440x1180@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .o08-shell { min-height: 1180px; }
+  .o08-filters { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 16px 0 12px; }
+  .o08-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .o08-card { display: flex; flex-direction: column; gap: 8px; position: relative; }
+  .o08-card.is-new { border-color: var(--alert-ring); }
+  .o08-card.is-new::before { content: ""; position: absolute; left: -1px; right: -1px; top: -1px; height: 3px; background: var(--alert); border-radius: var(--r-lg) var(--r-lg) 0 0; }
+  .o08-tbl { font-size: 27px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; }
+  .o08-meta { font-size: 14px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
+  .o08-age { font-size: 15px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+  .o08-age.over { color: var(--cancel-ink); }
+  .o08-new { background: var(--alert); color: var(--ink); }
+  .o08-new::before { background: var(--ink); }
+  .o08-items { display: flex; flex-direction: column; gap: 2px; }
+  .o08-items li { display: flex; gap: 10px; font-size: 15px; line-height: 1.5; }
+  .o08-items b { min-width: 30px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .o08-note { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--pending-soft); color: var(--pending-ink); border-radius: var(--r-sm); font-size: 14px; font-weight: 500; }
+  .o08-foot { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .o08-tools { display: flex; gap: 8px; }
+  .o08-tools .btn { flex: 1; padding: 0 8px; }
+  .o08-wait { display: flex; align-items: center; justify-content: center; gap: 10px; height: 52px; border-radius: var(--r); background: var(--ready-soft); color: var(--ready-ink); font-size: 15px; font-weight: 600; }
+  .o08-recent { grid-column: span 2; display: flex; flex-direction: column; gap: 6px; }
+  .o08-hist { flex: 1; display: flex; flex-direction: column; }
+  .o08-hrow { flex: 1; min-height: 44px; display: grid; grid-template-columns: 36px 1fr 52px 88px; align-items: center; gap: 12px; }
+  .o08-hrow + .o08-hrow { border-top: 1px solid var(--line); }
+  .o08-hcode { font-size: 18px; font-weight: 600; }
+  .o08-htime { text-align: right; }
+  .o08-hrow .badge { justify-self: end; }
+</style></head>
+<body class="frame">
+<div class="shell o08-shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span><div class="col"><b style="line-height:1.3">ชาบูเดโม่</b><span class="t-micro muted">FoodQueue</span></div></div>
+    <a class="nav"><svg class="i"><use href="#i-layout-grid"/></svg>ภาพรวม</a>
+    <a class="nav on"><svg class="i"><use href="#i-clipboard-list"/></svg>ออเดอร์<span class="count">3</span></a>
+    <a class="nav"><svg class="i"><use href="#i-history"/></svg>ประวัติการชำระ</a>
+    <a class="nav"><svg class="i"><use href="#i-chart-column"/></svg>รายงาน</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-book-open"/></svg>เมนูอาหาร</a>
+    <a class="nav"><svg class="i"><use href="#i-package"/></svg>แพ็กเกจ</a>
+    <a class="nav"><svg class="i"><use href="#i-armchair"/></svg>โต๊ะ</a>
+    <a class="nav"><svg class="i"><use href="#i-settings"/></svg>ตั้งค่า</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-chef-hat"/></svg>จอครัว<svg class="i i-sm" style="margin-left:auto"><use href="#i-arrow-up-right"/></svg></a>
+    <div class="side-foot"><span class="avatar">ส</span><div class="col grow"><b class="t-small" style="line-height:1.3">คุณสมศรี</b><span class="t-micro muted">เจ้าของร้าน</span></div><svg class="i muted"><use href="#i-log-out"/></svg></div>
+  </aside>
+
+  <main class="main">
+    <div class="pagehead">
+      <div class="col"><h1 class="t-h1">คิวออเดอร์</h1><span class="t-small muted">ศุกร์ 16 ต.ค. 2569 · 19:42 · ทุกรอบที่ครัวยังไม่ปิดบิล</span></div>
+      <div class="row gap-12"><span class="live">เชื่อมต่อแบบเรียลไทม์</span><span class="demo-tag">DEMO DATA</span></div>
+    </div>
+
+    <div class="o08-filters">
+      <div class="pills">
+        <span class="pill on">ทั้งหมด <b class="num">7</b></span>
+        <span class="pill">รอรับ <b class="num">3</b></span>
+        <span class="pill">กำลังทำ <b class="num">2</b></span>
+        <span class="pill">พร้อมเสิร์ฟ <b class="num">2</b></span>
+      </div>
+      <span class="t-small muted">ล่าช้าเกิน <span class="num">10</span> นาที <b class="num">3</b> รอบ · ครัวกดเริ่มทำแล้วสถานะบนการ์ดจะเปลี่ยนทันที</span>
+    </div>
+
+    <div class="o08-grid">
+      <!-- A1 รอบที่ 3 · NEW -->
+      <article class="card o08-card is-new pulse on">
+        <div class="row between gap-8">
+          <div class="row gap-8"><span class="o08-tbl">A1</span><span class="o08-meta">รอบที่ <span class="mono">3</span> · ส่ง <span class="mono">19:41</span></span></div>
+          <div class="row gap-6" style="flex:none"><span class="badge o08-new">ใหม่</span><span class="badge pending">รอรับ</span></div>
+        </div>
+        <div class="row gap-12">
+          <div class="rail-wrap thick grow" style="--p:5"><div class="rail"><i></i></div></div>
+          <span class="o08-age"><span class="mono">&lt;1</span> นาที</span>
+        </div>
+        <ul class="o08-items">
+          <li><b>×2</b><span>หมูสามชั้นสไลซ์</span></li>
+          <li><b>×1</b><span>เห็ดรวม</span></li>
+          <li><b>×1</b><span>ชาไทยเย็น</span></li>
+        </ul>
+        <div class="o08-note"><svg class="i i-sm"><use href="#i-pencil"/></svg>ไม่ติดมัน</div>
+        <div class="o08-foot">
+          <span class="btn btn-primary btn-lg btn-block">เริ่มทำ</span>
+          <div class="o08-tools">
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-square-pen"/></svg>แก้ไข</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-arrow-right-left"/></svg>ย้ายโต๊ะ</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-merge"/></svg>รวมบิล</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- B3 รอบที่ 4 -->
+      <article class="card o08-card">
+        <div class="row between gap-8">
+          <div class="row gap-8"><span class="o08-tbl">B3</span><span class="o08-meta">รอบที่ <span class="mono">4</span> · ส่ง <span class="mono">19:38</span></span></div>
+          <div class="row gap-6" style="flex:none"><span class="badge pending">รอรับ</span></div>
+        </div>
+        <div class="row gap-12">
+          <div class="rail-wrap thick grow" style="--p:40"><div class="rail"><i></i></div></div>
+          <span class="o08-age"><span class="mono">4</span> นาที</span>
+        </div>
+        <ul class="o08-items">
+          <li><b>×4</b><span>เนื้อวัวสไลซ์</span></li>
+          <li><b>×3</b><span>ลูกชิ้นกุ้ง</span></li>
+          <li><b>×2</b><span>เกี๊ยวซ่าทอด</span></li>
+        </ul>
+        <div class="o08-foot">
+          <span class="btn btn-primary btn-lg btn-block">เริ่มทำ</span>
+          <div class="o08-tools">
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-square-pen"/></svg>แก้ไข</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-arrow-right-left"/></svg>ย้ายโต๊ะ</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-merge"/></svg>รวมบิล</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- B5 รอบที่ 2 -->
+      <article class="card o08-card">
+        <div class="row between gap-8">
+          <div class="row gap-8"><span class="o08-tbl">B5</span><span class="o08-meta">รอบที่ <span class="mono">2</span> · ส่ง <span class="mono">19:35</span></span></div>
+          <div class="row gap-6" style="flex:none"><span class="badge pending">รอรับ</span></div>
+        </div>
+        <div class="row gap-12">
+          <div class="rail-wrap thick grow" style="--p:70"><div class="rail"><i></i></div></div>
+          <span class="o08-age"><span class="mono">7</span> นาที</span>
+        </div>
+        <ul class="o08-items">
+          <li><b>×5</b><span>สันคอหมูสไลซ์</span></li>
+          <li><b>×2</b><span>ผักบุ้งจีน</span></li>
+          <li><b>×1</b><span>หม่าล่า</span></li>
+          <li><b>×2</b><span>โค้ก</span></li>
+        </ul>
+        <div class="o08-note"><svg class="i i-sm"><use href="#i-pencil"/></svg>หม่าล่า: เผ็ดน้อย</div>
+        <div class="o08-foot">
+          <span class="btn btn-primary btn-lg btn-block">เริ่มทำ</span>
+          <div class="o08-tools">
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-square-pen"/></svg>แก้ไข</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-arrow-right-left"/></svg>ย้ายโต๊ะ</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-merge"/></svg>รวมบิล</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- A3 รอบที่ 5 · ล่าช้า -->
+      <article class="card o08-card">
+        <div class="row between gap-8">
+          <div class="row gap-8"><span class="o08-tbl">A3</span><span class="o08-meta">รอบที่ <span class="mono">5</span> · ส่ง <span class="mono">19:29</span></span></div>
+          <div class="row gap-6" style="flex:none"><span class="badge preparing">กำลังทำ</span></div>
+        </div>
+        <div class="row gap-12">
+          <div class="rail-wrap thick grow over" style="--p:100"><div class="rail"><i></i></div></div>
+          <span class="o08-age over"><span class="mono">13</span> นาที</span>
+        </div>
+        <ul class="o08-items">
+          <li><b>×3</b><span>แซลมอนสไลซ์</span></li>
+          <li><b>×4</b><span>หอยเชลล์</span></li>
+          <li><b>×4</b><span>ริบอายสไลซ์</span></li>
+          <li><b>×2</b><span>เบียร์สิงห์</span></li>
+        </ul>
+        <div class="o08-foot">
+          <span class="btn btn-primary btn-lg btn-block">พร้อมเสิร์ฟ</span>
+          <div class="o08-tools">
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-square-pen"/></svg>แก้ไข</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-arrow-right-left"/></svg>ย้ายโต๊ะ</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-merge"/></svg>รวมบิล</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- B1 รอบที่ 2 -->
+      <article class="card o08-card">
+        <div class="row between gap-8">
+          <div class="row gap-8"><span class="o08-tbl">B1</span><span class="o08-meta">รอบที่ <span class="mono">2</span> · ส่ง <span class="mono">19:36</span></span></div>
+          <div class="row gap-6" style="flex:none"><span class="badge preparing">กำลังทำ</span></div>
+        </div>
+        <div class="row gap-12">
+          <div class="rail-wrap thick grow" style="--p:60"><div class="rail"><i></i></div></div>
+          <span class="o08-age"><span class="mono">6</span> นาที</span>
+        </div>
+        <ul class="o08-items">
+          <li><b>×3</b><span>สันคอหมูสไลซ์</span></li>
+          <li><b>×2</b><span>ข้าวโพดอ่อน</span></li>
+        </ul>
+        <div class="o08-foot">
+          <span class="btn btn-primary btn-lg btn-block">พร้อมเสิร์ฟ</span>
+          <div class="o08-tools">
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-square-pen"/></svg>แก้ไข</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-arrow-right-left"/></svg>ย้ายโต๊ะ</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-merge"/></svg>รวมบิล</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- A3 รอบที่ 4 · พร้อมเสิร์ฟ -->
+      <article class="card o08-card">
+        <div class="row between gap-8">
+          <div class="row gap-8"><span class="o08-tbl">A3</span><span class="o08-meta">รอบที่ <span class="mono">4</span> · ส่ง <span class="mono">19:22</span></span></div>
+          <div class="row gap-6" style="flex:none"><span class="badge ready">พร้อมเสิร์ฟ</span></div>
+        </div>
+        <div class="row gap-12">
+          <div class="rail-wrap thick grow over" style="--p:100"><div class="rail"><i></i></div></div>
+          <span class="o08-age over"><span class="mono">20</span> นาที</span>
+        </div>
+        <ul class="o08-items">
+          <li><b>×4</b><span>เนื้อวัวสไลซ์</span></li>
+          <li><b>×3</b><span>ลูกชิ้นปลา</span></li>
+        </ul>
+        <div class="o08-foot">
+          <span class="o08-wait"><svg class="i"><use href="#i-hand-platter"/></svg>รอพนักงานนำไปเสิร์ฟ</span>
+          <div class="o08-tools">
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-arrow-right-left"/></svg>ย้ายโต๊ะ</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-merge"/></svg>รวมบิล</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- B5 รอบที่ 1 · พร้อมเสิร์ฟ -->
+      <article class="card o08-card">
+        <div class="row between gap-8">
+          <div class="row gap-8"><span class="o08-tbl">B5</span><span class="o08-meta">รอบที่ <span class="mono">1</span> · ส่ง <span class="mono">19:31</span></span></div>
+          <div class="row gap-6" style="flex:none"><span class="badge ready">พร้อมเสิร์ฟ</span></div>
+        </div>
+        <div class="row gap-12">
+          <div class="rail-wrap thick grow over" style="--p:100"><div class="rail"><i></i></div></div>
+          <span class="o08-age over"><span class="mono">11</span> นาที</span>
+        </div>
+        <ul class="o08-items">
+          <li><b>×1</b><span>น้ำซุปใส</span></li>
+          <li><b>×4</b><span>หมูนุ่มสไลซ์</span></li>
+          <li><b>×2</b><span>เห็ดรวม</span></li>
+        </ul>
+        <div class="o08-foot">
+          <span class="o08-wait"><svg class="i"><use href="#i-hand-platter"/></svg>รอพนักงานนำไปเสิร์ฟ</span>
+          <div class="o08-tools">
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-arrow-right-left"/></svg>ย้ายโต๊ะ</span>
+            <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-merge"/></svg>รวมบิล</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- เสร็จแล้ววันนี้ · 2 คอลัมน์ -->
+      <div class="card o08-recent">
+        <div class="row between gap-12">
+          <h2 class="t-h2">เสร็จแล้ววันนี้</h2>
+          <span class="t-micro muted">ล่าสุด <span class="num">4</span> รอบ · เสิร์ฟแล้ว <span class="num">3</span> · ยกเลิก <span class="num">1</span></span>
+        </div>
+        <div class="o08-hist">
+          <div class="o08-hrow">
+            <b class="o08-hcode mono">A2</b>
+            <span class="t-small muted">รอบที่ <span class="mono">2</span></span>
+            <span class="t-small mono muted o08-htime">19:33</span>
+            <span class="badge served">เสิร์ฟแล้ว</span>
+          </div>
+          <div class="o08-hrow">
+            <b class="o08-hcode mono">A4</b>
+            <span class="t-small muted">รอบที่ <span class="mono">2</span></span>
+            <span class="t-small mono muted o08-htime">19:26</span>
+            <span class="badge served">เสิร์ฟแล้ว</span>
+          </div>
+          <div class="o08-hrow">
+            <b class="o08-hcode mono">A1</b>
+            <span class="t-small muted">รอบที่ <span class="mono">2</span></span>
+            <span class="t-small mono muted o08-htime">19:20</span>
+            <span class="badge served">เสิร์ฟแล้ว</span>
+          </div>
+          <div class="o08-hrow">
+            <b class="o08-hcode mono">B3</b>
+            <span class="t-small muted">รอบที่ <span class="mono">3</span> · วัตถุดิบหมด: กุ้งขาว</span>
+            <span class="t-small mono muted o08-htime">19:18</span>
+            <span class="badge cancelled">ยกเลิก</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body></html>

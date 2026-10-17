@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1440x900@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .o9-grid { display:grid; grid-template-columns:240px 1fr; gap:16px; align-items:start; margin-top:8px; }
+  .o9-cat { display:flex; align-items:center; justify-content:space-between; gap:8px; height:38px; padding:0 12px; border-radius:10px; font-size:14px; color:var(--ink-2); }
+  .o9-cat.on { background:var(--orange-soft); color:var(--orange-ink); font-weight:600; }
+  .o9-cat .c { font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .o9-cat.on .c { color:var(--orange-ink); }
+  .o9-catsfoot { display:flex; align-items:center; gap:8px; padding:13px 20px; border-top:1px solid var(--line); color:var(--orange-ink); font-size:13.5px; font-weight:600; }
+  .o9-th { display:flex; align-items:center; gap:6px; }
+  .o9-th .i { color:var(--control); }
+  .o9-tfoot { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 16px; border-top:1px solid var(--line); }
+  .o9-off .thumb { color:var(--muted); }
+</style></head>
+<body class="frame">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span><div class="col"><b style="line-height:1.3">ชาบูเดโม่</b><span class="t-micro muted">FoodQueue</span></div></div>
+    <a class="nav"><svg class="i"><use href="#i-layout-grid"/></svg>ภาพรวม</a>
+    <a class="nav"><svg class="i"><use href="#i-clipboard-list"/></svg>ออเดอร์<span class="count">3</span></a>
+    <a class="nav"><svg class="i"><use href="#i-history"/></svg>ประวัติการชำระ</a>
+    <a class="nav"><svg class="i"><use href="#i-chart-column"/></svg>รายงาน</a>
+    <div class="nav-sep"></div>
+    <a class="nav on"><svg class="i"><use href="#i-book-open"/></svg>เมนูอาหาร</a>
+    <a class="nav"><svg class="i"><use href="#i-package"/></svg>แพ็กเกจ</a>
+    <a class="nav"><svg class="i"><use href="#i-armchair"/></svg>โต๊ะ</a>
+    <a class="nav"><svg class="i"><use href="#i-settings"/></svg>ตั้งค่า</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-chef-hat"/></svg>จอครัว<svg class="i i-sm" style="margin-left:auto"><use href="#i-arrow-up-right"/></svg></a>
+    <div class="side-foot"><span class="avatar">ส</span><div class="col grow"><b class="t-small" style="line-height:1.3">คุณสมศรี</b><span class="t-micro muted">เจ้าของร้าน</span></div><svg class="i muted"><use href="#i-log-out"/></svg></div>
+  </aside>
+
+  <main class="main">
+    <div class="pagehead">
+      <div class="col"><h1 class="t-h1">เมนูอาหาร</h1><span class="t-small muted">30 รายการ · 8 หมวดหมู่ · หมดชั่วคราว 1 รายการ</span></div>
+      <div class="row gap-12">
+        <div class="input" style="width:236px"><svg class="i i-sm muted"><use href="#i-search"/></svg><span class="ph">ค้นหาเมนู…</span></div>
+        <span class="btn btn-primary"><svg class="i i-sm"><use href="#i-plus"/></svg>เพิ่มเมนู</span>
+        <span class="live">เชื่อมต่อแบบเรียลไทม์</span>
+        <span class="demo-tag">DEMO DATA</span>
+      </div>
+    </div>
+
+    <div class="o9-grid">
+      <div class="card card-flush">
+        <div class="col" style="padding:8px">
+          <a class="o9-cat on">ทั้งหมด<span class="c">30</span></a>
+          <a class="o9-cat">น้ำซุป<span class="c">4</span></a>
+          <a class="o9-cat">หมู<span class="c">3</span></a>
+          <a class="o9-cat">เนื้อวัว<span class="c">3</span></a>
+          <a class="o9-cat">ทะเล<span class="c">4</span></a>
+          <a class="o9-cat">ลูกชิ้น/ของทอด<span class="c">4</span></a>
+          <a class="o9-cat">ผัก<span class="c">4</span></a>
+          <a class="o9-cat">ของหวาน<span class="c">2</span></a>
+          <a class="o9-cat">เครื่องดื่ม<span class="c">6</span></a>
+        </div>
+        <a class="o9-catsfoot"><svg class="i i-sm"><use href="#i-sliders-horizontal"/></svg>จัดการหมวดหมู่</a>
+      </div>
+
+      <div class="card card-flush">
+        <table class="tbl">
+          <thead><tr>
+            <th><span class="o9-th">เมนู<svg class="i i-sm"><use href="#i-chevrons-up-down"/></svg></span></th>
+            <th><span class="o9-th">ชนิด<svg class="i i-sm"><use href="#i-chevrons-up-down"/></svg></span></th>
+            <th><span class="o9-th">แพ็กเกจขั้นต่ำ<svg class="i i-sm"><use href="#i-chevrons-up-down"/></svg></span></th>
+            <th class="right"><span class="o9-th" style="justify-content:flex-end">ราคา<svg class="i i-sm"><use href="#i-chevrons-up-down"/></svg></span></th>
+            <th>พร้อมขาย</th>
+            <th></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/pork-collar.jpg" alt=""></span><b>สันคอหมูสไลซ์</b></div></td>
+              <td><span class="badge neutral badge-plain">บุฟเฟ่ต์</span></td>
+              <td class="ink-2">Silver ขึ้นไป</td>
+              <td class="right ink-2">รวมในบุฟเฟ่ต์</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/pork-belly.jpg" alt=""></span><b>หมูสามชั้นสไลซ์</b></div></td>
+              <td><span class="badge neutral badge-plain">บุฟเฟ่ต์</span></td>
+              <td class="ink-2">Silver ขึ้นไป</td>
+              <td class="right ink-2">รวมในบุฟเฟ่ต์</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/pork-soft.jpg" alt=""></span><b>หมูนุ่มสไลซ์</b></div></td>
+              <td><span class="badge neutral badge-plain">บุฟเฟ่ต์</span></td>
+              <td class="ink-2">Silver ขึ้นไป</td>
+              <td class="right ink-2">รวมในบุฟเฟ่ต์</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/beef.jpg" alt=""></span><b>เนื้อวัวสไลซ์</b></div></td>
+              <td><span class="badge neutral badge-plain">บุฟเฟ่ต์</span></td>
+              <td class="ink-2">Gold ขึ้นไป</td>
+              <td class="right ink-2">รวมในบุฟเฟ่ต์</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/ribeye.jpg" alt=""></span><b>ริบอายสไลซ์</b></div></td>
+              <td><span class="badge neutral badge-plain">บุฟเฟ่ต์</span></td>
+              <td class="ink-2">Platinum</td>
+              <td class="right ink-2">รวมในบุฟเฟ่ต์</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr class="o9-off">
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/shrimp.jpg" alt=""></span><b class="muted">กุ้งขาว</b><span class="badge neutral">หมดชั่วคราว</span></div></td>
+              <td><span class="badge neutral badge-plain">บุฟเฟ่ต์</span></td>
+              <td class="ink-2">Gold ขึ้นไป</td>
+              <td class="right muted">รวมในบุฟเฟ่ต์</td>
+              <td><span class="switch"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/mushrooms.jpg" alt=""></span><b>เห็ดรวม</b></div></td>
+              <td><span class="badge neutral badge-plain">บุฟเฟ่ต์</span></td>
+              <td class="ink-2">Silver ขึ้นไป</td>
+              <td class="right ink-2">รวมในบุฟเฟ่ต์</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/ice-cream.jpg" alt=""></span><b>ไอศกรีมวานิลลา</b></div></td>
+              <td><span class="badge neutral badge-plain">บุฟเฟ่ต์</span></td>
+              <td class="ink-2">Silver ขึ้นไป</td>
+              <td class="right ink-2">รวมในบุฟเฟ่ต์</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/water.jpg" alt=""></span><b>น้ำเปล่า</b></div></td>
+              <td><span class="badge accent badge-plain">คิดเงินแยก</span></td>
+              <td class="muted">-</td>
+              <td class="right num strong">฿15</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/coke.jpg" alt=""></span><b>โค้ก</b></div></td>
+              <td><span class="badge accent badge-plain">คิดเงินแยก</span></td>
+              <td class="muted">-</td>
+              <td class="right num strong">฿25</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/thai-tea.jpg" alt=""></span><b>ชาไทยเย็น</b></div></td>
+              <td><span class="badge accent badge-plain">คิดเงินแยก</span></td>
+              <td class="muted">-</td>
+              <td class="right num strong">฿45</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+            <tr>
+              <td><div class="row gap-12"><span class="thumb thumb-sm"><img src="../assets/menu/beer.jpg" alt=""></span><b>เบียร์สิงห์</b></div></td>
+              <td><span class="badge accent badge-plain">คิดเงินแยก</span></td>
+              <td class="muted">-</td>
+              <td class="right num strong">฿89</td>
+              <td><span class="switch on"></span></td>
+              <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-ellipsis-vertical"/></svg></span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="o9-tfoot">
+          <span class="t-small muted">แสดง 12 จาก 30 รายการ</span>
+          <span class="t-small muted">เรียงตามหมวดหมู่ · ลำดับ</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body></html>

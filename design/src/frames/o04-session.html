@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1440x1100@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .o4-page { min-height: 1100px; }
+  .o4-page .shell { min-height: 1100px; }
+  .o4-crumbs { padding-top: 18px; }
+  .o4-head { margin-top: 16px; }
+  .o4-clock { width: 320px; }
+  .o4-actions { margin-top: 24px; }
+  .o4-cols { margin-top: 24px; display: grid; grid-template-columns: 1fr 400px; gap: 24px; align-items: start; }
+  .o4-shead { padding: 16px 16px 12px; }
+  .o4-round { padding: 14px 16px 16px; }
+  .o4-round + .o4-round { border-top: 1px solid var(--line); }
+  .o4-items { margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; row-gap: 4px; }
+  .o4-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 26px; font-size: 14px; }
+  .o4-q { color: var(--ink-2); }
+  .o4-adj { padding: 12px 0 4px; }
+  .o4-adjadd { padding-top: 16px; }
+  .o4-amt { width: 148px; justify-content: flex-end; }
+  .o4-bill { position: sticky; top: 24px; }
+</style></head>
+<body class="frame o4-page">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span><div class="col"><b style="line-height:1.3">ชาบูเดโม่</b><span class="t-micro muted">FoodQueue</span></div></div>
+    <a class="nav on"><svg class="i"><use href="#i-layout-grid"/></svg>ภาพรวม</a>
+    <a class="nav"><svg class="i"><use href="#i-clipboard-list"/></svg>ออเดอร์<span class="count">3</span></a>
+    <a class="nav"><svg class="i"><use href="#i-history"/></svg>ประวัติการชำระ</a>
+    <a class="nav"><svg class="i"><use href="#i-chart-column"/></svg>รายงาน</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-book-open"/></svg>เมนูอาหาร</a>
+    <a class="nav"><svg class="i"><use href="#i-package"/></svg>แพ็กเกจ</a>
+    <a class="nav"><svg class="i"><use href="#i-armchair"/></svg>โต๊ะ</a>
+    <a class="nav"><svg class="i"><use href="#i-settings"/></svg>ตั้งค่า</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-chef-hat"/></svg>จอครัว<svg class="i i-sm" style="margin-left:auto"><use href="#i-arrow-up-right"/></svg></a>
+    <div class="side-foot"><span class="avatar">ส</span><div class="col grow"><b class="t-small" style="line-height:1.3">คุณสมศรี</b><span class="t-micro muted">เจ้าของร้าน</span></div><svg class="i muted"><use href="#i-log-out"/></svg></div>
+  </aside>
+
+  <main class="main">
+    <div class="o4-crumbs row between">
+      <div class="row gap-8">
+        <span class="t-small muted">ภาพรวม</span>
+        <svg class="i i-sm muted"><use href="#i-chevron-right"/></svg>
+        <span class="t-small strong">โต๊ะ B2</span>
+      </div>
+      <div class="row gap-12"><span class="live">เชื่อมต่อแบบเรียลไทม์</span><span class="demo-tag">DEMO DATA</span></div>
+    </div>
+
+    <div class="o4-head row between">
+      <div class="col gap-8">
+        <div class="row gap-12"><h1 class="t-h1">โต๊ะ B2</h1><span class="badge accent badge-lg">Gold</span></div>
+        <div class="row gap-8"><svg class="i i-sm muted"><use href="#i-users"/></svg><span class="t-small muted">2 ผู้ใหญ่ 1 เด็ก · เปิด <span class="mono">17:55</span> · หมดเวลา <span class="mono">19:25</span></span></div>
+      </div>
+      <div class="o4-clock col gap-6">
+        <div class="row gap-8" style="justify-content:flex-end">
+          <svg class="i" style="color:var(--cancel-ink)"><use href="#i-timer-off"/></svg>
+          <span class="t-h3" style="color:var(--cancel-ink)">ปิดการสั่งแล้ว</span>
+          <span class="t-small" style="color:var(--cancel-ink)">ใช้ไป <b class="mono">107</b> นาที</span>
+        </div>
+        <div class="rail-wrap over" style="--p:100; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div>
+        <span class="t-micro muted right">ครบ 90 นาที · ลูกค้าสั่งเพิ่มไม่ได้</span>
+      </div>
+    </div>
+
+    <div class="o4-actions row gap-8">
+      <span class="btn btn-secondary"><svg class="i i-sm"><use href="#i-file-text"/></svg>พิมพ์ใบแจ้งยอด</span>
+      <span class="btn btn-secondary"><svg class="i i-sm"><use href="#i-qr-code"/></svg>แสดง QR</span>
+      <span class="btn is-disabled"><svg class="i i-sm"><use href="#i-ban"/></svg>ยกเลิกโต๊ะ</span>
+      <span class="t-small muted">ยกเลิกไม่ได้ เพราะมีออเดอร์แล้ว</span>
+    </div>
+
+    <div class="o4-cols">
+      <div class="col gap-16">
+        <div class="card card-flush">
+          <div class="o4-shead row between">
+            <h2 class="t-h2">ออเดอร์</h2>
+            <span class="t-small muted">4 รอบ · เสิร์ฟครบทุกจาน</span>
+          </div>
+
+          <div class="o4-round">
+            <div class="row between">
+              <div class="row gap-12"><b class="t-h3">รอบที่ 1</b><span class="mono t-small muted">17:58</span></div>
+              <span class="badge served">เสิร์ฟแล้ว</span>
+            </div>
+            <div class="o4-items">
+              <div class="o4-item"><span>น้ำซุปต้มยำน้ำข้น</span><span class="o4-q num">×1</span></div>
+              <div class="o4-item"><span>สันคอหมูสไลซ์</span><span class="o4-q num">×3</span></div>
+              <div class="o4-item"><span>หมูสามชั้นสไลซ์</span><span class="o4-q num">×2</span></div>
+              <div class="o4-item"><span>ผักกาดขาว</span><span class="o4-q num">×2</span></div>
+              <div class="o4-item"><span>เห็ดรวม</span><span class="o4-q num">×1</span></div>
+            </div>
+          </div>
+
+          <div class="o4-round">
+            <div class="row between">
+              <div class="row gap-12"><b class="t-h3">รอบที่ 2</b><span class="mono t-small muted">18:20</span></div>
+              <div class="row gap-12"><span class="t-micro muted">คิดเงินแยก <span class="num">฿178.00</span></span><span class="badge served">เสิร์ฟแล้ว</span></div>
+            </div>
+            <div class="o4-items">
+              <div class="o4-item"><span>เนื้อวัวสไลซ์</span><span class="o4-q num">×2</span></div>
+              <div class="o4-item"><span>หมึกกล้วย</span><span class="o4-q num">×2</span></div>
+              <div class="o4-item"><span>ลูกชิ้นกุ้ง</span><span class="o4-q num">×2</span></div>
+              <div class="o4-item"><span>เกี๊ยวซ่าทอด</span><span class="o4-q num">×1</span></div>
+              <div class="o4-item"><span>เบียร์สิงห์</span><span class="row gap-12"><span class="o4-q num">×2</span><b class="num">฿178.00</b></span></div>
+            </div>
+          </div>
+
+          <div class="o4-round">
+            <div class="row between">
+              <div class="row gap-12"><b class="t-h3">รอบที่ 3</b><span class="mono t-small muted">18:48</span></div>
+              <span class="badge served">เสิร์ฟแล้ว</span>
+            </div>
+            <div class="o4-items">
+              <div class="o4-item"><span>หมูสามชั้นสไลซ์</span><span class="o4-q num">×3</span></div>
+              <div class="o4-item"><span>ผักบุ้งจีน</span><span class="o4-q num">×2</span></div>
+              <div class="o4-item"><span>ข้าวโพดอ่อน</span><span class="o4-q num">×1</span></div>
+              <div class="o4-item"><span>เต้าหู้ปลา</span><span class="o4-q num">×1</span></div>
+            </div>
+          </div>
+
+          <div class="o4-round">
+            <div class="row between">
+              <div class="row gap-12"><b class="t-h3">รอบที่ 4</b><span class="mono t-small muted">19:05</span></div>
+              <span class="badge served">เสิร์ฟแล้ว</span>
+            </div>
+            <div class="o4-items">
+              <div class="o4-item"><span>เนื้อวัวสไลซ์</span><span class="o4-q num">×3</span></div>
+              <div class="o4-item"><span>ลูกชิ้นปลา</span><span class="o4-q num">×2</span></div>
+              <div class="o4-item"><span>ไอศกรีมวานิลลา</span><span class="o4-q num">×2</span></div>
+              <div class="o4-item"><span>วุ้นมะพร้าว</span><span class="o4-q num">×1</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row between"><h2 class="t-h2">ปรับยอด</h2><span class="t-small muted">บวกเพิ่มยอด · ลบเป็นส่วนลด</span></div>
+          <div class="o4-adj row between">
+            <div class="col gap-2"><span>ค่าปรับอาหารเหลือ</span><span class="t-micro muted">ปรับยอดโดยเจ้าของร้าน</span></div>
+            <div class="row gap-12"><b class="t-h3 num">+฿50.00</b><span class="btn btn-ghost btn-sm btn-icon"><svg class="i i-sm"><use href="#i-trash-2"/></svg></span></div>
+          </div>
+          <hr class="divider">
+          <div class="o4-adjadd">
+            <div class="row gap-8">
+              <div class="input grow"><span class="ph">เหตุผล เช่น ค่าปรับอาหารเหลือ</span></div>
+              <div class="input o4-amt"><span class="ph">+0.00</span></div>
+              <span class="btn btn-secondary">เพิ่ม</span>
+            </div>
+            <div class="help" style="margin-top:8px">ใส่เครื่องหมายลบนำหน้าเพื่อลดยอด เช่น -20.00 · ปรับยอดได้เฉพาะตอนยังไม่ปิดบิล</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col gap-16">
+        <div class="card o4-bill">
+          <div class="row between" style="margin-bottom:8px"><h2 class="t-h2">บิล</h2><span class="badge accent badge-plain">Gold · <span class="num">90</span> นาที</span></div>
+
+          <div class="t-micro strong muted">ค่าบุฟเฟ่ต์</div>
+          <div class="kv"><span>ผู้ใหญ่ 2 × <span class="num">฿399</span></span><span class="num">฿798.00</span></div>
+          <div class="kv"><span>เด็ก 1 × <span class="num">฿199</span></span><span class="num">฿199.00</span></div>
+
+          <div class="t-micro strong muted" style="margin-top:8px">เมนูคิดเงินแยก</div>
+          <div class="kv"><span>เบียร์สิงห์ 2 × <span class="num">฿89</span></span><span class="num">฿178.00</span></div>
+
+          <div class="t-micro strong muted" style="margin-top:8px">ปรับยอด</div>
+          <div class="kv"><span>ค่าปรับอาหารเหลือ</span><span class="num">+฿50.00</span></div>
+
+          <hr class="divider" style="margin:10px 0 6px">
+          <div class="kv"><span class="ink-2">ยอดก่อนค่าบริการ</span><span class="num">฿1,225.00</span></div>
+          <div class="kv"><span class="ink-2">ค่าบริการ 10%</span><span class="num">฿122.50</span></div>
+          <div class="kv"><span class="ink-2">VAT 7%</span><span class="num">฿94.33</span></div>
+          <div class="kv total"><span>รวมทั้งสิ้น</span><span class="num">฿1,441.83</span></div>
+
+          <div class="banner ok" style="margin-top:14px"><svg class="i i-sm"><use href="#i-circle-check"/></svg>ออเดอร์เสิร์ฟครบแล้ว · ปิดบิลได้</div>
+          <span class="btn btn-primary btn-lg btn-block" style="margin-top:14px">รับชำระเงิน</span>
+        </div>
+
+        <div class="well">
+          <div class="row gap-8"><svg class="i i-sm"><use href="#i-circle-alert"/></svg><span class="t-small strong" style="color:var(--orange-ink)">ปิดการสั่งแล้ว</span></div>
+          <div class="t-small muted" style="margin-top:4px">ลูกค้าสั่งเพิ่มไม่ได้ · ยังปรับยอดและรับชำระเงินได้</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body></html>

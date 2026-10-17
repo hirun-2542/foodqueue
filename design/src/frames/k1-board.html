@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1280x800@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .k1-sum { font-size: 14px; color: var(--ink-2); }
+  .k1-sound { height: 40px; gap: 10px; padding: 0 10px 0 14px; font-size: 13.5px; }
+  .k1-clock { font-size: 20px; }
+  .k1-stack { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+  .k1-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; flex: none; }
+  .k1-card.is-new { border: 2px solid var(--alert); box-shadow: 0 0 0 7px var(--alert-ring); }
+  .k1-top { padding: 8px 12px 6px; border-bottom: 1px solid var(--line); }
+  .k1-card.is-new .k1-top { background: var(--pending-soft); border-bottom-color: var(--alert); }
+  .k1-badge-new { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: var(--r-pill); background: var(--alert); color: var(--ink); font-size: 12.5px; font-weight: 600; }
+  .k1-tbl { font-size: 28px; font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+  .k1-meta { font-size: 14px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
+  .k1-rail { align-items: center; margin-top: 4px; }
+  .k1-age { font-size: 17px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+  .k1-age.over { color: var(--cancel-ink); }
+  .k1-items { padding: 8px 12px 0; display: flex; flex-direction: column; gap: 2px; }
+  .k1-items li { display: flex; gap: 8px; font-size: 18px; line-height: 1.5; }
+  .k1-items b { min-width: 32px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .k1-note { display: flex; align-items: center; gap: 6px; margin: 8px 12px 0; padding: 3px 10px; background: var(--pending-soft); color: var(--pending-ink); border-radius: var(--r-sm); font-size: 15px; line-height: 1.5; font-weight: 500; }
+  .k1-acts { gap: 8px; padding: 6px 12px 8px; }
+  .k1-more { width: 64px; padding: 0; flex: none; }
+  .k1-wait { height: 64px; display: inline-flex; align-items: center; gap: 10px; padding: 0 16px; border-radius: var(--r-lg); background: var(--ready-soft); color: var(--ready-ink); font-size: 16px; font-weight: 600; white-space: nowrap; }
+</style></head>
+<body class="frame">
+<div class="kds">
+  <header class="kds-top">
+    <div class="row gap-12">
+      <span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span>
+      <div class="col">
+        <b class="t-h3" style="line-height:1.25">จอครัว</b>
+        <span class="t-micro muted">ชาบูเดโม่</span>
+      </div>
+    </div>
+    <span class="k1-sum">ออเดอร์ค้าง <b class="num">7</b> รอบ · ล่าช้าเกิน 10 นาที <b class="num">3</b> รอบ</span>
+    <div class="grow"></div>
+    <span class="live">เชื่อมต่อแล้ว</span>
+    <div class="pill k1-sound"><svg class="i i-sm"><use href="#i-volume-2"/></svg>เสียงแจ้งเตือน · <b>เปิด</b><span class="switch on"></span></div>
+    <span class="mono k1-clock">19:42</span>
+    <div class="vdivider" style="height:32px"></div>
+    <div class="row gap-8"><span class="avatar">ค</span><span class="t-small strong">ครัว</span></div>
+  </header>
+
+  <div class="kds-cols">
+    <section class="kcol">
+      <div class="kcol-head"><h2 class="t-h2">รอรับ</h2><span class="n">3</span></div>
+      <div class="k1-stack">
+        <article class="k1-card is-new">
+          <div class="k1-top">
+            <div class="row between gap-8">
+              <div class="row gap-8" style="min-width:0"><span class="k1-tbl">A1</span><span class="k1-meta">รอบที่ 3 · ส่ง 19:41</span></div>
+              <div class="row gap-6" style="flex:none"><span class="k1-badge-new">ใหม่</span><span class="badge pending">รอรับ</span></div>
+            </div>
+            <div class="row gap-12 k1-rail">
+              <div class="rail-wrap thick grow" style="--p:5"><div class="rail"><i></i></div></div>
+              <span class="k1-age"><span class="mono">&lt;1</span> นาที</span>
+            </div>
+          </div>
+          <ul class="k1-items">
+            <li><b>×2</b><span>หมูสามชั้นสไลซ์</span></li>
+            <li><b>×1</b><span>เห็ดรวม</span></li>
+            <li><b>×1</b><span>ชาไทยเย็น</span></li>
+          </ul>
+          <div class="k1-note"><svg class="i i-sm"><use href="#i-pencil"/></svg>ไม่ติดมัน</div>
+          <div class="row k1-acts">
+            <span class="btn btn-primary btn-xl grow">เริ่มทำ</span>
+            <span class="btn btn-secondary btn-xl k1-more"><svg class="i i-lg"><use href="#i-ellipsis-vertical"/></svg></span>
+          </div>
+        </article>
+
+        <article class="k1-card">
+          <div class="k1-top">
+            <div class="row between gap-8">
+              <div class="row gap-8" style="min-width:0"><span class="k1-tbl">B3</span><span class="k1-meta">รอบที่ 4 · ส่ง 19:38</span></div>
+              <div class="row gap-6" style="flex:none"><span class="badge pending">รอรับ</span></div>
+            </div>
+            <div class="row gap-12 k1-rail">
+              <div class="rail-wrap thick grow" style="--p:40"><div class="rail"><i></i></div></div>
+              <span class="k1-age"><span class="mono">4</span> นาที</span>
+            </div>
+          </div>
+          <ul class="k1-items">
+            <li><b>×4</b><span>เนื้อวัวสไลซ์</span></li>
+            <li><b>×3</b><span>ลูกชิ้นกุ้ง</span></li>
+            <li><b>×2</b><span>เกี๊ยวซ่าทอด</span></li>
+          </ul>
+          <div class="row k1-acts">
+            <span class="btn btn-primary btn-xl grow">เริ่มทำ</span>
+            <span class="btn btn-secondary btn-xl k1-more"><svg class="i i-lg"><use href="#i-ellipsis-vertical"/></svg></span>
+          </div>
+        </article>
+
+        <article class="k1-card">
+          <div class="k1-top">
+            <div class="row between gap-8">
+              <div class="row gap-8" style="min-width:0"><span class="k1-tbl">B5</span><span class="k1-meta">รอบที่ 2 · ส่ง 19:35</span></div>
+              <div class="row gap-6" style="flex:none"><span class="badge pending">รอรับ</span></div>
+            </div>
+            <div class="row gap-12 k1-rail">
+              <div class="rail-wrap thick grow" style="--p:70"><div class="rail"><i></i></div></div>
+              <span class="k1-age"><span class="mono">7</span> นาที</span>
+            </div>
+          </div>
+          <ul class="k1-items">
+            <li><b>×5</b><span>สันคอหมูสไลซ์</span></li>
+            <li><b>×2</b><span>ผักบุ้งจีน</span></li>
+            <li><b>×1</b><span>หม่าล่า</span></li>
+            <li><b>×2</b><span>โค้ก</span></li>
+          </ul>
+          <div class="k1-note"><svg class="i i-sm"><use href="#i-pencil"/></svg>หม่าล่า: เผ็ดน้อย</div>
+          <div class="row k1-acts">
+            <span class="btn btn-primary btn-xl grow">เริ่มทำ</span>
+            <span class="btn btn-secondary btn-xl k1-more"><svg class="i i-lg"><use href="#i-ellipsis-vertical"/></svg></span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="kcol">
+      <div class="kcol-head"><h2 class="t-h2">กำลังทำ</h2><span class="n">2</span></div>
+      <div class="k1-stack">
+        <article class="k1-card">
+          <div class="k1-top">
+            <div class="row between gap-8">
+              <div class="row gap-8" style="min-width:0"><span class="k1-tbl">A3</span><span class="k1-meta">รอบที่ 5 · ส่ง 19:29</span></div>
+              <div class="row gap-6" style="flex:none"><span class="badge preparing">กำลังทำ</span></div>
+            </div>
+            <div class="row gap-12 k1-rail">
+              <div class="rail-wrap thick grow over" style="--p:100"><div class="rail"><i></i></div></div>
+              <span class="k1-age over"><span class="mono">13</span> นาที</span>
+            </div>
+          </div>
+          <ul class="k1-items">
+            <li><b>×3</b><span>แซลมอนสไลซ์</span></li>
+            <li><b>×4</b><span>หอยเชลล์</span></li>
+            <li><b>×4</b><span>ริบอายสไลซ์</span></li>
+            <li><b>×2</b><span>เบียร์สิงห์</span></li>
+          </ul>
+          <div class="row k1-acts">
+            <span class="btn btn-primary btn-xl grow">พร้อมเสิร์ฟ</span>
+            <span class="btn btn-secondary btn-xl k1-more"><svg class="i i-lg"><use href="#i-ellipsis-vertical"/></svg></span>
+          </div>
+        </article>
+
+        <article class="k1-card">
+          <div class="k1-top">
+            <div class="row between gap-8">
+              <div class="row gap-8" style="min-width:0"><span class="k1-tbl">B1</span><span class="k1-meta">รอบที่ 2 · ส่ง 19:36</span></div>
+              <div class="row gap-6" style="flex:none"><span class="badge preparing">กำลังทำ</span></div>
+            </div>
+            <div class="row gap-12 k1-rail">
+              <div class="rail-wrap thick grow" style="--p:60"><div class="rail"><i></i></div></div>
+              <span class="k1-age"><span class="mono">6</span> นาที</span>
+            </div>
+          </div>
+          <ul class="k1-items">
+            <li><b>×3</b><span>สันคอหมูสไลซ์</span></li>
+            <li><b>×2</b><span>ข้าวโพดอ่อน</span></li>
+          </ul>
+          <div class="row k1-acts">
+            <span class="btn btn-primary btn-xl grow">พร้อมเสิร์ฟ</span>
+            <span class="btn btn-secondary btn-xl k1-more"><svg class="i i-lg"><use href="#i-ellipsis-vertical"/></svg></span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="kcol">
+      <div class="kcol-head"><h2 class="t-h2">พร้อมเสิร์ฟ</h2><span class="n">2</span></div>
+      <div class="k1-stack">
+        <article class="k1-card">
+          <div class="k1-top">
+            <div class="row between gap-8">
+              <div class="row gap-8" style="min-width:0"><span class="k1-tbl">A3</span><span class="k1-meta">รอบที่ 4 · ส่ง 19:22</span></div>
+              <div class="row gap-6" style="flex:none"><span class="badge ready">พร้อมเสิร์ฟ</span></div>
+            </div>
+            <div class="row gap-12 k1-rail">
+              <div class="rail-wrap thick grow over" style="--p:100"><div class="rail"><i></i></div></div>
+              <span class="k1-age over">รอเสิร์ฟ <span class="mono">20</span> นาที</span>
+            </div>
+          </div>
+          <ul class="k1-items">
+            <li><b>×4</b><span>เนื้อวัวสไลซ์</span></li>
+            <li><b>×3</b><span>ลูกชิ้นปลา</span></li>
+          </ul>
+          <div class="row k1-acts">
+            <span class="k1-wait grow"><svg class="i"><use href="#i-hand-platter"/></svg>รอพนักงานนำไปเสิร์ฟ</span>
+            <span class="btn btn-secondary btn-xl k1-more"><svg class="i i-lg"><use href="#i-ellipsis-vertical"/></svg></span>
+          </div>
+        </article>
+
+        <article class="k1-card">
+          <div class="k1-top">
+            <div class="row between gap-8">
+              <div class="row gap-8" style="min-width:0"><span class="k1-tbl">B5</span><span class="k1-meta">รอบที่ 1 · ส่ง 19:31</span></div>
+              <div class="row gap-6" style="flex:none"><span class="badge ready">พร้อมเสิร์ฟ</span></div>
+            </div>
+            <div class="row gap-12 k1-rail">
+              <div class="rail-wrap thick grow over" style="--p:100"><div class="rail"><i></i></div></div>
+              <span class="k1-age over"><span class="mono">11</span> นาที</span>
+            </div>
+          </div>
+          <ul class="k1-items">
+            <li><b>×1</b><span>น้ำซุปใส</span></li>
+            <li><b>×4</b><span>หมูนุ่มสไลซ์</span></li>
+            <li><b>×2</b><span>เห็ดรวม</span></li>
+          </ul>
+          <div class="row k1-acts">
+            <span class="k1-wait grow"><svg class="i"><use href="#i-hand-platter"/></svg>รอพนักงานนำไปเสิร์ฟ</span>
+            <span class="btn btn-secondary btn-xl k1-more"><svg class="i i-lg"><use href="#i-ellipsis-vertical"/></svg></span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</div>
+</body></html>

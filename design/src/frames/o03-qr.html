@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1440x900@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  /* backdrop = frames/o01-overview.html with โต๊ะ A5 freshly opened; class names re-prefixed for this frame */
+  .o3-tgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .o3-tcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 16px 16px 14px; display: flex; flex-direction: column; gap: 10px; min-height: 176px; }
+  .o3-tcard .name { font-size: 22px; font-weight: 600; line-height: 1.2; }
+  .o3-tcard .left { font-family: var(--mono); font-size: 22px; font-weight: 500; line-height: 1.2; }
+  .o3-tcard .foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--line); }
+  .o3-tcard.free { background: transparent; border-style: dashed; border-color: var(--line-strong); align-items: flex-start; }
+  .o3-tcard.attn { border-color: var(--orange-line); }
+  .o3-tcard.pay { border-color: var(--orange-strong); }
+  .o3-tcard.fresh { border-color: var(--orange-line); }
+
+  /* dialog */
+  .o3-dlg { width: 560px; left: 50%; transform: translateX(-50%); top: 108px; padding: 24px; }
+  .o3-qr { width: 244px; height: 244px; margin: 18px auto 0; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); display: flex; align-items: center; justify-content: center; }
+  .o3-url { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; }
+  .o3-sum { margin-top: 18px; }
+  .o3-foot { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+</style></head>
+<body class="frame">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span><div class="col"><b style="line-height:1.3">ชาบูเดโม่</b><span class="t-micro muted">FoodQueue</span></div></div>
+    <a class="nav on"><svg class="i"><use href="#i-layout-grid"/></svg>ภาพรวม</a>
+    <a class="nav"><svg class="i"><use href="#i-clipboard-list"/></svg>ออเดอร์<span class="count">3</span></a>
+    <a class="nav"><svg class="i"><use href="#i-history"/></svg>ประวัติการชำระ</a>
+    <a class="nav"><svg class="i"><use href="#i-chart-column"/></svg>รายงาน</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-book-open"/></svg>เมนูอาหาร</a>
+    <a class="nav"><svg class="i"><use href="#i-package"/></svg>แพ็กเกจ</a>
+    <a class="nav"><svg class="i"><use href="#i-armchair"/></svg>โต๊ะ</a>
+    <a class="nav"><svg class="i"><use href="#i-settings"/></svg>ตั้งค่า</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-chef-hat"/></svg>จอครัว<svg class="i i-sm" style="margin-left:auto"><use href="#i-arrow-up-right"/></svg></a>
+    <div class="side-foot"><span class="avatar">ส</span><div class="col grow"><b class="t-small" style="line-height:1.3">คุณสมศรี</b><span class="t-micro muted">เจ้าของร้าน</span></div><svg class="i muted"><use href="#i-log-out"/></svg></div>
+  </aside>
+
+  <main class="main">
+    <div class="pagehead">
+      <div class="col"><h1 class="t-h1">ภาพรวม</h1><span class="t-small muted">ศุกร์ 16 ต.ค. 2569 · 19:42</span></div>
+      <div class="row gap-12"><span class="live">เชื่อมต่อแบบเรียลไทม์</span><span class="demo-tag">DEMO DATA</span></div>
+    </div>
+
+    <div class="kpis">
+      <div><div class="kpi-label">ยอดขายวันนี้</div><div class="kpi-value">฿38,420</div><div class="t-small" style="color:var(--ready-ink)">+8% เทียบเมื่อวานเวลาเดียวกัน</div></div>
+      <div><div class="kpi-label">บิลที่ชำระแล้ว</div><div class="kpi-value">29</div><div class="t-small muted">เฉลี่ย ฿1,325 ต่อบิล</div></div>
+      <div><div class="kpi-label">ลูกค้า (หัว)</div><div class="kpi-value">91</div><div class="t-small muted">เฉลี่ย ฿422 ต่อหัว</div></div>
+      <div><div class="kpi-label">โต๊ะที่เปิดอยู่</div><div class="kpi-value">9 <span class="muted" style="font-size:18px; font-weight:500">/ 12</span></div><div class="t-small muted">ค้างครัว 7 รอบ</div></div>
+    </div>
+
+    <div class="row between" style="margin:28px 0 14px">
+      <h2 class="t-h2">โต๊ะ</h2>
+      <div class="pills"><span class="pill on">ทั้งหมด 12</span><span class="pill">กำลังใช้ 9</span><span class="pill">ว่าง 3</span><span class="pill">ต้องดูแล 2</span></div>
+    </div>
+
+    <div class="o3-tgrid">
+      <div class="o3-tcard">
+        <div class="row between"><span class="name">A1</span><span class="badge accent">Gold</span></div>
+        <div class="t-small muted">2 ผู้ใหญ่</div>
+        <div class="col gap-4"><div class="row between" style="align-items:baseline"><span class="left">18:55–20:25</span><span class="t-small muted">ใช้ไป <b class="mono">47</b> นาที</span></div>
+          <div class="rail-wrap" style="--p:52; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div></div>
+        <div class="foot"><span class="badge pending">ค้างครัว 1</span><b class="num">฿1,074.60</b></div>
+      </div>
+      <div class="o3-tcard">
+        <div class="row between"><span class="name">A2</span><span class="badge neutral badge-plain">Silver</span></div>
+        <div class="t-small muted">3 ผู้ใหญ่ 1 เด็ก</div>
+        <div class="col gap-4"><div class="row between" style="align-items:baseline"><span class="left">19:10–20:40</span><span class="t-small muted">ใช้ไป <b class="mono">32</b> นาที</span></div>
+          <div class="rail-wrap" style="--p:36; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div></div>
+        <div class="foot"><span class="badge served">เสิร์ฟครบ</span><b class="num">฿1,289.99</b></div>
+      </div>
+      <div class="o3-tcard">
+        <div class="row between"><span class="name">A3</span><span class="badge neutral badge-plain">Platinum</span></div>
+        <div class="t-small muted">4 ผู้ใหญ่</div>
+        <div class="col gap-4"><div class="row between" style="align-items:baseline"><span class="left">18:30–20:30</span><span class="t-small muted">ใช้ไป <b class="mono">72</b> นาที</span></div>
+          <div class="rail-wrap" style="--p:60; --m:87.5"><div class="rail"><i></i></div><span class="mark"></span></div></div>
+        <div class="foot"><span class="badge preparing">ค้างครัว 2</span><b class="num">฿3,148.95</b></div>
+      </div>
+      <div class="o3-tcard attn">
+        <div class="row between"><span class="name">A4</span><span class="row gap-6"><span class="badge accent badge-plain">Last order</span><span class="badge accent">Gold</span></span></div>
+        <div class="t-small muted">2 ผู้ใหญ่</div>
+        <div class="col gap-4"><div class="row between" style="align-items:baseline"><span class="left">18:20–19:50</span><span class="t-small" style="color:var(--orange-ink)">ใช้ไป <b class="mono">82</b> นาที</span></div>
+          <div class="rail-wrap late" style="--p:91; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div></div>
+        <div class="foot"><span class="badge served">เสิร์ฟครบ</span><b class="num">฿1,045.18</b></div>
+      </div>
+
+      <div class="o3-tcard">
+        <div class="row between"><span class="name">B1</span><span class="badge neutral badge-plain">Silver</span></div>
+        <div class="t-small muted">2 ผู้ใหญ่</div>
+        <div class="col gap-4"><div class="row between" style="align-items:baseline"><span class="left">19:25–20:55</span><span class="t-small muted">ใช้ไป <b class="mono">17</b> นาที</span></div>
+          <div class="rail-wrap" style="--p:19; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div></div>
+        <div class="foot"><span class="badge preparing">ค้างครัว 1</span><b class="num">฿739.16</b></div>
+      </div>
+      <div class="o3-tcard pay">
+        <div class="row between"><span class="name">B2</span><span class="row gap-6"><span class="badge cancelled badge-plain">ปิดการสั่งแล้ว</span><span class="badge accent">Gold</span></span></div>
+        <div class="t-small muted">2 ผู้ใหญ่ 1 เด็ก</div>
+        <div class="col gap-4"><div class="row between" style="align-items:baseline"><span class="left">17:55–19:25</span><span class="t-small" style="color:var(--cancel-ink)">ใช้ไป <b class="mono">107</b> นาที</span></div>
+          <div class="rail-wrap over" style="--p:100; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div></div>
+        <div class="foot"><b class="num">฿1,441.83</b><span class="btn btn-primary btn-sm">รับชำระเงิน</span></div>
+      </div>
+      <div class="o3-tcard">
+        <div class="row between"><span class="name">B3</span><span class="badge neutral badge-plain">Platinum</span></div>
+        <div class="t-small muted">3 ผู้ใหญ่ 2 เด็ก</div>
+        <div class="col gap-4"><div class="row between" style="align-items:baseline"><span class="left">18:45–20:45</span><span class="t-small muted">ใช้ไป <b class="mono">57</b> นาที</span></div>
+          <div class="rail-wrap" style="--p:48; --m:87.5"><div class="rail"><i></i></div><span class="mark"></span></div></div>
+        <div class="foot"><span class="badge pending">ค้างครัว 1</span><b class="num">฿3,380.40</b></div>
+      </div>
+      <div class="o3-tcard">
+        <div class="row between"><span class="name">B5</span><span class="badge accent">Gold</span></div>
+        <div class="t-small muted">4 ผู้ใหญ่</div>
+        <div class="col gap-4"><div class="row between" style="align-items:baseline"><span class="left">19:30–21:00</span><span class="t-small muted">ใช้ไป <b class="mono">12</b> นาที</span></div>
+          <div class="rail-wrap" style="--p:13; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div></div>
+        <div class="foot"><span class="badge ready">ค้างครัว 2</span><b class="num">฿1,884.30</b></div>
+      </div>
+
+      <div class="o3-tcard fresh">
+        <div class="row between"><span class="name">A5</span><span class="badge accent">Gold</span></div>
+        <div class="t-small muted">2 ผู้ใหญ่ 1 เด็ก</div>
+        <div class="col gap-4"><div class="row between" style="align-items:baseline"><span class="left">19:42–21:12</span><span class="t-small muted">ใช้ไป <b class="mono">0</b> นาที</span></div>
+          <div class="rail-wrap" style="--p:0; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div></div>
+        <div class="foot"><span class="badge neutral badge-plain"><svg class="i i-sm" style="width:14px;height:14px"><use href="#i-qr-code"/></svg>รอลูกค้าสแกน</span><b class="num">฿1,173.47</b></div>
+      </div>
+      <div class="o3-tcard free"><div class="row between" style="width:100%"><span class="name" style="color:var(--ink-2)">A6</span><span class="badge neutral badge-plain">ว่าง</span></div><span class="t-small muted">4 ที่นั่ง</span><span class="btn btn-secondary btn-sm" style="margin-top:auto"><svg class="i i-sm"><use href="#i-plus"/></svg>เปิดโต๊ะ</span></div>
+      <div class="o3-tcard free"><div class="row between" style="width:100%"><span class="name" style="color:var(--ink-2)">B4</span><span class="badge neutral badge-plain">ว่าง</span></div><span class="t-small muted">4 ที่นั่ง</span><span class="btn btn-secondary btn-sm" style="margin-top:auto"><svg class="i i-sm"><use href="#i-plus"/></svg>เปิดโต๊ะ</span></div>
+      <div class="o3-tcard free"><div class="row between" style="width:100%"><span class="name" style="color:var(--ink-2)">B6</span><span class="badge neutral badge-plain">ว่าง</span></div><span class="t-small muted">4 ที่นั่ง</span><span class="btn btn-secondary btn-sm" style="margin-top:auto"><svg class="i i-sm"><use href="#i-plus"/></svg>เปิดโต๊ะ</span></div>
+    </div>
+  </main>
+</div>
+
+<div class="scrim"></div>
+<div class="dialog o3-dlg">
+  <h2 class="t-h1">โต๊ะ A5 เปิดแล้ว</h2>
+  <span class="t-small muted">พิมพ์ slip ไปวางที่โต๊ะ หรือให้ลูกค้าสแกนจากจอนี้ได้เลย</span>
+
+  <div class="banner ok" style="margin-top:16px">
+    <svg class="i i-sm"><use href="#i-circle-check"/></svg>
+    สร้าง QR สำหรับรอบการนั่งนี้แล้ว · ใช้ได้จนกว่าจะปิดบิล
+  </div>
+
+  <div class="o3-qr"><img src="../assets/qr-session.svg" width="222" height="222" alt="QR สำหรับสั่งอาหารของโต๊ะ A5"></div>
+  <div class="o3-url">
+    <span class="mono t-small muted">…/s/Kq3vT8mZ1xR4…</span>
+    <span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-copy"/></svg>คัดลอกลิงก์</span>
+  </div>
+
+  <div class="well o3-sum">
+    <div class="row between"><span class="t-small muted">แพ็กเกจ</span><span class="row gap-8"><span class="badge accent badge-plain">Gold</span><span class="t-small strong"><span class="num">90</span> นาที</span></span></div>
+    <div class="row between" style="margin-top:4px"><span class="t-small muted">จำนวน</span><span class="t-small strong">2 ผู้ใหญ่ 1 เด็ก</span></div>
+    <div class="row between" style="margin-top:4px"><span class="t-small muted">เวลา</span><span class="t-small strong">เปิด <span class="mono">19:42</span> · หมด <span class="mono">21:12</span></span></div>
+  </div>
+
+  <div class="o3-foot row between">
+    <span class="btn btn-ghost">เสร็จสิ้น</span>
+    <span class="btn btn-primary btn-lg"><svg class="i"><use href="#i-printer"/></svg>พิมพ์ QR slip</span>
+  </div>
+</div>
+</body></html>

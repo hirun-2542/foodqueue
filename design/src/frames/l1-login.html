@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1440x900@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .l1 { width: 1440px; height: 900px; background: var(--bg); padding: 48px; display: grid; grid-template-columns: 1fr 620px; gap: 64px; }
+  .l1-left { display: flex; flex-direction: column; min-width: 0; }
+  .l1-brand { display: flex; align-items: center; gap: 12px; }
+  .l1-form { margin: auto 0; max-width: 420px; display: flex; flex-direction: column; gap: 18px; }
+  .l1-in { height: 52px; border-radius: var(--r); padding: 0 16px; }
+  .l1-eye { margin-left: auto; color: var(--muted); }
+  .l1-dots { letter-spacing: 2px; }
+  .l1-card { align-self: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 40px; display: flex; flex-direction: column; }
+  .l1-role { height: 64px; justify-content: flex-start; gap: 14px; padding: 0 16px; text-align: left; white-space: normal; }
+  .l1-role .ttl { font-size: 15px; font-weight: 600; line-height: 1.3; }
+  .l1-role .desc { font-size: 12.5px; font-weight: 400; line-height: 1.45; color: var(--muted); }
+  .l1-role.btn-primary .desc { color: inherit; }
+  .l1-link { display: inline-flex; align-items: center; gap: 8px; height: 44px; font-weight: 600; color: var(--orange-ink); }
+  .l1-feed { display: flex; flex-direction: column; }
+  .l1-feed li { display: flex; align-items: center; gap: 10px; height: 36px; border-top: 1px solid var(--line); }
+  .l1-feed li:first-child { border-top: 0; }
+  .l1-feed .ic { color: var(--served-dot); }
+</style></head>
+<body class="frame">
+<div class="l1">
+  <div class="l1-left">
+    <div class="l1-brand"><span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span>
+      <div class="col"><b style="line-height:1.3">ชาบูเดโม่</b><span class="t-micro muted">FoodQueue</span></div>
+    </div>
+
+    <div class="l1-form">
+      <h1 class="t-display">เข้าสู่ระบบ</h1>
+      <div class="field"><label>อีเมล</label><div class="input l1-in">owner@demo.local</div></div>
+      <div class="field"><label>รหัสผ่าน</label>
+        <div class="input l1-in is-focus"><span class="l1-dots">•••••••••</span><svg class="i l1-eye"><use href="#i-eye"/></svg></div>
+      </div>
+      <div class="col gap-12" style="margin-top:6px">
+        <span class="btn btn-primary btn-lg btn-block">เข้าสู่ระบบ</span>
+        <span class="t-small muted">สำหรับเจ้าของร้านและพนักงานครัว</span>
+      </div>
+    </div>
+
+    <div class="l1-foot t-micro muted">ชาบูเดโม่ · 99/9 ถ.สุขุมวิท เขตวัฒนา กรุงเทพฯ 10110 · 02-000-0000</div>
+  </div>
+
+  <section class="l1-card">
+    <div class="row gap-12">
+      <h2 class="t-h1">ทดลองใช้งาน</h2>
+      <span class="demo-tag">DEMO MODE</span>
+    </div>
+    <p class="t-body ink-2" style="margin-top:12px">ข้อมูลทั้งหมดเป็นข้อมูลตัวอย่าง ไม่ต้องใช้รหัสผ่าน</p>
+
+    <div class="col gap-12" style="margin-top:32px">
+      <span class="btn btn-primary l1-role">
+        <svg class="i i-lg"><use href="#i-layout-grid"/></svg>
+        <span class="col"><span class="ttl">เข้าใช้แบบเจ้าของร้าน</span><span class="desc">ภาพรวม โต๊ะ รายงาน และการรับชำระเงิน</span></span>
+      </span>
+      <span class="btn btn-secondary l1-role">
+        <svg class="i i-lg"><use href="#i-chef-hat"/></svg>
+        <span class="col"><span class="ttl">เข้าใช้แบบครัว</span><span class="desc">รับออเดอร์และเลื่อนสถานะบนจอครัว</span></span>
+      </span>
+      <span class="btn btn-secondary l1-role">
+        <svg class="i i-lg"><use href="#i-smartphone"/></svg>
+        <span class="col"><span class="ttl">ดูมุมมองลูกค้า</span><span class="desc">ลองสั่งอาหารเหมือนลูกค้าที่โต๊ะจริง</span></span>
+      </span>
+    </div>
+
+    <span class="l1-link" style="margin-top:20px">ดูทั้ง 3 มุมมองพร้อมกัน<svg class="i"><use href="#i-arrow-right"/></svg></span>
+
+    <div style="margin-top:40px">
+      <div class="t-small strong ink-2" style="padding-bottom:6px">กิจกรรมล่าสุดจากบอท</div>
+      <ul class="l1-feed">
+        <li><svg class="i i-sm ic"><use href="#i-clipboard-list"/></svg><span class="t-small"><span class="mono muted">19:41</span> · A1 สั่งรอบที่ 3</span></li>
+        <li><svg class="i i-sm ic"><use href="#i-clipboard-list"/></svg><span class="t-small"><span class="mono muted">19:38</span> · B3 สั่งรอบที่ 4</span></li>
+        <li><svg class="i i-sm ic"><use href="#i-chef-hat"/></svg><span class="t-small"><span class="mono muted">19:36</span> · B1 ครัวเริ่มทำรอบที่ 2</span></li>
+        <li><svg class="i i-sm ic"><use href="#i-clipboard-list"/></svg><span class="t-small"><span class="mono muted">19:31</span> · B5 สั่งรอบที่ 1</span></li>
+      </ul>
+      <div class="t-micro muted" style="padding-top:10px">บอทจำลองลูกค้าสั่งอาหารทุก 20–40 วินาที</div>
+    </div>
+  </section>
+</div>
+</body></html>

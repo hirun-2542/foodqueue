@@ -1,0 +1,31 @@
+# FoodQueue UI mockups: shared brief
+
+Pinned by the user: **Modern Minimalism, Clean White + Orange.** Output is PNG mockups of every screen, built as static HTML rendered by headless Chromium. No app code. Language: Thai only. All data is synthetic demo data from `DATA.md`.
+
+## The world (what makes this FoodQueue and not a template)
+- **Ground is white.** Cards are white with a 1px hairline border, no shadow. Shadow exists only on things that float (dialogs, sheets, toasts, menus).
+- **Orange does four jobs only:** (1) the one primary action per screen (`btn-primary`), (2) selection/active state (`nav.on`, `pill.on`, selected row tint `--orange-soft`), (3) **the time rail**, the signature element, on staff screens, (4) the customer shop banner (`.cust-banner`). Everything else is ink, grey and the status colours. Do not scatter orange.
+- **The time rail** (`.rail-wrap > .rail > i` plus `.mark`) draws the seating clock: fill = elapsed share of the package duration, tick = Last order point. `late` after the tick, `over` once expired. It appears on owner table cards, the owner session detail and kitchen cards (there as age against the 10-minute limit). **The customer screens show no countdown, no rail and no bill tab** (customer tab bar = เมนู / ออเดอร์). Reuse the rail, do not invent other progress visuals (no rings, no sparklines).
+- **Customer screens carry the table and package as two small white chips on the banner (table top left, package top right), have no separate table row, and the orders page is one merged list with no rounds, no status and no time.** Staff screens keep rounds and statuses. A closed QR shows no amount or receipt number.
+- **Numbers that must not be misread** (countdowns, table codes inside data, receipt numbers) use `.mono` (DM Mono, has no Thai glyphs). **Never put Thai in a `.mono` run**: split `เกิน` (UI font) from `16:48` (mono) into separate elements. Money uses the UI font with `.num` (tabular), never mono.
+- Density follows the surface: customer = relaxed, big touch targets (>=44px). Kitchen = big, high-contrast, thumb-sized actions (>=56px). Owner = denser, scannable, tables and cards.
+
+## Hard rules
+1. **Colours only from `tokens.css`.** No new hex values in frames. Orange text is `--orange-ink` (never `--orange` or `--orange-strong` on `--bg`). `--orange` is for non-text.
+2. **Status = dot + label** via `.badge.pending|preparing|ready|served|cancelled`. Labels (Thai): รอรับ, กำลังทำ, พร้อมเสิร์ฟ, ยกเลิก (เสิร์ฟแล้ว remains only for history). Staff buttons are เริ่มทำ and พร้อมเสิร์ฟ only. Never colour alone. A new, unstarted order CARD (queue, kitchen) is shown with the `--alert` fill and `.pulse.on` (frozen halo in PNGs). The table map has only two states and no animation: ใช้งานอยู่ orange tint, ว่าง sunken grey. Time on staff table cards is start–end plus minutes used (`ใช้ไป N นาที`), never a countdown; past the end time ordering is closed (`ปิดการสั่งแล้ว`).
+3. **No** gradients, glass/blur, coloured side-borders on cards, emoji or unicode symbols standing in for icons (use lucide via `<svg class="i"><use href="#i-NAME"/></svg>`, any lucide kebab-case name works, the build injects the sprite), kicker/eyebrow text above headings, section numbers, hero-metric templates, identical icon+heading+text card grids as page structure, nested cards, modals where an inline panel works.
+4. Radii: 8 / 12 / 16 (`--r-sm/--r/--r-lg`), pills only for small controls. Spacing on a 4px grid; more space above a heading than below.
+5. Type: use `t-*` classes; 12px minimum text; body 15px. Thai needs line-height >= 1.5, do not tighten it.
+6. Menu items use real photos: `<span class="thumb"><img src="../assets/menu/<slug>.jpg" alt=""></span>` (72px), `.thumb.thumb-sm` (48px) or `.thumb.thumb-xs` (36px, customer order lines). Slugs are listed in `src/assets/menu/CREDITS.md`; mapping from DATA.md names: pork-collar, pork-belly, pork-soft, beef, ribeye, wagyu, shrimp, squid, scallop, salmon, fishball, shrimp-ball, fish-tofu, gyoza-fried, napa, mushrooms, baby-corn, morning-glory, ice-cream, coconut-jelly, water, coke, thai-tea, green-tea, coconut-water, beer, clear-soup, tom-yum, sukiyaki, mala. A lucide category icon inside `.thumb` is only the no-photo fallback.
+7. Real copy from `DATA.md`, never lorem or "ข้อความ". Buttons name their action. Errors name the problem and the fix. Label simulated state ("DEMO DATA" tag via `.demo-tag`) where a viewer could mistake it for real.
+8. Every control a real implementation needs must be visible and look usable: focus states where relevant (`.input.is-focus`), disabled (`.btn.is-disabled`), one error or empty state per screen where the story calls for it.
+9. Do **not** edit `tokens.css`, `components.css` or `build.mjs`. If a frame needs a one-off style, put it in the frame's own `<style>` with class names prefixed by the frame id (`.o4-…`), using tokens only. Do not redefine an existing class.
+10. Shells to copy: customer shell = `frames/c1-menu.html`; owner shell (sidebar + page head) = `frames/o01-overview.html` (keep the nav identical; mark the right item `.on`). Kitchen shell = `.kds`, `.kds-top`, `.kds-cols` in `components.css`. Paper = `.paper`. QR codes are real SVG assets in `src/assets/` (see DATA.md); never hand-draw a QR.
+11. Dialogs/sheets: render the real screen behind (simplified is fine, but recognisably the same page), then `.scrim`, then `.dialog`/`.sheet`. Use `position:absolute` inside the frame.
+
+## Frame file contract
+- One file per frame: `design/src/frames/<id>.html`, a complete HTML document linking `../tokens.css` and `../components.css`, containing `<meta name="frame" content="WxH@dsf">` (customer 390x844@2, owner/demo 1440x900@1, kitchen 1280x800@1; a taller owner page may use `1440x1200@1` or `,full`).
+- Render: `cd design && ICON_DIR=/tmp/lucide/package/icons node build.mjs <id-prefix>`. It prints clipped-text / x-overflow / non-font-glyph flags: **all must be clean** (exit 0). PNGs land in `design/out/<id>.png`.
+- Inspect your PNGs by opening them once as a batch. Fix everything you see in one batch. At most one confirming re-render. Then stop.
+- Reference renders to match in quality: `out/c1-menu.png`, `out/o01-overview.png` (already built). Frame ids are fixed by the assignment you were given.
+- Do not touch frames you were not assigned.

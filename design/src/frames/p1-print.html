@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1400x1000@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .p1-desk { width: 1400px; height: 1000px; background: var(--sunken); padding: 56px 48px; display: flex; flex-direction: column; gap: 32px; justify-content: center; }
+  .p1-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .p1-row { display: flex; align-items: flex-start; justify-content: center; gap: 40px; }
+  .p1-slip { display: flex; flex-direction: column; gap: 10px; margin: 0; width: 302px; }
+  .p1-cap { text-align: center; font-size: 13px; line-height: 1.55; font-weight: 500; color: var(--ink-2); }
+  .p1-shop { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .p1-shop b { font-size: 16px; line-height: 1.5; }
+  .p1-shop span { color: var(--muted); }
+  .p1-h { text-align: center; font-weight: 600; font-size: 13px; }
+  .p1-h2 { text-align: center; font-weight: 600; }
+  .p1-c { text-align: center; color: var(--muted); }
+  .p1-g { color: var(--muted); margin-top: 4px; }
+  .p1-total { font-weight: 600; font-size: 16px; }
+  .p1-qr { display: flex; justify-content: center; padding: 6px 0; }
+  .p1-qr img { display: block; }
+  .p1-url { text-align: center; color: var(--muted); }
+  .p1-tbl { text-align: center; font-weight: 600; font-size: 20px; }
+  .p1-slip .pk > span:last-child { white-space: nowrap; }
+</style></head>
+<body class="frame">
+<div class="p1-desk">
+  <div class="p1-head">
+    <div class="col gap-4">
+      <h1 class="t-h1">งานพิมพ์ · กระดาษความร้อน 80 มม.</h1>
+      <span class="t-small muted">พิมพ์จากเบราว์เซอร์ได้ทันที ไม่ต้องติดตั้งไดรเวอร์ · ใช้ข้อมูลชุดเดียวกับหน้าจอเจ้าของร้าน · ไม่มีใบสั่งครัว</span>
+    </div>
+    <span class="demo-tag">DEMO DATA</span>
+  </div>
+
+  <div class="p1-row">
+    <figure class="p1-slip">
+      <div class="paper">
+        <div class="p1-shop">
+          <b>ชาบูเดโม่</b>
+          <span>99/9 ถ.สุขุมวิท เขตวัฒนา กรุงเทพฯ 10110</span>
+          <span>โทร <span class="mono">02-000-0000</span></span>
+        </div>
+        <div class="dash"></div>
+        <div class="p1-h">ใบแจ้งยอด (ยังไม่ใช่ใบเสร็จ)</div>
+        <div class="pk"><span>โต๊ะ B2 · Gold</span><span>2 ผู้ใหญ่ 1 เด็ก</span></div>
+        <div class="pk"><span>เปิด</span><span class="mono">17:55</span></div>
+        <div class="dash"></div>
+        <div class="p1-g">บุฟเฟ่ต์</div>
+        <div class="pk"><span>ผู้ใหญ่ 2 × ฿399</span><span class="num">฿798.00</span></div>
+        <div class="pk"><span>เด็ก 1 × ฿199</span><span class="num">฿199.00</span></div>
+        <div class="p1-g">เมนูคิดเงินแยก</div>
+        <div class="pk"><span>เบียร์สิงห์ 2 × ฿89</span><span class="num">฿178.00</span></div>
+        <div class="p1-g">ปรับยอด</div>
+        <div class="pk"><span>ค่าปรับอาหารเหลือ</span><span class="num">+฿50.00</span></div>
+        <div class="dash"></div>
+        <div class="pk"><span>ยอดก่อนค่าบริการ</span><span class="num">฿1,225.00</span></div>
+        <div class="pk"><span>ค่าบริการ 10%</span><span class="num">฿122.50</span></div>
+        <div class="pk"><span>VAT 7%</span><span class="num">฿94.33</span></div>
+        <div class="dash"></div>
+        <div class="pk p1-total"><span>รวมทั้งสิ้น</span><span class="num">฿1,441.83</span></div>
+        <div class="dash"></div>
+        <div class="p1-qr"><img src="../assets/qr-promptpay.svg" width="132" height="132" alt="PromptPay QR ยอด ฿1,441.83"></div>
+        <div class="p1-h2">สแกนเพื่อชำระ</div>
+        <div class="p1-c">PromptPay <span class="mono">081-234-5678</span></div>
+      </div>
+      <figcaption class="p1-cap">ใบแจ้งยอด (Pre-bill)</figcaption>
+    </figure>
+
+    <figure class="p1-slip">
+      <div class="paper">
+        <div class="p1-shop">
+          <b>ชาบูเดโม่</b>
+          <span>99/9 ถ.สุขุมวิท เขตวัฒนา กรุงเทพฯ 10110</span>
+          <span>โทร <span class="mono">02-000-0000</span></span>
+          <span>เลขผู้เสียภาษี <span class="mono">0-1055-67000-00-0</span></span>
+        </div>
+        <div class="dash"></div>
+        <div class="p1-h">ใบเสร็จรับเงิน</div>
+        <div class="pk"><span>เลขที่</span><span class="mono">R20261016-000047</span></div>
+        <div class="pk"><span>วันเวลา</span><span>16 ต.ค. 2569 <span class="mono">19:46</span></span></div>
+        <div class="pk"><span>โต๊ะ B2 · Gold</span><span>2 ผู้ใหญ่ 1 เด็ก</span></div>
+        <div class="pk"><span>เปิด</span><span class="mono">17:55</span></div>
+        <div class="dash"></div>
+        <div class="p1-g">บุฟเฟ่ต์</div>
+        <div class="pk"><span>ผู้ใหญ่ 2 × ฿399</span><span class="num">฿798.00</span></div>
+        <div class="pk"><span>เด็ก 1 × ฿199</span><span class="num">฿199.00</span></div>
+        <div class="p1-g">เมนูคิดเงินแยก</div>
+        <div class="pk"><span>เบียร์สิงห์ 2 × ฿89</span><span class="num">฿178.00</span></div>
+        <div class="p1-g">ปรับยอด</div>
+        <div class="pk"><span>ค่าปรับอาหารเหลือ</span><span class="num">+฿50.00</span></div>
+        <div class="dash"></div>
+        <div class="pk"><span>ยอดก่อนค่าบริการ</span><span class="num">฿1,225.00</span></div>
+        <div class="pk"><span>ค่าบริการ 10%</span><span class="num">฿122.50</span></div>
+        <div class="pk"><span>VAT 7%</span><span class="num">฿94.33</span></div>
+        <div class="dash"></div>
+        <div class="pk p1-total"><span>รวมทั้งสิ้น</span><span class="num">฿1,441.83</span></div>
+        <div class="dash"></div>
+        <div class="pk"><span>วิธีจ่าย</span><span>PromptPay</span></div>
+        <div class="pk"><span>รับเงิน</span><span class="num">฿1,441.83</span></div>
+        <div class="pk"><span>เงินทอน</span><span class="num">฿0.00</span></div>
+        <div class="dash"></div>
+        <div class="p1-h2">ขอบคุณที่ใช้บริการ</div>
+      </div>
+      <figcaption class="p1-cap">ใบเสร็จ (Receipt)</figcaption>
+    </figure>
+
+    <figure class="p1-slip">
+      <div class="paper">
+        <div class="p1-shop">
+          <b>ชาบูเดโม่</b>
+          <span>99/9 ถ.สุขุมวิท เขตวัฒนา กรุงเทพฯ 10110</span>
+          <span>โทร <span class="mono">02-000-0000</span></span>
+        </div>
+        <div class="dash"></div>
+        <div class="p1-tbl">โต๊ะ A5</div>
+        <div class="p1-c">Gold · 2 ผู้ใหญ่ 1 เด็ก</div>
+        <div class="dash"></div>
+        <div class="pk"><span>เปิด</span><span class="mono">19:42</span></div>
+        <div class="pk"><span>หมดเวลา</span><span class="mono">21:12</span></div>
+        <div class="dash"></div>
+        <div class="p1-qr"><img src="../assets/qr-session.svg" width="185" height="185" alt="QR สั่งอาหารของโต๊ะ A5"></div>
+        <div class="p1-h2">สแกนเพื่อสั่งอาหาร</div>
+        <div class="p1-url mono">…/s/Kq3vT8mZ1xR4…</div>
+        <div class="dash"></div>
+        <div class="p1-c">QR ใช้ได้จนกว่าจะปิดบิล</div>
+        <div class="p1-c">ลิมิต 5 ต่อเมนู · 20 รายการต่อรอบ</div>
+        <div class="dash"></div>
+        <div class="p1-c">พิมพ์เมื่อ 16 ต.ค. 2569 <span class="mono">19:42</span></div>
+      </div>
+      <figcaption class="p1-cap">QR slip</figcaption>
+    </figure>
+  </div>
+</div>
+</body></html>

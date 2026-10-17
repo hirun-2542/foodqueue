@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="390x844@2">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  /* menu page behind the scrim — same look as c1-menu */
+  .c2-sec { padding: 20px 0 6px; display: flex; align-items: baseline; justify-content: space-between; }
+  .c2-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .c2-item:first-of-type { border-top: 0; }
+  .c2-name { font-size: 16px; font-weight: 600; line-height: 1.4; }
+  .c2-incl { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--orange-ink); font-weight: 500; }
+  .c2-note { display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; font-size: 12.5px; color: var(--ink-2); }
+  .c2-sel { background: var(--orange-soft); margin: 0 -16px; padding: 12px 16px; border-top-color: transparent; }
+  .c2-sel + .c2-item { border-top-color: transparent; }
+  .c2-add { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong); display: inline-flex; align-items: center; justify-content: center; background: var(--surface); }
+  .c2-mstep .s-btn { width: 40px; height: 40px; }
+
+  /* cart sheet */
+  .c2-sheet { padding: 0 16px 20px; }
+  .c2-shead { margin-top: 8px; }
+  .c2-list { margin-top: 4px; }
+  .c2-line { padding: 10px 0; border-top: 1px solid var(--line); }
+  .c2-line:first-child { border-top: 0; }
+  .c2-lname { font-size: 16px; font-weight: 600; line-height: 1.4; }
+  .c2-lincl { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--orange-ink); font-weight: 500; }
+  .c2-lprice { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+  .c2-fld { margin-top: 8px; font-size: 14px; }
+  .c2-fld .i { color: var(--muted); }
+  .c2-fld.open { border-style: dashed; border-color: var(--line); }
+  .c2-stepper .s-btn { width: 44px; height: 44px; }
+  .c2-stepper b { min-width: 26px; font-size: 16px; }
+  .c2-count { margin-top: 12px; }
+</style></head>
+<body class="frame">
+<div class="cust">
+  <header>
+    <div class="cust-banner">
+      <span class="cust-chip l">โต๊ะ A1</span>
+      <span class="cust-chip r"><i class="d"></i>Gold · 2 ท่าน</span>
+      <div class="shop">ชาบูเดโม่</div>
+      <div class="tag">ชาบูบุฟเฟ่ต์ · สั่งอาหารผ่าน QR</div>
+      <svg class="i deco"><use href="#i-soup"/></svg>
+    </div>
+  </header>
+
+  <div style="background:var(--surface); border-bottom:1px solid var(--line); padding:0 16px">
+    <div class="utabs" style="border:0; overflow:hidden; gap:22px">
+      <span>น้ำซุป</span><span class="on">หมู</span><span>เนื้อวัว</span><span>ทะเล</span><span>ลูกชิ้น/ของทอด</span><span>ผัก</span>
+    </div>
+  </div>
+
+  <main class="cust-body">
+    <div class="c2-sec"><h2 class="t-h2">หมู</h2><span class="t-small muted">สั่งได้ 5 ต่อเมนู</span></div>
+    <div class="c2-item c2-sel">
+      <div class="thumb"><img src="../assets/menu/pork-collar.jpg" alt=""></div>
+      <div class="grow">
+        <div class="c2-name">สันคอหมูสไลซ์</div>
+        <span class="c2-incl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span>
+      </div>
+      <div class="stepper c2-mstep"><span class="s-btn"><svg class="i"><use href="#i-minus"/></svg></span><b>3</b><span class="s-btn add"><svg class="i"><use href="#i-plus"/></svg></span></div>
+    </div>
+    <div class="c2-item c2-sel">
+      <div class="thumb"><img src="../assets/menu/pork-belly.jpg" alt=""></div>
+      <div class="grow">
+        <div class="c2-name">หมูสามชั้นสไลซ์</div>
+        <span class="c2-incl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span>
+        <div class="c2-note"><svg class="i i-sm"><use href="#i-pencil"/></svg>ไม่ติดมัน</div>
+      </div>
+      <div class="stepper c2-mstep"><span class="s-btn"><svg class="i"><use href="#i-minus"/></svg></span><b>2</b><span class="s-btn add"><svg class="i"><use href="#i-plus"/></svg></span></div>
+    </div>
+    <div class="c2-item">
+      <div class="thumb"><img src="../assets/menu/pork-soft.jpg" alt=""></div>
+      <div class="grow">
+        <div class="c2-name">หมูนุ่มสไลซ์</div>
+        <span class="c2-incl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span>
+      </div>
+      <span class="c2-add"><svg class="i"><use href="#i-plus"/></svg></span>
+    </div>
+  </main>
+
+  <nav class="tabbar">
+    <div class="on"><svg class="i i-lg"><use href="#i-utensils"/></svg>เมนู</div>
+    <div><svg class="i i-lg"><use href="#i-clipboard-list"/></svg>ออเดอร์</div>
+  </nav>
+</div>
+
+<div class="scrim"></div>
+
+<div class="sheet c2-sheet">
+  <div class="grabber"></div>
+  <div class="row between c2-shead">
+    <div class="col">
+      <h2 class="t-h1">ตะกร้า</h2>
+      <span class="t-small muted">ยังไม่ได้ส่ง</span>
+    </div>
+    <span class="btn btn-ghost"><svg class="i i-sm"><use href="#i-trash-2"/></svg>ล้างตะกร้า</span>
+  </div>
+
+  <ul class="c2-list">
+    <li class="c2-line">
+      <div class="row gap-12">
+        <div class="thumb thumb-sm"><img src="../assets/menu/pork-collar.jpg" alt=""></div>
+        <div class="grow col" style="gap:2px">
+          <span class="c2-lname">สันคอหมูสไลซ์</span>
+          <span class="c2-lincl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span>
+        </div>
+        <div class="stepper c2-stepper"><span class="s-btn"><svg class="i"><use href="#i-minus"/></svg></span><b>3</b><span class="s-btn add"><svg class="i"><use href="#i-plus"/></svg></span></div>
+      </div>
+      <div class="input c2-fld open"><svg class="i i-sm"><use href="#i-pencil"/></svg><span class="ph">เพิ่มหมายเหตุ</span></div>
+    </li>
+    <li class="c2-line">
+      <div class="row gap-12">
+        <div class="thumb thumb-sm"><img src="../assets/menu/pork-belly.jpg" alt=""></div>
+        <div class="grow col" style="gap:2px">
+          <span class="c2-lname">หมูสามชั้นสไลซ์</span>
+          <span class="c2-lincl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span>
+        </div>
+        <div class="stepper c2-stepper"><span class="s-btn"><svg class="i"><use href="#i-minus"/></svg></span><b>2</b><span class="s-btn add"><svg class="i"><use href="#i-plus"/></svg></span></div>
+      </div>
+      <div class="input c2-fld"><svg class="i i-sm"><use href="#i-pencil"/></svg>ไม่ติดมัน</div>
+    </li>
+    <li class="c2-line">
+      <div class="row gap-12">
+        <div class="thumb thumb-sm"><img src="../assets/menu/beef.jpg" alt=""></div>
+        <div class="grow col" style="gap:2px">
+          <span class="c2-lname">เนื้อวัวสไลซ์</span>
+          <span class="c2-lincl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span>
+        </div>
+        <div class="stepper c2-stepper"><span class="s-btn"><svg class="i"><use href="#i-minus"/></svg></span><b>2</b><span class="s-btn add"><svg class="i"><use href="#i-plus"/></svg></span></div>
+      </div>
+    </li>
+    <li class="c2-line">
+      <div class="row gap-12">
+        <div class="thumb thumb-sm"><img src="../assets/menu/thai-tea.jpg" alt=""></div>
+        <div class="grow col" style="gap:2px">
+          <span class="c2-lname">ชาไทยเย็น</span>
+          <span class="c2-lprice">฿45 คิดเงินแยก</span>
+        </div>
+        <div class="stepper c2-stepper"><span class="s-btn"><svg class="i"><use href="#i-minus"/></svg></span><b>1</b><span class="s-btn add"><svg class="i"><use href="#i-plus"/></svg></span></div>
+      </div>
+    </li>
+  </ul>
+
+  <div class="well c2-count">
+    <div class="row between">
+      <span class="t-small muted">รายการในรอบนี้</span>
+      <span class="t-h3 num">8 / 20 รายการ</span>
+    </div>
+    <div class="t-micro muted" style="margin-top:2px">สั่งได้สูงสุด 5 ต่อเมนูต่อรอบ</div>
+  </div>
+
+  <div class="btn btn-primary btn-lg btn-block" style="margin-top:12px">
+    <svg class="i"><use href="#i-send"/></svg>ส่งออเดอร์
+  </div>
+</div>
+</body></html>

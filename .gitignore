@@ -1,0 +1,11 @@
+bin/
+obj/
+node_modules/
+.next/
+out/
+uploads/
+.env
+*.user
+test-results/
+playwright-report/
+design/src/_built/

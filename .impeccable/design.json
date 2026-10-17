@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T21:30:00+07:00",
+  "title": "Design System: FoodQueue",
+  "extensions": {
+    "colorMeta": {
+      "orange-strong": { "role": "primary", "displayName": "Seating Orange", "canonical": "#CC4A0A", "tonalRamp": ["#FFF3E8", "#FDBA74", "#F97316", "#CC4A0A", "#B33F08", "#A83A06"] },
+      "ground": { "role": "neutral", "displayName": "Ground", "canonical": "#FAFAF9", "tonalRamp": ["#FFFFFF", "#FAFAF9", "#F5F4F2", "#E7E5E4", "#8E8883", "#6B6560", "#44403C", "#1C1917"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Payment total and login title." },
+      "clock": { "displayName": "Clock", "purpose": "Countdowns, table codes, receipt numbers only. Never contains Thai glyphs." }
+    },
+    "shadows": [
+      { "name": "float", "value": "0 1px 2px rgba(28,25,23,.06), 0 12px 32px -4px rgba(28,25,23,.14)", "purpose": "Dialogs, sheets, drawers, toasts, floating cart bar." }
+    ],
+    "motion": [],
+    "breakpoints": [
+      { "name": "phone", "value": "390px" },
+      { "name": "tablet-landscape", "value": "1280px" },
+      { "name": "desktop", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Time rail",
+      "kind": "custom",
+      "refersTo": "time-rail",
+      "description": "Seating clock: elapsed share of the package with a tick at Last order.",
+      "html": "<div class=\"rail-wrap\" style=\"--p:52;--m:83.3\"><div class=\"rail\"><i></i></div><span class=\"mark\"></span></div>",
+      "css": ".rail-wrap{position:relative;padding:3px 0}.rail{height:6px;border-radius:999px;background:#E7E5E4}.rail>i{display:block;height:100%;width:calc(var(--p)*1%);background:#F97316;border-radius:999px}.rail-wrap .mark{position:absolute;top:0;bottom:0;left:calc(var(--m)*1%);width:2px;background:#44403C}.rail-wrap.late .rail>i{background:#CC4A0A}.rail-wrap.over .rail>i{background:#E5484D}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one primary action on a screen.",
+      "html": "<button class=\"btn\">รับชำระเงิน</button>",
+      "css": ".btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 18px;border-radius:12px;border:0;background:#CC4A0A;color:#fff;font:600 15px 'Noto Sans Thai',sans-serif}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Seating Clock",
+    "overview": "Everything either helps a person act inside the seating or shows how much of it is left. White ground, hairline cards, ink text, and one orange that does three jobs.",
+    "keyCharacteristics": ["White ground, flat resting surfaces", "Orange for action, selection and the time rail only", "Status as dot plus Thai label", "Tabular numerals, Thai outside mono runs"],
+    "rules": [
+      { "name": "The Three Jobs Rule", "body": "Orange appears for the primary action, the selected state and the time rail.", "section": "colors" },
+      { "name": "The Split Run Rule", "body": "Mono is for numbers that must not be misread; the Thai word beside them stays in Noto Sans Thai.", "section": "typography" },
+      { "name": "The Border-or-Shadow Rule", "body": "A surface has a hairline or a shadow, never both.", "section": "elevation" }
+    ],
+    "dos": ["Do reserve orange for action, selection and the time rail.", "Do pair every status colour with a dot and a Thai label."],
+    "donts": ["Don't use ring or pie charts.", "Don't introduce a colour that is not a token."]
+  }
+}

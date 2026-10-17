@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1440x900@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  /* legend strip: each chip carries a real swatch of the table state */
+  .o12-legend { display:flex; align-items:center; gap:10px; margin:14px 0 16px; }
+  .o12-lchip { display:inline-flex; align-items:center; gap:10px; height:46px; padding:0 16px 0 9px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); }
+  .o12-lsw { width:36px; height:28px; border-radius:var(--r-sm); display:inline-flex; align-items:center; justify-content:center; flex:none; }
+  .o12-lsw i { width:7px; height:7px; border-radius:50%; }
+  .o12-lsw.free { background:var(--ready-soft); }
+  .o12-lsw.free i { background:var(--ready-dot); }
+  .o12-lsw.use { background:var(--orange-soft); border:1px solid var(--orange-line); }
+  .o12-lsw.use i { background:var(--orange); }
+  .o12-lsw.new { background:var(--alert); box-shadow:0 0 0 4px var(--alert-ring); }
+  .o12-lsw.new i { background:var(--ink); }
+  .o12-lname { font-size:14px; font-weight:600; }
+  .o12-lchip.free .o12-lname { color:var(--ready-ink); }
+  .o12-lchip.use .o12-lname { color:var(--orange-ink); }
+  .o12-lchip.new .o12-lname { color:var(--pending-ink); }
+  .o12-lnum { font-size:18px; font-weight:600; letter-spacing:-0.01em; }
+
+  .o12-cols { display:grid; grid-template-columns:800px 312px; gap:24px; align-items:start; }
+
+  /* floor plan canvas: the room fills the card, ~20px inset */
+  .o12-floor { position:relative; width:800px; height:690px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); }
+  .o12-wall { position:absolute; background:var(--line-strong); }
+  .o12-kitchen { position:absolute; left:21px; top:21px; width:756px; height:37px; background:var(--sunken); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px; padding:0 14px; color:var(--ink-2); }
+  .o12-zone { position:absolute; top:59px; }
+  .o12-land { position:absolute; display:flex; align-items:center; gap:8px; color:var(--ink-2); }
+  .o12-counter { position:absolute; border:1px solid var(--line-strong); border-radius:var(--r-sm); display:flex; flex-direction:column; justify-content:center; gap:2px; padding:0 14px; color:var(--ink-2); }
+  .o12-door { position:absolute; left:349px; top:620px; width:100px; display:flex; align-items:center; justify-content:center; gap:6px; color:var(--ink-2); }
+
+  /* table tiles */
+  .o12-t { position:absolute; width:128px; height:130px; padding:14px; border:1px solid var(--line); border-radius:var(--r); background:var(--surface); display:flex; flex-direction:column; justify-content:space-between; }
+  .o12-t.free { background:var(--ready-soft); border-color:var(--ready-soft); color:var(--ready-ink); }
+  .o12-t.use { background:var(--orange-soft); border-color:var(--orange-line); color:var(--orange-ink); }
+  .o12-t.new { background:var(--alert); border-color:var(--alert); color:var(--ink); }
+  .o12-t.big { height:136px; border-radius:20px; }
+  .o12-sel { outline:2px solid var(--ink); outline-offset:14px; }
+  .o12-code { font-size:26px; font-weight:600; line-height:1.2; letter-spacing:-0.01em; }
+  .o12-pips { display:flex; gap:3px; }
+  .o12-pip { width:6px; height:6px; border-radius:50%; }
+  .o12-t.free .o12-pip { border:1px solid var(--ready-dot); opacity:.4; }
+  .o12-t.use .o12-pip { border:1px solid var(--orange-line); }
+  .o12-t.use .o12-pip.on { background:var(--orange); border-color:var(--orange); }
+  .o12-t.new .o12-pip { border:1px solid var(--ink); opacity:.4; }
+  .o12-t.new .o12-pip.on { background:var(--ink); border-color:var(--ink); opacity:1; }
+  .o12-guests { display:flex; align-items:center; gap:6px; font-size:14px; font-weight:500; }
+  .o12-state { display:inline-flex; align-items:center; gap:5px; font-size:13px; font-weight:600; }
+  .o12-cue { display:inline-flex; align-items:center; gap:5px; font-size:13px; font-weight:600; }
+  .o12-d { width:6px; height:6px; border-radius:50%; flex:none; }
+  .o12-t.free .o12-d { background:var(--ready-dot); }
+  .o12-t.use .o12-d { background:var(--orange); }
+  .o12-t.new .o12-d { background:var(--ink); }
+
+  /* right panel */
+  .o12-abadge { display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 10px; border-radius:var(--r-pill); background:var(--alert); color:var(--ink); font-size:12.5px; font-weight:600; flex:none; }
+  .o12-adot { width:6px; height:6px; border-radius:50%; background:var(--ink); flex:none; }
+  .o12-fact { display:flex; justify-content:space-between; gap:12px; padding:7px 0; }
+  .o12-notice { margin-top:16px; padding:12px; border-radius:var(--r); background:var(--pending-soft); }
+  .o12-acts { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+  .o12-acts2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  /* two-colour tables: in use = orange tint, free = quiet grey. No amber, no pulse. */
+  .o12-t.free { background:var(--sunken); border-color:var(--line); color:var(--ink-2); }
+  .o12-t.free .o12-pip { border:1px solid var(--control); opacity:.7; }
+  .o12-t.free .o12-d { background:var(--control); }
+  .o12-lsw.free { background:var(--sunken); border:1px solid var(--line); }
+  .o12-lsw.free i { background:var(--control); }
+  .o12-lchip.free .o12-lname { color:var(--ink-2); }
+  .o12-notice { background:var(--sunken); }
+  .o20-bell { background:var(--orange-soft); color:var(--orange-ink); }
+  .o20-kicker { color:var(--orange-ink); }
+  .o20-qd { background:var(--orange); }
+</style></head>
+<body class="frame">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span><div class="col"><b style="line-height:1.3">ชาบูเดโม่</b><span class="t-micro muted">FoodQueue</span></div></div>
+    <a class="nav"><svg class="i"><use href="#i-layout-grid"/></svg>ภาพรวม</a>
+    <a class="nav"><svg class="i"><use href="#i-clipboard-list"/></svg>ออเดอร์<span class="count">3</span></a>
+    <a class="nav"><svg class="i"><use href="#i-history"/></svg>ประวัติการชำระ</a>
+    <a class="nav"><svg class="i"><use href="#i-chart-column"/></svg>รายงาน</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-book-open"/></svg>เมนูอาหาร</a>
+    <a class="nav"><svg class="i"><use href="#i-package"/></svg>แพ็กเกจ</a>
+    <a class="nav on"><svg class="i"><use href="#i-armchair"/></svg>โต๊ะ</a>
+    <a class="nav"><svg class="i"><use href="#i-settings"/></svg>ตั้งค่า</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-chef-hat"/></svg>จอครัว<svg class="i i-sm" style="margin-left:auto"><use href="#i-arrow-up-right"/></svg></a>
+    <div class="side-foot"><span class="avatar">ส</span><div class="col grow"><b class="t-small" style="line-height:1.3">คุณสมศรี</b><span class="t-micro muted">เจ้าของร้าน</span></div><svg class="i muted"><use href="#i-log-out"/></svg></div>
+  </aside>
+
+  <main class="main">
+    <div class="pagehead">
+      <div class="col"><h1 class="t-h1">โต๊ะ</h1><span class="t-small muted">ผังร้านและสถานะโต๊ะ · อัปเดตเรียลไทม์</span></div>
+      <div class="row gap-12">
+        <span class="live">เชื่อมต่อแบบเรียลไทม์</span>
+        <span class="demo-tag">DEMO DATA</span>
+        <span class="vdivider" style="height:24px"></span>
+        <span class="btn btn-secondary"><svg class="i i-sm"><use href="#i-square-pen"/></svg>แก้ไขผัง</span>
+        <span class="btn btn-secondary"><svg class="i i-sm"><use href="#i-plus"/></svg>เพิ่มโต๊ะ</span>
+      </div>
+    </div>
+
+    <div class="o12-legend">
+      <span class="o12-lchip use"><span class="o12-lsw use"><i></i></span><span class="o12-lname">ใช้งานอยู่</span><b class="o12-lnum num">8</b></span>
+      <span class="o12-lchip free"><span class="o12-lsw free"><i></i></span><span class="o12-lname">ว่าง</span><b class="o12-lnum num">4</b></span>
+      <div class="grow"></div>
+      <span class="t-small muted">รวม <b class="num">12</b> โต๊ะ · <b class="num">50</b> ที่นั่ง</span>
+    </div>
+
+    <div class="o12-cols">
+      <div>
+        <div class="o12-floor">
+          <div class="o12-wall" style="left:20px;top:20px;width:759px;height:1px"></div>
+          <div class="o12-wall" style="left:20px;top:20px;width:1px;height:648px"></div>
+          <div class="o12-wall" style="left:778px;top:20px;width:1px;height:648px"></div>
+          <div class="o12-wall" style="left:20px;top:667px;width:329px;height:1px"></div>
+          <div class="o12-wall" style="left:449px;top:667px;width:330px;height:1px"></div>
+          <div class="o12-kitchen"><svg class="i i-sm"><use href="#i-chef-hat"/></svg><b class="t-small">ครัว</b></div>
+          <div class="o12-wall" style="left:28px;top:96px;width:1px;height:430px"></div>
+          <div class="o12-wall" style="left:20px;top:96px;width:9px;height:1px"></div>
+          <div class="o12-wall" style="left:20px;top:526px;width:9px;height:1px"></div>
+          <span class="o12-land t-micro" style="left:31px;top:534px"><span class="muted">หน้าต่าง</span></span>
+          <span class="o12-zone t-small" style="left:39px"><b class="ink-2">โซน A</b><span class="muted"> · ริมหน้าต่าง</span></span>
+          <span class="o12-zone t-small" style="left:335px"><b class="ink-2">โซน B</b><span class="muted"> · กลางร้าน</span></span>
+          <div class="o12-t use o12-sel" style="left:39px;top:96px">
+            <div class="row between"><span class="o12-code">A1</span><span class="o12-pips"><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip"></i><i class="o12-pip"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span class="num">2/4</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ใช้งานอยู่</div>
+            <div class="o12-cue"><svg class="i i-sm"><use href="#i-bell"/></svg>ออเดอร์รอรับ</div>
+          </div>
+          <div class="o12-t use" style="left:39px;top:246px">
+            <div class="row between"><span class="o12-code">A2</span><span class="o12-pips"><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip on"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span class="num">4/4</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ใช้งานอยู่</div>
+          </div>
+          <div class="o12-t use" style="left:39px;top:396px">
+            <div class="row between"><span class="o12-code">A3</span><span class="o12-pips"><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip on"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span class="num">4/4</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ใช้งานอยู่</div>
+          </div>
+          <div class="o12-t use" style="left:187px;top:96px">
+            <div class="row between"><span class="o12-code">A4</span><span class="o12-pips"><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip"></i><i class="o12-pip"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span class="num">2/4</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ใช้งานอยู่</div>
+            <div class="o12-cue"><i class="o12-d"></i>Last order</div>
+          </div>
+          <div class="o12-t free" style="left:187px;top:246px">
+            <div class="row between"><span class="o12-code">A5</span><span class="o12-pips"><i class="o12-pip"></i><i class="o12-pip"></i><i class="o12-pip"></i><i class="o12-pip"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span>4 ที่นั่ง</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ว่าง</div>
+          </div>
+          <div class="o12-t free" style="left:187px;top:396px">
+            <div class="row between"><span class="o12-code">A6</span><span class="o12-pips"><i class="o12-pip"></i><i class="o12-pip"></i><i class="o12-pip"></i><i class="o12-pip"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span>4 ที่นั่ง</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ว่าง</div>
+          </div>
+          <div class="o12-t use" style="left:335px;top:96px">
+            <div class="row between"><span class="o12-code">B1</span><span class="o12-pips"><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip"></i><i class="o12-pip"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span class="num">2/4</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ใช้งานอยู่</div>
+          </div>
+          <div class="o12-t use" style="left:483px;top:96px">
+            <div class="row between"><span class="o12-code">B2</span><span class="o12-pips"><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span class="num">3/4</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ใช้งานอยู่</div>
+            <div class="o12-cue"><i class="o12-d"></i>รอจ่าย</div>
+          </div>
+          <div class="o12-t use big" style="left:631px;top:90px">
+            <div class="row between"><span class="o12-code">B3</span><span class="o12-pips"><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span class="num">5/6</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ใช้งานอยู่</div>
+            <div class="o12-cue"><svg class="i i-sm"><use href="#i-bell"/></svg>ออเดอร์รอรับ</div>
+          </div>
+          <div class="o12-t free" style="left:335px;top:246px">
+            <div class="row between"><span class="o12-code">B4</span><span class="o12-pips"><i class="o12-pip"></i><i class="o12-pip"></i><i class="o12-pip"></i><i class="o12-pip"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span>4 ที่นั่ง</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ว่าง</div>
+          </div>
+          <div class="o12-t use" style="left:483px;top:246px">
+            <div class="row between"><span class="o12-code">B5</span><span class="o12-pips"><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip on"></i><i class="o12-pip on"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span class="num">4/4</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ใช้งานอยู่</div>
+            <div class="o12-cue"><svg class="i i-sm"><use href="#i-bell"/></svg>ออเดอร์รอรับ</div>
+          </div>
+          <div class="o12-t free" style="left:631px;top:246px">
+            <div class="row between"><span class="o12-code">B6</span><span class="o12-pips"><i class="o12-pip"></i><i class="o12-pip"></i><i class="o12-pip"></i><i class="o12-pip"></i></span></div>
+            <div class="o12-guests"><svg class="i i-sm"><use href="#i-users"/></svg><span>4 ที่นั่ง</span></div>
+            <div class="o12-state"><i class="o12-d"></i>ว่าง</div>
+          </div>
+          <div class="o12-counter" style="left:559px;top:576px;width:200px;height:72px">
+            <span class="row gap-8"><svg class="i i-sm"><use href="#i-wallet"/></svg><b class="t-small">แคชเชอร์</b></span>
+            <span class="t-micro muted">รับชำระเงิน · ออกใบเสร็จ</span>
+          </div>
+          <div class="o12-wall" style="left:349px;top:661px;width:1px;height:6px"></div>
+          <div class="o12-wall" style="left:449px;top:661px;width:1px;height:6px"></div>
+          <div class="o12-door"><svg class="i"><use href="#i-door-open"/></svg><span class="t-small muted">ทางเข้า</span></div>
+        </div>
+        <div class="t-small muted" style="margin-top:10px">เพิ่ม ลบ และตั้งจำนวนที่นั่งของโต๊ะได้ในโหมดแก้ไขผัง</div>
+      </div>
+
+      <aside class="card">
+        <div class="row between">
+          <h2 class="t-h2">โต๊ะ A1</h2>
+          <span class="badge accent">ใช้งานอยู่</span>
+        </div>
+        <div class="t-small" style="margin-top:14px">
+          <div class="o12-fact"><span class="muted">ตำแหน่ง</span><span class="ink-2">โซน A · ริมหน้าต่าง · แถวแรก</span></div>
+          <div class="o12-fact"><span class="muted">ผู้นั่ง</span><span class="ink-2">2 ผู้ใหญ่ (2/4 ที่นั่ง)</span></div>
+          <div class="o12-fact"><span class="muted">แพ็กเกจ</span><span class="ink-2 strong">Gold</span></div>
+          <div class="o12-fact"><span class="muted">เวลาใช้โต๊ะ</span><span class="mono strong">18:55–20:25</span></div>
+          <div class="o12-fact"><span class="muted">ใช้ไปแล้ว</span><span class="ink-2"><b class="mono">47</b> นาที</span></div>
+          <div class="rail-wrap" style="--p:52; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div>
+          <div class="o12-fact"><span class="muted">ยอดบิล</span><span class="num strong">฿1,074.60</span></div>
+        </div>
+        <div class="o12-notice">
+          <div class="row gap-8"><svg class="i i-sm"><use href="#i-bell"/></svg><span class="t-small ink-2">มีออเดอร์รอรับ · รอบที่ 3 · ส่ง <span class="mono">19:41</span></span></div>
+          <span class="btn btn-primary btn-block" style="margin-top:12px">ไปหน้าออเดอร์<svg class="i i-sm"><use href="#i-arrow-right"/></svg></span>
+        </div>
+        <div class="o12-acts">
+          <span class="btn btn-secondary btn-sm btn-block">ดูรายละเอียด</span>
+          <div class="o12-acts2">
+            <span class="btn btn-secondary btn-sm">ย้ายโต๊ะ</span>
+            <span class="btn btn-secondary btn-sm">รวมบิล</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+</body></html>

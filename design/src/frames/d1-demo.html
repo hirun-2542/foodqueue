@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1440x1060@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .d1 { width: 1440px; height: 1060px; background: var(--bg); display: flex; flex-direction: column; }
+  .d1-top { height: 56px; flex: none; background: var(--surface); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; padding: 0 24px; }
+  .d1-main { flex: 1; min-height: 0; padding: 34px 24px; display: flex; align-items: stretch; gap: 20px; }
+
+  .d1-pane { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 12px; }
+  .d1-cap { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 2px; }
+  .d1-box { overflow: hidden; border-radius: var(--r-sm); background: var(--bg); width: calc(var(--w) * var(--s)); height: calc(var(--h) * var(--s)); }
+  .d1-box iframe { width: var(--w); height: var(--h); border: 0; display: block; transform: scale(var(--s)); transform-origin: 0 0; pointer-events: none; }
+  .d1-left { --w: 390px; --h: 844px; --s: 1.0379; flex: none; }
+  .d1-center { flex: none; width: 666px; display: flex; flex-direction: column; gap: 16px; }
+  .d1-kitchen { --w: 1280px; --h: 800px; --s: .5; }
+  .d1-owner { --w: 1440px; --h: 900px; --s: .44444; }
+
+  .d1-side { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+  .d1-side-head { flex: none; display: flex; align-items: center; gap: 8px; }
+  .d1-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ready-dot); flex: none; }
+  .d1-feed { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-evenly; position: relative; padding-left: 30px; }
+  .d1-feed::before { content: ""; position: absolute; left: 11px; top: 0; bottom: 0; width: 1px; background: var(--line); }
+  .d1-feed li { flex: 0 1 auto; max-height: 92px; display: flex; align-items: center; position: relative; }
+  .d1-node { position: absolute; left: -30px; top: 50%; margin-top: -11px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); display: flex; align-items: center; justify-content: center; }
+  .d1-node .i { width: 12px; height: 12px; }
+  .d1-foot { flex: none; border-top: 1px solid var(--line); padding-top: 14px; }
+  .d1-guide { display: flex; flex-direction: column; gap: 10px; }
+  .d1-guide .row { gap: 8px; }
+</style></head>
+<body class="frame">
+<div class="d1">
+  <header class="d1-top">
+    <span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span>
+    <div class="col"><b class="t-h3" style="line-height:1.25">FoodQueue Demo</b><span class="t-micro muted">ชาบูเดโม่</span></div>
+    <div class="row gap-8" style="margin-left:16px"><svg class="i i-sm muted"><use href="#i-bot"/></svg><span class="t-small muted">บอทจำลองลูกค้าสั่งอาหารทุก 20–40 วินาที</span></div>
+    <div class="row gap-12" style="margin-left:auto"><span class="demo-tag">DEMO DATA</span><span class="btn btn-ghost btn-sm"><svg class="i i-sm"><use href="#i-arrow-left"/></svg>กลับ</span></div>
+  </header>
+
+  <main class="d1-main">
+    <section class="d1-pane d1-left">
+      <div class="d1-cap"><svg class="i i-sm muted"><use href="#i-smartphone"/></svg><span class="t-small strong">ลูกค้า · โต๊ะ A1</span></div>
+      <div class="d1-box allow-overflow"><iframe src="c1-menu.html" scrolling="no" title="มุมมองลูกค้า โต๊ะ A1"></iframe></div>
+    </section>
+
+    <div class="d1-center">
+      <section class="d1-pane d1-kitchen">
+        <div class="d1-cap"><svg class="i i-sm muted"><use href="#i-chef-hat"/></svg><span class="t-small strong">ครัว</span></div>
+        <div class="d1-box allow-overflow"><iframe src="k1-board.html" scrolling="no" title="จอครัว"></iframe></div>
+      </section>
+      <section class="d1-pane d1-owner">
+        <div class="d1-cap"><svg class="i i-sm muted"><use href="#i-layout-grid"/></svg><span class="t-small strong">เจ้าของร้าน</span></div>
+        <div class="d1-box allow-overflow"><iframe src="o01-overview.html" scrolling="no" title="หน้าภาพรวมเจ้าของร้าน"></iframe></div>
+      </section>
+    </div>
+
+    <aside class="d1-side">
+      <div class="d1-side-head"><span class="d1-dot"></span><h2 class="t-h3">บอทกำลังทำงาน</h2></div>
+
+      <ul class="d1-feed">
+        <li><span class="d1-node"><svg class="i"><use href="#i-clipboard-list"/></svg></span><span class="t-small"><span class="mono muted">19:41</span> · A1 สั่งรอบที่ 3</span></li>
+        <li><span class="d1-node"><svg class="i"><use href="#i-clipboard-list"/></svg></span><span class="t-small"><span class="mono muted">19:38</span> · B3 สั่งรอบที่ 4</span></li>
+        <li><span class="d1-node"><svg class="i"><use href="#i-chef-hat"/></svg></span><span class="t-small"><span class="mono muted">19:36</span> · B1 ครัวเริ่มทำรอบที่ 2</span></li>
+        <li><span class="d1-node"><svg class="i"><use href="#i-clipboard-list"/></svg></span><span class="t-small"><span class="mono muted">19:31</span> · B5 สั่งรอบที่ 1</span></li>
+        <li><span class="d1-node"><svg class="i"><use href="#i-chef-hat"/></svg></span><span class="t-small"><span class="mono muted">19:29</span> · A3 ครัวเริ่มทำรอบที่ 5</span></li>
+        <li><span class="d1-node"><svg class="i"><use href="#i-armchair"/></svg></span><span class="t-small"><span class="mono muted">19:25</span> · B1 เปิดโต๊ะ Silver</span></li>
+      </ul>
+
+      <div class="d1-foot">
+        <div class="t-micro muted" style="padding-bottom:12px">บอทจำลองลูกค้าสั่งอาหารทุก 20–40 วินาที</div>
+        <div class="d1-guide">
+          <div class="row"><svg class="i i-sm muted"><use href="#i-smartphone"/></svg><span class="t-small"><b>ลูกค้า</b>: ส่งออเดอร์</span></div>
+          <div class="row"><svg class="i i-sm muted"><use href="#i-chef-hat"/></svg><span class="t-small"><b>ครัว</b>: การ์ดใหม่โผล่ทันที</span></div>
+          <div class="row"><svg class="i i-sm muted"><use href="#i-layout-grid"/></svg><span class="t-small"><b>เจ้าของร้าน</b>: ยอดและโต๊ะอัปเดต</span></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+</div>
+</body></html>

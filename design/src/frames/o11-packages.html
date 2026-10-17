@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1440x900@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .o11-th { display:flex; align-items:center; gap:6px; }
+  .o11-th .i { color:var(--control); }
+  .o11-rank { width:26px; height:26px; border-radius:50%; background:var(--sunken); color:var(--ink-2); display:inline-flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; }
+  .o11-cols { display:grid; grid-template-columns:1fr 400px; gap:16px; align-items:start; margin-top:16px; }
+  .o11-form { display:grid; grid-template-columns:1fr 1fr; gap:14px 16px; margin-top:16px; }
+  .o11-actions { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
+  .o11-steps { margin-top:16px; }
+  .o11-step { position:relative; display:flex; gap:12px; padding-bottom:16px; }
+  .o11-step:last-child { padding-bottom:0; }
+  .o11-step:not(:last-child)::after { content:""; position:absolute; left:13px; top:34px; bottom:6px; width:1px; background:var(--line); }
+  .o11-n { width:26px; height:26px; border-radius:50%; background:var(--sunken); color:var(--ink-2); display:inline-flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; flex:none; }
+</style></head>
+<body class="frame">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span><div class="col"><b style="line-height:1.3">ชาบูเดโม่</b><span class="t-micro muted">FoodQueue</span></div></div>
+    <a class="nav"><svg class="i"><use href="#i-layout-grid"/></svg>ภาพรวม</a>
+    <a class="nav"><svg class="i"><use href="#i-clipboard-list"/></svg>ออเดอร์<span class="count">3</span></a>
+    <a class="nav"><svg class="i"><use href="#i-history"/></svg>ประวัติการชำระ</a>
+    <a class="nav"><svg class="i"><use href="#i-chart-column"/></svg>รายงาน</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-book-open"/></svg>เมนูอาหาร</a>
+    <a class="nav on"><svg class="i"><use href="#i-package"/></svg>แพ็กเกจ</a>
+    <a class="nav"><svg class="i"><use href="#i-armchair"/></svg>โต๊ะ</a>
+    <a class="nav"><svg class="i"><use href="#i-settings"/></svg>ตั้งค่า</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-chef-hat"/></svg>จอครัว<svg class="i i-sm" style="margin-left:auto"><use href="#i-arrow-up-right"/></svg></a>
+    <div class="side-foot"><span class="avatar">ส</span><div class="col grow"><b class="t-small" style="line-height:1.3">คุณสมศรี</b><span class="t-micro muted">เจ้าของร้าน</span></div><svg class="i muted"><use href="#i-log-out"/></svg></div>
+  </aside>
+
+  <main class="main">
+    <div class="pagehead">
+      <div class="col"><h1 class="t-h1">แพ็กเกจ</h1><span class="t-small muted">3 ระดับ · ระดับสูงสั่งเมนูของระดับต่ำกว่าได้ด้วย</span></div>
+      <div class="row gap-12">
+        <span class="btn btn-primary"><svg class="i i-sm"><use href="#i-plus"/></svg>เพิ่มแพ็กเกจ</span>
+        <span class="demo-tag">DEMO DATA</span>
+      </div>
+    </div>
+
+    <div class="card card-flush">
+      <table class="tbl">
+        <thead><tr>
+          <th style="width:110px"><span class="o11-th">ระดับ<svg class="i i-sm"><use href="#i-chevrons-up-down"/></svg></span></th>
+          <th><span class="o11-th">ชื่อแพ็กเกจ<svg class="i i-sm"><use href="#i-chevrons-up-down"/></svg></span></th>
+          <th class="right" style="width:190px"><span class="o11-th" style="justify-content:flex-end">ราคาผู้ใหญ่<svg class="i i-sm"><use href="#i-chevrons-up-down"/></svg></span></th>
+          <th class="right" style="width:190px"><span class="o11-th" style="justify-content:flex-end">ราคาเด็ก<svg class="i i-sm"><use href="#i-chevrons-up-down"/></svg></span></th>
+          <th style="width:170px"><span class="o11-th">เวลา<svg class="i i-sm"><use href="#i-chevrons-up-down"/></svg></span></th>
+          <th style="width:150px">ใช้งาน</th>
+          <th style="width:70px"></th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="o11-rank num">1</span></td>
+            <td><b>Silver</b></td>
+            <td class="right num strong">฿299</td>
+            <td class="right num">฿149</td>
+            <td class="ink-2">90 นาที</td>
+            <td><span class="switch on"></span></td>
+            <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-pencil"/></svg></span></td>
+          </tr>
+          <tr>
+            <td><span class="o11-rank num">2</span></td>
+            <td><b>Gold</b></td>
+            <td class="right num strong">฿399</td>
+            <td class="right num">฿199</td>
+            <td class="ink-2">90 นาที</td>
+            <td><span class="switch on"></span></td>
+            <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-pencil"/></svg></span></td>
+          </tr>
+          <tr>
+            <td><span class="o11-rank num">3</span></td>
+            <td><b>Platinum</b></td>
+            <td class="right num strong">฿549</td>
+            <td class="right num">฿279</td>
+            <td class="ink-2">120 นาที</td>
+            <td><span class="switch on"></span></td>
+            <td class="right"><span class="btn btn-ghost btn-icon btn-sm"><svg class="i"><use href="#i-pencil"/></svg></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="o11-cols">
+      <div class="card">
+        <div class="row between">
+          <h2 class="t-h3">แก้ไขแพ็กเกจ · Gold</h2>
+          <span class="badge accent badge-plain">ระดับ 2</span>
+        </div>
+        <div class="o11-form">
+          <div class="field"><label>ชื่อแพ็กเกจ</label><div class="input">Gold</div></div>
+          <div class="field">
+            <label>ระดับ</label>
+            <div class="input is-error num">1</div>
+            <div class="help error">ระดับนี้ซ้ำกับ Silver · เลือกระดับ 4 แทน</div>
+          </div>
+          <div class="field"><label>ราคาผู้ใหญ่</label><div class="input num">฿399</div></div>
+          <div class="field"><label>ราคาเด็ก</label><div class="input num">฿199</div></div>
+          <div class="field"><label>เวลา (นาที)</label><div class="input num">90</div></div>
+          <div class="field"><label>ใช้งาน</label><div class="row" style="height:44px; gap:10px"><span class="switch on"></span><span class="t-small muted">แสดงในหน้าเปิดโต๊ะ</span></div></div>
+        </div>
+        <div class="o11-actions">
+          <div class="col gap-4">
+            <span class="btn btn-danger">ปิดใช้งาน</span>
+            <span class="t-micro muted">ปิดได้เมื่อไม่มีโต๊ะที่ใช้แพ็กเกจนี้อยู่</span>
+          </div>
+          <div class="row gap-8"><span class="btn btn-secondary">ยกเลิก</span><span class="btn btn-primary">บันทึก</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="col gap-4">
+          <h2 class="t-h3">สิทธิ์เมนูตามระดับ</h2>
+          <span class="t-small muted">นับเฉพาะเมนูบุฟเฟ่ต์ 24 รายการ จากทั้งหมด 30 รายการ</span>
+        </div>
+        <div class="o11-steps">
+          <div class="o11-step">
+            <span class="o11-n num">1</span>
+            <div class="col grow gap-4">
+              <div class="row between"><b>Silver</b><span class="t-small strong num">17 เมนู</span></div>
+              <span class="t-micro muted">เมนูระดับ 1 ทั้งหมด · น้ำซุป หมู ลูกชิ้น/ของทอด ผัก ของหวาน</span>
+            </div>
+          </div>
+          <div class="o11-step">
+            <span class="o11-n num">2</span>
+            <div class="col grow gap-4">
+              <div class="row between"><b>Gold</b><span class="t-small strong num">20 เมนู</span></div>
+              <span class="t-micro muted">+3 จากระดับก่อน · เนื้อวัวสไลซ์, กุ้งขาว, หมึกกล้วย</span>
+            </div>
+          </div>
+          <div class="o11-step">
+            <span class="o11-n num">3</span>
+            <div class="col grow gap-4">
+              <div class="row between"><b>Platinum</b><span class="t-small strong num">24 เมนู</span></div>
+              <span class="t-micro muted">+4 จากระดับก่อน · ริบอายสไลซ์, วากิวสไลซ์ A5, หอยเชลล์, แซลมอนสไลซ์</span>
+            </div>
+          </div>
+        </div>
+        <hr class="divider" style="margin:16px 0">
+        <div class="col gap-6">
+          <span class="t-small"><b class="num">6</b> เมนูคิดเงินแยก สั่งได้ทุกระดับ</span>
+          <span class="t-micro muted">แพ็กเกจที่ระดับสูงกว่าสั่งเมนูของระดับต่ำกว่าได้ด้วย</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body></html>

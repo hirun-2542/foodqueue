@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="390x844@2">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .sec { padding: 20px 0 6px; display: flex; align-items: baseline; justify-content: space-between; }
+  .item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .item:first-of-type { border-top: 0; }
+  .item .meta { flex: 1; min-width: 0; }
+  .item .name { font-size: 16px; font-weight: 600; line-height: 1.4; }
+  .item .incl { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--orange-ink); font-weight: 500; }
+  .item.off .name, .item.off .thumb { opacity: .55; }
+  .item.sel { background: var(--orange-soft); margin: 0 -16px; padding: 12px 16px; border-top-color: transparent; }
+  .item.sel + .item { border-top-color: transparent; }
+  .addbtn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong); display: inline-flex; align-items: center; justify-content: center; background: var(--surface); }
+  .stepper .s-btn { width: 40px; height: 40px; }
+  .note { display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; font-size: 12.5px; color: var(--ink-2); }
+</style></head>
+<body class="frame">
+<div class="cust">
+  <header>
+    <div class="cust-banner">
+      <span class="cust-chip l">โต๊ะ A1</span>
+      <span class="cust-chip r"><i class="d"></i>Gold · 2 ท่าน</span>
+      <div class="shop">ชาบูเดโม่</div>
+      <div class="tag">ชาบูบุฟเฟ่ต์ · สั่งอาหารผ่าน QR</div>
+      <svg class="i deco"><use href="#i-soup"/></svg>
+    </div>
+  </header>
+
+  <div style="background:var(--surface); border-bottom:1px solid var(--line); padding:0 16px">
+    <div class="utabs" style="border:0; overflow:hidden; gap:22px">
+      <span>น้ำซุป</span><span class="on">หมู</span><span>เนื้อวัว</span><span>ทะเล</span><span>ลูกชิ้น/ของทอด</span><span>ผัก</span>
+    </div>
+  </div>
+
+  <main class="cust-body">
+    <div class="sec"><h2 class="t-h2">หมู</h2><span class="t-small muted">สั่งได้ 5 ต่อเมนู</span></div>
+    <div class="item sel">
+      <div class="thumb"><img src="../assets/menu/pork-collar.jpg" alt=""></div>
+      <div class="meta"><div class="name">สันคอหมูสไลซ์</div><span class="incl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span></div>
+      <div class="stepper"><span class="s-btn"><svg class="i"><use href="#i-minus"/></svg></span><b>3</b><span class="s-btn add"><svg class="i"><use href="#i-plus"/></svg></span></div>
+    </div>
+    <div class="item sel">
+      <div class="thumb"><img src="../assets/menu/pork-belly.jpg" alt=""></div>
+      <div class="meta"><div class="name">หมูสามชั้นสไลซ์</div><span class="incl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span>
+        <div class="note"><svg class="i i-sm"><use href="#i-pencil"/></svg>ไม่ติดมัน</div></div>
+      <div class="stepper"><span class="s-btn"><svg class="i"><use href="#i-minus"/></svg></span><b>2</b><span class="s-btn add"><svg class="i"><use href="#i-plus"/></svg></span></div>
+    </div>
+    <div class="item">
+      <div class="thumb"><img src="../assets/menu/pork-soft.jpg" alt=""></div>
+      <div class="meta"><div class="name">หมูนุ่มสไลซ์</div><span class="incl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span></div>
+      <span class="addbtn"><svg class="i"><use href="#i-plus"/></svg></span>
+    </div>
+
+    <div class="sec"><h2 class="t-h2">เนื้อวัว</h2></div>
+    <div class="item sel">
+      <div class="thumb"><img src="../assets/menu/beef.jpg" alt=""></div>
+      <div class="meta"><div class="name">เนื้อวัวสไลซ์</div><span class="incl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span></div>
+      <div class="stepper"><span class="s-btn"><svg class="i"><use href="#i-minus"/></svg></span><b>2</b><span class="s-btn add"><svg class="i"><use href="#i-plus"/></svg></span></div>
+    </div>
+
+    <div class="sec"><h2 class="t-h2">ทะเล</h2></div>
+    <div class="item">
+      <div class="thumb"><img src="../assets/menu/squid.jpg" alt=""></div>
+      <div class="meta"><div class="name">หมึกกล้วย</div><span class="incl"><svg class="i i-sm"><use href="#i-check"/></svg>รวมในบุฟเฟ่ต์</span></div>
+      <span class="addbtn"><svg class="i"><use href="#i-plus"/></svg></span>
+    </div>
+    <div class="item off">
+      <div class="thumb"><img src="../assets/menu/shrimp.jpg" alt=""></div>
+      <div class="meta"><div class="name">กุ้งขาว</div><span class="badge cancelled badge-plain" style="margin-top:2px">หมดชั่วคราว</span></div>
+      <span class="addbtn" style="background:var(--sunken); border-color:var(--line); color:var(--muted)"><svg class="i"><use href="#i-plus"/></svg></span>
+    </div>
+  </main>
+
+  <div class="cartbar">
+    <div class="btn btn-primary btn-lg btn-block" style="justify-content:space-between; box-shadow:var(--float)">
+      <span class="row gap-8"><svg class="i"><use href="#i-shopping-basket"/></svg>ตะกร้า · 4 เมนู</span>
+      <span class="row gap-8"><span class="num" style="font-weight:500">8 / 20 รายการ</span><svg class="i"><use href="#i-chevron-right"/></svg></span>
+    </div>
+  </div>
+
+  <nav class="tabbar">
+    <div class="on"><svg class="i i-lg"><use href="#i-utensils"/></svg>เมนู</div>
+    <div><svg class="i i-lg"><use href="#i-clipboard-list"/></svg>ออเดอร์</div>
+
+  </nav>
+</div>
+</body></html>

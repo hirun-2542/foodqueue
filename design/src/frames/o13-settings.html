@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1440x1120@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .o13-sticky { position:sticky; top:0; z-index:1; background:var(--bg); margin:0 -32px; padding:0 32px; border-bottom:1px solid var(--line); }
+  .o13-grid { display:grid; grid-template-columns:1fr 360px; gap:16px; align-items:start; margin-top:16px; }
+  .o13-form { display:grid; grid-template-columns:1fr 1fr; gap:14px 16px; margin-top:14px; }
+  .o13-form.o13-3 { grid-template-columns:repeat(3, 1fr); }
+  .o13-span2 { grid-column:1 / -1; }
+  .o13-sep { margin:14px 0; }
+</style></head>
+<body class="frame">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span><div class="col"><b style="line-height:1.3">ชาบูเดโม่</b><span class="t-micro muted">FoodQueue</span></div></div>
+    <a class="nav"><svg class="i"><use href="#i-layout-grid"/></svg>ภาพรวม</a>
+    <a class="nav"><svg class="i"><use href="#i-clipboard-list"/></svg>ออเดอร์<span class="count">3</span></a>
+    <a class="nav"><svg class="i"><use href="#i-history"/></svg>ประวัติการชำระ</a>
+    <a class="nav"><svg class="i"><use href="#i-chart-column"/></svg>รายงาน</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-book-open"/></svg>เมนูอาหาร</a>
+    <a class="nav"><svg class="i"><use href="#i-package"/></svg>แพ็กเกจ</a>
+    <a class="nav"><svg class="i"><use href="#i-armchair"/></svg>โต๊ะ</a>
+    <a class="nav on"><svg class="i"><use href="#i-settings"/></svg>ตั้งค่า</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-chef-hat"/></svg>จอครัว<svg class="i i-sm" style="margin-left:auto"><use href="#i-arrow-up-right"/></svg></a>
+    <div class="side-foot"><span class="avatar">ส</span><div class="col grow"><b class="t-small" style="line-height:1.3">คุณสมศรี</b><span class="t-micro muted">เจ้าของร้าน</span></div><svg class="i muted"><use href="#i-log-out"/></svg></div>
+  </aside>
+
+  <main class="main">
+    <div class="pagehead o13-sticky">
+      <div class="col"><h1 class="t-h1">ตั้งค่า</h1><span class="t-small muted">ข้อมูลร้าน · การคิดเงิน · การสั่งอาหาร</span></div>
+      <div class="row gap-12">
+        <span class="t-small muted">แก้ไขล่าสุด 19:38</span>
+        <span class="btn btn-primary"><svg class="i i-sm"><use href="#i-check"/></svg>บันทึกการตั้งค่า</span>
+        <span class="demo-tag">DEMO DATA</span>
+      </div>
+    </div>
+
+    <div class="o13-grid">
+      <div class="card">
+        <section>
+          <div class="col gap-4">
+            <h2 class="t-h3">ข้อมูลร้าน</h2>
+            <span class="t-small muted">แสดงบนใบแจ้งยอด ใบเสร็จ และ QR slip</span>
+          </div>
+          <div class="o13-form">
+            <div class="field"><label>ชื่อร้าน</label><div class="input">ชาบูเดโม่</div></div>
+            <div class="field"><label>โทรศัพท์</label><div class="input mono">02-000-0000</div></div>
+            <div class="field o13-span2"><label>ที่อยู่</label><div class="input">99/9 ถ.สุขุมวิท เขตวัฒนา กรุงเทพฯ 10110</div></div>
+            <div class="field"><label>เลขผู้เสียภาษี</label><div class="input mono">0-1055-67000-00-0</div></div>
+            <div class="field"><label>PromptPay ID</label><div class="input mono">081-234-5678</div><div class="help">ใช้สร้าง QR รับชำระเงิน · เว้นว่างได้</div></div>
+            <div class="field o13-span2"><label>แบนเนอร์หน้าลูกค้า</label>
+              <div class="row gap-16" style="align-items:center">
+                <div style="width:260px; height:86px; border-radius:var(--r); overflow:hidden; flex:none">
+                  <div style="width:390px; transform:scale(.6667); transform-origin:top left">
+                    <div class="cust-banner"><span class="cust-chip l">โต๊ะ A1</span><span class="cust-chip r"><i class="d"></i>Gold · 2 ท่าน</span><div class="shop">ชาบูเดโม่</div><div class="tag">ชาบูบุฟเฟ่ต์ · สั่งอาหารผ่าน QR</div><svg class="i deco"><use href="#i-soup"/></svg></div>
+                  </div>
+                </div>
+                <div class="col gap-8">
+                  <div class="row gap-8"><span class="btn btn-secondary btn-sm"><svg class="i i-sm"><use href="#i-image-plus"/></svg>อัปโหลดรูปแบนเนอร์</span><span class="btn btn-ghost btn-sm">ใช้แบนเนอร์เริ่มต้น</span></div>
+                  <div class="help">jpeg / png / webp ไม่เกิน 2MB · แนะนำ 1170 × 336 พิกเซล · ชื่อร้านแสดงทับรูปเสมอ</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr class="divider o13-sep">
+
+        <section>
+          <div class="col gap-4">
+            <h2 class="t-h3">การคิดเงิน</h2>
+            <span class="t-small muted">ใช้กับบิลที่ยังไม่ชำระทุกใบ</span>
+          </div>
+          <div class="o13-form">
+            <div class="field"><label>ค่าบริการ (%)</label><div class="input num">10</div><div class="help">ช่วง 0–30% · คิดก่อน VAT</div></div>
+            <div class="field"><label>VAT (%)</label><div class="input num">7</div><div class="help">ช่วง 0–30% · คิดจากยอด + ค่าบริการ</div></div>
+          </div>
+        </section>
+
+        <hr class="divider o13-sep">
+
+        <section>
+          <div class="col gap-4">
+            <h2 class="t-h3">การสั่งอาหาร</h2>
+            <span class="t-small muted">ตรวจทั้งฝั่งลูกค้าและเซิร์ฟเวอร์ทุกรอบ</span>
+          </div>
+          <div class="o13-form o13-3">
+            <div class="field"><label>สูงสุดต่อเมนูต่อรอบ</label><div class="input num">5</div><div class="help">ช่วง 1–99 · นับแยกตามเมนู</div></div>
+            <div class="field"><label>สูงสุดต่อรอบ</label><div class="input num">20</div><div class="help">ช่วง 1–99 · รวมทุกรายการในรอบ</div></div>
+            <div class="field"><label>เตือน Last order ก่อนหมดเวลา</label><div class="input"><span class="num">15</span><span class="t-small muted" style="margin-left:auto">นาที</span></div><div class="help">ช่วง 1–99 นาที · แสดงฝั่งลูกค้า</div></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="card">
+        <div class="row between">
+          <h2 class="t-h3">ตัวอย่างการคิดเงิน</h2>
+          <span class="t-micro muted">ยอดอาหาร ฿1,000.00</span>
+        </div>
+        <div class="well" style="margin-top:14px">
+          <div class="kv"><span class="t-small muted">ยอดก่อนค่าบริการ</span><span class="t-small num">฿1,000.00</span></div>
+          <div class="kv"><span class="t-small muted">ค่าบริการ 10%</span><span class="t-small num">฿100.00</span></div>
+          <div class="kv"><span class="t-small muted">VAT 7%</span><span class="t-small num">฿77.00</span></div>
+          <hr class="divider" style="margin:8px 0">
+          <div class="kv total"><span>รวมทั้งสิ้น</span><span class="num">฿1,177.00</span></div>
+        </div>
+        <div class="col gap-6" style="margin-top:14px">
+          <span class="t-micro muted">คำนวณจากเปอร์เซ็นต์ที่ตั้งไว้ · ตัวอย่างนี้ใช้ 10% และ 7%</span>
+          <span class="t-micro muted">บิลที่ชำระแล้วจะไม่ถูกคำนวณใหม่</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body></html>

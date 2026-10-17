@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="1440x900@1">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .o15-tbl { table-layout: fixed; }
+  .o15-tbl th { height: 42px; padding: 0 14px; }
+  .o15-tbl td { height: auto; padding: 16px 14px; }
+  .o15-tr.sel td { background: var(--orange-soft); }
+  .o15-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; border-top: 1px solid var(--line); }
+  .o15-grid { display: grid; grid-template-columns: 1fr 420px; gap: 20px; align-items: start; }
+  .o15-group { font-size: 12px; font-weight: 600; color: var(--muted); margin: 14px 0 4px; }
+  .o15-line { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 14px; }
+  .o15-total { display: flex; justify-content: space-between; gap: 12px; padding-top: 12px; margin-top: 4px; border-top: 1px solid var(--line); font-size: 18px; font-weight: 600; }
+</style></head>
+<body class="frame">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span><div class="col"><b style="line-height:1.3">ชาบูเดโม่</b><span class="t-micro muted">FoodQueue</span></div></div>
+    <a class="nav"><svg class="i"><use href="#i-layout-grid"/></svg>ภาพรวม</a>
+    <a class="nav"><svg class="i"><use href="#i-clipboard-list"/></svg>ออเดอร์<span class="count">3</span></a>
+    <a class="nav on"><svg class="i"><use href="#i-history"/></svg>ประวัติการชำระ</a>
+    <a class="nav"><svg class="i"><use href="#i-chart-column"/></svg>รายงาน</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-book-open"/></svg>เมนูอาหาร</a>
+    <a class="nav"><svg class="i"><use href="#i-package"/></svg>แพ็กเกจ</a>
+    <a class="nav"><svg class="i"><use href="#i-armchair"/></svg>โต๊ะ</a>
+    <a class="nav"><svg class="i"><use href="#i-settings"/></svg>ตั้งค่า</a>
+    <div class="nav-sep"></div>
+    <a class="nav"><svg class="i"><use href="#i-chef-hat"/></svg>จอครัว<svg class="i i-sm" style="margin-left:auto"><use href="#i-arrow-up-right"/></svg></a>
+    <div class="side-foot"><span class="avatar">ส</span><div class="col grow"><b class="t-small" style="line-height:1.3">คุณสมศรี</b><span class="t-micro muted">เจ้าของร้าน</span></div><svg class="i muted"><use href="#i-log-out"/></svg></div>
+  </aside>
+
+  <main class="main">
+    <div class="pagehead">
+      <div class="col"><h1 class="t-h1">ประวัติการชำระ</h1><span class="t-small muted">ศุกร์ 16 ต.ค. 2569 · 19:42</span></div>
+      <div class="row gap-12">
+        <div class="pills">
+          <span class="pill on">ทั้งหมด</span>
+          <span class="pill">เงินสด</span>
+          <span class="pill">PromptPay</span>
+          <span class="pill">บัตร</span>
+        </div>
+        <span class="btn btn-secondary"><svg class="i i-sm"><use href="#i-calendar"/></svg>16 ต.ค. 2569<svg class="i i-sm muted"><use href="#i-chevron-down"/></svg></span>
+      </div>
+    </div>
+
+    <div class="row between" style="margin:4px 0 14px">
+      <h2 class="t-h2">บิลที่ชำระแล้ว</h2>
+      <span class="t-small muted">12 รายการ · รวม ฿17,238.86</span>
+    </div>
+
+    <div class="o15-grid">
+      <div class="card card-flush">
+        <table class="tbl o15-tbl">
+          <thead><tr>
+            <th style="width:170px">เลขที่ใบเสร็จ</th>
+            <th style="width:56px">โต๊ะ</th>
+            <th style="width:70px">เวลา</th>
+            <th style="width:52px">คน</th>
+            <th style="width:96px">แพ็กเกจ</th>
+            <th style="width:102px">วิธีจ่าย</th>
+            <th class="right">ยอด</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="mono">R20261016-000046</span></td>
+              <td><span class="mono strong">A6</span></td>
+              <td><span class="mono">19:38</span></td>
+              <td class="num">2</td>
+              <td><span class="badge neutral badge-plain">Silver</span></td>
+              <td><span class="badge neutral badge-plain">เงินสด</span></td>
+              <td class="right"><b class="num">฿739.16</b></td>
+            </tr>
+            <tr class="o15-tr sel">
+              <td><span class="mono">R20261016-000045</span></td>
+              <td><span class="mono strong">B4</span></td>
+              <td><span class="mono">19:21</span></td>
+              <td class="num">4</td>
+              <td><span class="badge neutral badge-plain">Gold</span></td>
+              <td><span class="badge neutral badge-plain">PromptPay</span></td>
+              <td class="right"><b class="num">฿1,949.11</b></td>
+            </tr>
+            <tr>
+              <td><span class="mono">R20261016-000044</span></td>
+              <td><span class="mono strong">A5</span></td>
+              <td><span class="mono">19:05</span></td>
+              <td class="num">3</td>
+              <td><span class="badge neutral badge-plain">Silver</span></td>
+              <td><span class="badge neutral badge-plain">บัตร</span></td>
+              <td class="right"><b class="num">฿1,043.90</b></td>
+            </tr>
+            <tr>
+              <td><span class="mono">R20261016-000043</span></td>
+              <td><span class="mono strong">B6</span></td>
+              <td><span class="mono">18:52</span></td>
+              <td class="num">2</td>
+              <td><span class="badge neutral badge-plain">Platinum</span></td>
+              <td><span class="badge neutral badge-plain">PromptPay</span></td>
+              <td class="right"><b class="num">฿1,356.40</b></td>
+            </tr>
+            <tr>
+              <td><span class="mono">R20261016-000042</span></td>
+              <td><span class="mono strong">A2</span></td>
+              <td><span class="mono">18:31</span></td>
+              <td class="num">5</td>
+              <td><span class="badge neutral badge-plain">Gold</span></td>
+              <td><span class="badge neutral badge-plain">เงินสด</span></td>
+              <td class="right"><b class="num">฿2,401.20</b></td>
+            </tr>
+            <tr>
+              <td><span class="mono">R20261016-000041</span></td>
+              <td><span class="mono strong">A6</span></td>
+              <td><span class="mono">18:18</span></td>
+              <td class="num">3</td>
+              <td><span class="badge neutral badge-plain">Gold</span></td>
+              <td><span class="badge neutral badge-plain">เงินสด</span></td>
+              <td class="right"><b class="num">฿1,461.83</b></td>
+            </tr>
+            <tr>
+              <td><span class="mono">R20261016-000040</span></td>
+              <td><span class="mono strong">B5</span></td>
+              <td><span class="mono">18:02</span></td>
+              <td class="num">2</td>
+              <td><span class="badge neutral badge-plain">Silver</span></td>
+              <td><span class="badge neutral badge-plain">PromptPay</span></td>
+              <td class="right"><b class="num">฿762.70</b></td>
+            </tr>
+            <tr>
+              <td><span class="mono">R20261016-000039</span></td>
+              <td><span class="mono strong">B4</span></td>
+              <td><span class="mono">17:44</span></td>
+              <td class="num">4</td>
+              <td><span class="badge neutral badge-plain">Platinum</span></td>
+              <td><span class="badge neutral badge-plain">บัตร</span></td>
+              <td class="right"><b class="num">฿2,584.69</b></td>
+            </tr>
+            <tr>
+              <td><span class="mono">R20261016-000038</span></td>
+              <td><span class="mono strong">A5</span></td>
+              <td><span class="mono">17:26</span></td>
+              <td class="num">3</td>
+              <td><span class="badge neutral badge-plain">Silver</span></td>
+              <td><span class="badge neutral badge-plain">เงินสด</span></td>
+              <td class="right"><b class="num">฿1,214.66</b></td>
+            </tr>
+            <tr>
+              <td><span class="mono">R20261016-000037</span></td>
+              <td><span class="mono strong">A3</span></td>
+              <td><span class="mono">17:05</span></td>
+              <td class="num">4</td>
+              <td><span class="badge neutral badge-plain">Gold</span></td>
+              <td><span class="badge neutral badge-plain">PromptPay</span></td>
+              <td class="right"><b class="num">฿1,512.45</b></td>
+            </tr>
+            <tr>
+              <td><span class="mono">R20261016-000036</span></td>
+              <td><span class="mono strong">A1</span></td>
+              <td><span class="mono">16:52</span></td>
+              <td class="num">2</td>
+              <td><span class="badge neutral badge-plain">Gold</span></td>
+              <td><span class="badge neutral badge-plain">PromptPay</span></td>
+              <td class="right"><b class="num">฿1,003.98</b></td>
+            </tr>
+            <tr>
+              <td><span class="mono">R20261016-000035</span></td>
+              <td><span class="mono strong">A4</span></td>
+              <td><span class="mono">16:41</span></td>
+              <td class="num">3</td>
+              <td><span class="badge neutral badge-plain">Gold</span></td>
+              <td><span class="badge neutral badge-plain">เงินสด</span></td>
+              <td class="right"><b class="num">฿1,208.78</b></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="o15-foot"><span class="t-small muted">แสดง 12 จาก 29 บิลของวันนี้</span><span class="t-small muted">เรียงจากเวลาชำระล่าสุด</span></div>
+      </div>
+
+      <div class="card">
+        <div class="row between">
+          <div class="col gap-4"><span class="t-micro muted">เลขที่ใบเสร็จ</span><b class="mono" style="font-size:15px; line-height:1.4">R20261016-000045</b></div>
+          <span class="badge neutral badge-plain">ชำระแล้ว</span>
+        </div>
+        <hr class="divider" style="margin:14px 0 6px">
+        <div class="kv"><span class="t-small muted">โต๊ะ</span><span><b>B4</b> · Gold · 4 ผู้ใหญ่</span></div>
+        <div class="kv"><span class="t-small muted">รอบออเดอร์</span><span>4 รอบ · เสิร์ฟครบทุกจาน</span></div>
+        <hr class="divider" style="margin:8px 0 0">
+        <div class="o15-group">บุฟเฟ่ต์</div>
+        <div class="o15-line"><span>ผู้ใหญ่ 4 × ฿399</span><span class="num">฿1,596.00</span></div>
+        <div class="o15-group">เมนูคิดเงินแยก</div>
+        <div class="o15-line"><span>น้ำเปล่า 4 × ฿15</span><span class="num">฿60.00</span></div>
+        <div class="o15-group">ปรับยอด</div>
+        <div class="o15-line muted"><span>ไม่มีรายการปรับยอด</span></div>
+        <div class="o15-line" style="margin-top:4px; border-top:1px solid var(--line); padding-top:10px"><span>ยอดก่อนค่าบริการ</span><span class="num">฿1,656.00</span></div>
+        <div class="o15-line"><span>ค่าบริการ 10%</span><span class="num">฿165.60</span></div>
+        <div class="o15-line"><span>VAT 7%</span><span class="num">฿127.51</span></div>
+        <div class="o15-total"><span>รวมทั้งสิ้น</span><span class="num">฿1,949.11</span></div>
+        <div class="well" style="margin-top:14px">
+          <div class="kv"><span class="t-small muted">วิธีจ่าย</span><span class="badge neutral badge-plain">PromptPay</span></div>
+          <div class="kv"><span class="t-small muted">รับเงิน</span><span class="num">฿1,949.11</span></div>
+          <div class="kv"><span class="t-small muted">เงินทอน</span><span class="num">฿0.00</span></div>
+          <div class="kv"><span class="t-small muted">ชำระเมื่อ</span><span class="mono">19:21</span></div>
+        </div>
+        <div class="row gap-12" style="margin-top:16px">
+          <span class="btn btn-primary grow"><svg class="i i-sm"><use href="#i-printer"/></svg>พิมพ์ใบเสร็จซ้ำ</span>
+          <span class="btn btn-secondary grow"><svg class="i i-sm"><use href="#i-list"/></svg>ดูรายการออเดอร์</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body></html>

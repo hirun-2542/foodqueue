@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="frame" content="390x844@2">
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../components.css">
+<style>
+  .o16-phone { width: 390px; height: 844px; display: flex; flex-direction: column; background: var(--bg); overflow: hidden; }
+  .o16-top { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 14px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .o16-live { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 10px; border-radius: var(--r-pill); background: var(--ready-soft); color: var(--ready-ink); font-size: 12px; font-weight: 600; }
+  .o16-live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ready-dot); }
+  .o16-cta { height: 44px; padding: 0 14px; font-size: 14px; border-radius: var(--r-sm); }
+  .o16-body { flex: 1; min-height: 0; padding: 12px 16px 0; }
+  .o16-kpis { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+  .o16-kpi { padding: 9px 14px; border-left: 1px solid var(--line); border-top: 1px solid var(--line); }
+  .o16-kpi:nth-child(odd) { border-left: 0; }
+  .o16-kpi:nth-child(-n+2) { border-top: 0; }
+  .o16-kl { font-size: 12px; line-height: 1.45; color: var(--muted); }
+  .o16-kv { font-size: 22px; font-weight: 600; line-height: 1.25; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .o16-pill { height: 44px; padding: 0 16px; }
+  .o16-tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .o16-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+  .o16-card.attn { border-color: var(--orange-line); }
+  .o16-card.pay { border-color: var(--orange-strong); }
+  .o16-name { font-size: 20px; font-weight: 600; line-height: 1.15; }
+  .o16-left { font-family: var(--mono); font-size: 20px; font-weight: 500; line-height: 1.2; }
+  .o16-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 6px; padding-top: 8px; border-top: 1px solid var(--line); }
+  .o16-foot .badge { height: 22px; padding: 0 7px; gap: 5px; font-size: 12px; }
+  .o16-foot b { font-size: 13px; font-weight: 600; }
+  .o16-tabbar { grid-template-columns: repeat(5, 1fr); }
+  .o16-count { min-width: 20px; height: 20px; padding: 0 5px; border-radius: var(--r-pill); background: var(--orange-strong); color: var(--surface); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+</style></head>
+<body class="frame">
+<div class="o16-phone">
+  <header class="o16-top">
+    <span class="logo"><svg class="i i-lg"><use href="#i-soup"/></svg></span>
+    <div class="col grow gap-4">
+      <b style="font-size:16px; line-height:1.3">ชาบูเดโม่</b>
+      <div class="row gap-6"><span class="o16-live">เรียลไทม์</span><span class="demo-tag">DEMO DATA</span></div>
+    </div>
+    <span class="btn btn-primary o16-cta"><svg class="i i-sm"><use href="#i-plus"/></svg>เปิดโต๊ะ</span>
+  </header>
+
+  <div class="o16-body">
+    <div class="o16-kpis">
+      <div class="o16-kpi"><div class="o16-kl">ยอดขายวันนี้</div><div class="o16-kv">฿38,420</div></div>
+      <div class="o16-kpi"><div class="o16-kl">บิลที่ชำระแล้ว</div><div class="o16-kv">29</div></div>
+      <div class="o16-kpi"><div class="o16-kl">ลูกค้า (หัว)</div><div class="o16-kv">91</div></div>
+      <div class="o16-kpi"><div class="o16-kl">โต๊ะที่เปิดอยู่</div><div class="o16-kv">8 <span class="muted" style="font-size:14px; font-weight:500">/ 12</span></div></div>
+    </div>
+
+    <div class="row between" style="margin:16px 0 10px">
+      <h2 class="t-h2">โต๊ะ</h2>
+      <div class="pills"><span class="pill o16-pill on">ทั้งหมด 12</span><span class="pill o16-pill">กำลังใช้ 8</span><span class="pill o16-pill">ว่าง 4</span></div>
+    </div>
+
+    <div class="o16-tgrid">
+      <div class="o16-card">
+        <div class="row between"><span class="o16-name">A1</span><span class="badge accent">Gold</span></div>
+        <span class="t-micro muted">2 ผู้ใหญ่</span>
+        <div class="o16-left" style="font-size:17px">18:55–20:25</div>
+        <span class="t-micro muted">ใช้ไป <b class="mono">47</b> นาที</span>
+        <div class="rail-wrap" style="--p:52; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div>
+        <div class="o16-foot"><span class="badge pending">ค้างครัว 1</span><b class="num">฿1,074.60</b></div>
+      </div>
+
+      <div class="o16-card">
+        <div class="row between"><span class="o16-name">A2</span><span class="badge neutral badge-plain">Silver</span></div>
+        <span class="t-micro muted">3 ผู้ใหญ่ 1 เด็ก</span>
+        <div class="o16-left" style="font-size:17px">19:10–20:40</div>
+        <span class="t-micro muted">ใช้ไป <b class="mono">32</b> นาที</span>
+        <div class="rail-wrap" style="--p:36; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div>
+        <div class="o16-foot"><span class="badge served">เสิร์ฟครบ</span><b class="num">฿1,289.99</b></div>
+      </div>
+
+      <div class="o16-card">
+        <div class="row between"><span class="o16-name">A3</span><span class="badge neutral badge-plain">Platinum</span></div>
+        <span class="t-micro muted">4 ผู้ใหญ่</span>
+        <div class="o16-left" style="font-size:17px">18:30–20:30</div>
+        <span class="t-micro muted">ใช้ไป <b class="mono">72</b> นาที</span>
+        <div class="rail-wrap" style="--p:60; --m:87.5"><div class="rail"><i></i></div><span class="mark"></span></div>
+        <div class="o16-foot"><span class="badge preparing">ค้างครัว 2</span><b class="num">฿3,148.95</b></div>
+      </div>
+
+      <div class="o16-card attn">
+        <div class="row between"><span class="o16-name">A4</span><span class="badge accent">Gold</span></div>
+        <span class="t-micro muted">2 ผู้ใหญ่</span>
+        <div class="o16-left" style="font-size:17px">18:20–19:50</div>
+        <div class="row between"><span class="t-micro" style="color:var(--orange-ink)">ใช้ไป <b class="mono">82</b> นาที</span><span class="badge accent badge-plain">Last order</span></div>
+        <div class="rail-wrap late" style="--p:91; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div>
+        <div class="o16-foot"><span class="badge served">เสิร์ฟครบ</span><b class="num">฿1,045.18</b></div>
+      </div>
+
+      <div class="o16-card">
+        <div class="row between"><span class="o16-name">B1</span><span class="badge neutral badge-plain">Silver</span></div>
+        <span class="t-micro muted">2 ผู้ใหญ่</span>
+        <div class="o16-left" style="font-size:17px">19:25–20:55</div>
+        <span class="t-micro muted">ใช้ไป <b class="mono">17</b> นาที</span>
+        <div class="rail-wrap" style="--p:19; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div>
+        <div class="o16-foot"><span class="badge preparing">ค้างครัว 1</span><b class="num">฿739.16</b></div>
+      </div>
+
+      <div class="o16-card pay">
+        <div class="row between"><span class="o16-name">B2</span><span class="badge accent">Gold</span></div>
+        <span class="t-micro muted">2 ผู้ใหญ่ 1 เด็ก</span>
+        <div class="o16-left" style="font-size:17px">17:55–19:25</div>
+        <span class="t-micro" style="color:var(--cancel-ink)">ปิดการสั่งแล้ว · ใช้ไป <b class="mono">107</b> นาที</span>
+        <div class="rail-wrap over" style="--p:100; --m:83.3"><div class="rail"><i></i></div><span class="mark"></span></div>
+        <div class="row between"><span class="t-micro muted">ยอดบิล</span><b class="num">฿1,441.83</b></div>
+        <div class="o16-foot"><span class="btn btn-primary btn-block">รับชำระเงิน</span></div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="tabbar o16-tabbar">
+    <div class="on"><svg class="i i-lg"><use href="#i-layout-grid"/></svg>ภาพรวม</div>
+    <div><svg class="i i-lg"><use href="#i-clipboard-list"/></svg><span class="row gap-4">ออเดอร์<span class="o16-count">3</span></span></div>
+    <div><svg class="i i-lg"><use href="#i-book-open"/></svg>เมนู</div>
+    <div><svg class="i i-lg"><use href="#i-chart-column"/></svg>รายงาน</div>
+    <div><svg class="i i-lg"><use href="#i-more-horizontal"/></svg>เพิ่มเติม</div>
+  </nav>
+</div>
+</body></html>
