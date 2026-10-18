@@ -2,18 +2,28 @@ import { type APIRequestContext, type Locator, type Page, expect, test } from "@
 
 // Ticket 17: the owner edits a round from the queue (frame o17) on a stack built from this branch.
 // The run seeds its own table, package and menu, submits a round through the customer API, edits it in
-// the browser, and cancels/voids everything afterwards — the demo data is left as found.
+// the browser, and cancels/voids everything afterwards — the demo data is left as found. Its dishes live in
+// one "E2E 17" category that every run reuses, and they are switched off again at the end, so a customer on a
+// demo stack never sees a second หมูสามชั้นสไลซ์.
 //
-// A fresh database has no service charge and no VAT, so the preview moves by exactly the removed
-// à la carte line (฿45.00) and the numbers can be asserted directly. The frame is 1440x900 and the
-// owner's screens are desktop/tablet ones, so this file runs on the `desktop` project only; the
-// 390x844 project belongs to the customer screens (tickets 09/13).
+// The dialog's preview is checked against the server's own bill once the same edit is saved, so the numbers
+// hold whatever service charge and VAT the shop has (the demo seed has 10% and 7%; a fresh database has none).
+// The frame is 1440x900 and the owner's screens are desktop/tablet ones, so this file runs on the `desktop`
+// project only; the 390x844 project belongs to the customer screens (tickets 09/13).
 test.skip(({ viewport }) => (viewport?.width ?? 0) < 1200, "the owner's screens are desktop/tablet sized");
 
 const OWNER = { email: "owner@demo.local", password: "Demo1234!" };
 const KITCHEN = { email: "kitchen@demo.local", password: "Demo1234!" };
 const TABLE = "E2E-17";
 const ALA_CARTE_PRICE = 45;
+const MENU_CATEGORY = "E2E 17";
+
+interface MenuItemRow {
+  id: number;
+  categoryName: string;
+  name: string;
+  isActive: boolean;
+}
 
 interface Item {
   id: number;
@@ -86,20 +96,49 @@ async function openRound(request: APIRequestContext, tableId: number): Promise<S
   return opened.json();
 }
 
-/** The dishes of frame o17: two buffet dishes (free inside the package) and one à la carte drink (฿45). */
+/**
+ * The dishes of frame o17: two buffet dishes (free inside the package) and one à la carte drink (฿45), in the
+ * run's own category. A dish an earlier run left behind is switched back on rather than created again.
+ */
 async function seedMenu(request: APIRequestContext) {
-  const category: { id: number } = await (await request.post("/api/categories", { data: { name: "E2E 17" } })).json();
-  const item = async (name: string, kind: "Buffet" | "AlaCarte", price: number) =>
-    (
-      await request.post("/api/menu-items", {
-        data: { name, categoryId: category.id, kind, price, isAvailable: true, ...(kind === "Buffet" ? { minPackageRank: 1 } : {}) },
-      })
-    ).json() as Promise<{ id: number }>;
-  return {
-    pork: (await item("หมูสามชั้นสไลซ์", "Buffet", 0)).id,
-    mushrooms: (await item("เห็ดรวม", "Buffet", 0)).id,
-    tea: (await item("ชาไทยเย็น", "AlaCarte", ALA_CARTE_PRICE)).id,
+  const categories: Array<{ id: number; name: string }> = await (await request.get("/api/categories")).json();
+  const category: { id: number } =
+    categories.find((row) => row.name === MENU_CATEGORY) ??
+    (await (await request.post("/api/categories", { data: { name: MENU_CATEGORY } })).json());
+  const existing: Array<MenuItemRow & { categoryId: number }> = await (await request.get("/api/menu-items")).json();
+  const item = async (name: string, kind: "Buffet" | "AlaCarte", price: number) => {
+    const data = {
+      name,
+      categoryId: category.id,
+      kind,
+      price,
+      isAvailable: true,
+      isActive: true,
+      ...(kind === "Buffet" ? { minPackageRank: 1 } : {}),
+    };
+    const found = existing.find((row) => row.categoryId === category.id && row.name === name);
+    const saved = found
+      ? await request.put(`/api/menu-items/${found.id}`, { data })
+      : await request.post("/api/menu-items", { data });
+    expect(saved.ok(), await saved.text()).toBeTruthy();
+    if (found) return found.id;
+    const created: { id: number } = await saved.json();
+    return created.id;
   };
+  return {
+    pork: await item("หมูสามชั้นสไลซ์", "Buffet", 0),
+    mushrooms: await item("เห็ดรวม", "Buffet", 0),
+    tea: await item("ชาไทยเย็น", "AlaCarte", ALA_CARTE_PRICE),
+  };
+}
+
+/** Switches off every dish of the run's category (including ones earlier runs left on), so customers never see them. */
+async function hideMenu(request: APIRequestContext) {
+  const items: MenuItemRow[] = await (await request.get("/api/menu-items")).json();
+  for (const row of items.filter((item) => item.categoryName === MENU_CATEGORY && item.isActive)) {
+    const saved = await request.put(`/api/menu-items/${row.id}`, { data: { ...row, isActive: false } });
+    expect(saved.ok(), await saved.text()).toBeTruthy();
+  }
 }
 
 async function submitRound(
@@ -187,8 +226,11 @@ test("reducing a line updates the bill, the card, the customer and the kitchen",
   await dialog.locator("li", { hasText: "ชาไทยเย็น" }).getByRole("button", { name: "นำ ชาไทยเย็น ออก" }).click();
   await expect(dialog.getByRole("button", { name: "เอาคืน", exact: true })).toBeVisible();
   expect(baht(await billBlock(dialog).before.textContent())).toBeCloseTo(before.bill.total, 2);
-  expect(baht(await billBlock(dialog).after.textContent())).toBeCloseTo(before.bill.total - ALA_CARTE_PRICE, 2);
-  await expect(billBlock(dialog).delta).toHaveText("-฿45.00");
+  // The preview is the bill this edit will leave (checked against the server once it is saved, below).
+  const previewTotal = baht(await billBlock(dialog).after.textContent());
+  expect(previewTotal).toBeLessThan(before.bill.total);
+  const previewDelta = (before.bill.total - previewTotal).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  await expect(billBlock(dialog).delta).toHaveText(`-฿${previewDelta}`);
   // The design frame is 1440x900@1, so the comparison screenshot is taken at exactly that size.
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.screenshot({ path: "test-results/o17-order-edit.png" });
@@ -209,6 +251,7 @@ test("reducing a line updates the bill, the card, the customer and the kitchen",
   const after = await detailOf(request, session.id);
   expect(after.bill.alaCarteTotal).toBe(0);
   expect(after.bill.subtotal).toBe(before.bill.subtotal - ALA_CARTE_PRICE);
+  expect(after.bill.total).toBeCloseTo(previewTotal, 2);
   const edited = after.orders.find((order) => order.id === orderId)!;
   expect(edited.status).toBe("Pending");
   expect(edited.editReason).toBe("ลูกค้าเอาออก");
@@ -242,9 +285,10 @@ test("reducing a line updates the bill, the card, the customer and the kitchen",
   expect(cancelled.cancelReason).toBe("ลูกค้าเอาออก");
   expect(closed.bill.alaCarteTotal).toBe(0);
 
-  // Cleanup: the run's own round and table go back to how they were found.
+  // Cleanup: the run's own round, table and dishes go back to how they were found.
   expect((await request.post(`/api/sessions/${session.id}/void`)).ok()).toBeTruthy();
   expect((await request.put(`/api/tables/${table.id}`, { data: { ...table, isActive: false } })).ok()).toBeTruthy();
+  await hideMenu(request);
   await customerContext.close();
   await kitchenContext.close();
 });
@@ -282,4 +326,5 @@ test("a Ready round offers no แก้ไข and the API answers ORDER_NOT_EDIT
   expect((await request.post(`/api/orders/${orderId}/cancel`, { data: { reason: "e2e 17: เก็บรอบทดสอบ" } })).ok()).toBeTruthy();
   expect((await request.post(`/api/sessions/${session.id}/void`)).ok()).toBeTruthy();
   expect((await request.put(`/api/tables/${table.id}`, { data: { ...table, isActive: false } })).ok()).toBeTruthy();
+  await hideMenu(request);
 });

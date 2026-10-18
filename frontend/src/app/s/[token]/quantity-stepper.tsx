@@ -4,7 +4,10 @@ import { CheckIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { useCart, type CartMenuItem } from "@/lib/cart";
 import { cn } from "@/lib/utils";
 
-/** ปุ่มกลมของ stepper — 44px ตามกติกาสัมผัสของ DESIGN (frame c2/c5 ย่อเป็น 40px บนแถวเมนู) */
+/**
+ * ปุ่มกลมของ stepper — พื้นที่แตะ 44px เสมอตามกติกาสัมผัสของ DESIGN; `compact` ย่อเฉพาะวงกลมที่มองเห็นเป็น 40px
+ * ตาม frame c1/c2/c5 บนแถวเมนู (วงกลมอยู่กลางปุ่ม 44px จึงแตะได้เท่าเดิม)
+ */
 function StepButton({
   label,
   disabled,
@@ -26,16 +29,20 @@ function StepButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className={cn(
-        "inline-flex flex-none items-center justify-center rounded-full border",
-        compact ? "size-10" : "size-11",
-        accent
-          ? "border-orange-strong bg-orange-strong text-on-accent"
-          : "border-line-strong bg-surface text-ink",
-        disabled && "border-border bg-sunken text-muted-foreground",
-      )}
+      className="inline-flex size-11 flex-none items-center justify-center rounded-full"
     >
-      {children}
+      <span
+        className={cn(
+          "inline-flex items-center justify-center rounded-full border",
+          compact ? "size-10" : "size-11",
+          accent
+            ? "border-orange-strong bg-orange-strong text-on-accent"
+            : "border-line-strong bg-surface text-ink",
+          disabled && "border-border bg-sunken text-muted-foreground",
+        )}
+      >
+        {children}
+      </span>
     </button>
   );
 }
@@ -50,22 +57,18 @@ export function QuantityStepper({ item, compact }: { item: CartMenuItem; compact
   const quantity = quantityOf(item.id);
   const canAddMore = !isFull && quantity < limits.maxQtyPerItem && !orderWindow.isClosed;
 
+  // frame c1 `.addbtn`: a dish not in the cart yet has a quiet 44px white "+", the orange fill is the stepper's
+  // (Orange's four jobs: the primary action is the cart, not every row).
   if (quantity === 0) {
     return (
-      <StepButton
-        label={`เพิ่ม ${item.name}`}
-        compact={compact}
-        accent
-        disabled={!canAddMore}
-        onClick={() => add(item)}
-      >
-        <PlusIcon className={compact ? "size-5" : "size-6"} strokeWidth={1.75} aria-hidden />
+      <StepButton label={`เพิ่ม ${item.name}`} disabled={!canAddMore} onClick={() => add(item)}>
+        <PlusIcon className="size-5" strokeWidth={1.75} aria-hidden />
       </StepButton>
     );
   }
 
   return (
-    <div className="inline-flex flex-none items-center gap-1">
+    <div className={cn("inline-flex flex-none items-center", compact ? "gap-0.5" : "gap-1")}>
       <StepButton
         label={`ลด ${item.name}`}
         compact={compact}
