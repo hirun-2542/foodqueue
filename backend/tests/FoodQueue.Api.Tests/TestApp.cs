@@ -81,8 +81,8 @@ public sealed class TestApp : WebApplicationFactory<Program>
     public string ConnectionString => _connectionString;
 
     /// <param name="demo">
-    /// เปิด Demo Mode ของ host นี้ — เทสต์ของ ticket 24 เท่านั้นที่ส่ง true (ค่าเริ่มต้นคือปิด
-    /// ตาม notes/00-CONTRACTS.md "ปิด Demo ในเทสต์ backend และ seed เฉพาะที่แต่ละเคสต้องใช้")
+    /// เปิด Demo Mode ของ host นี้ — เทสต์ที่ต้องมีข้อมูลตัวอย่าง/สวิตช์ demo เปิดเป็นผู้ส่ง true
+    /// (ค่าเริ่มต้นคือปิดตาม notes/00-CONTRACTS.md "ปิด Demo ในเทสต์ backend และ seed เฉพาะที่แต่ละเคสต้องใช้")
     /// </param>
     public TestApp(PostgresFixture postgres, Action<IServiceCollection>? testServices = null, bool demo = false)
         : this(postgres.NewDatabase(), testServices, demo)
