@@ -19,9 +19,15 @@ public interface ILiveNotifier
 
 public sealed class LiveNotifier(IHubContext<LiveHub, ILiveClient> hub) : ILiveNotifier
 {
+    /// <summary>
+    /// ปลายทาง "kitchen+owner": ทุกการเชื่อมต่อของ Owner อยู่ใน group kitchen ด้วย (LiveHub) จึงส่งที่ kitchen ครั้งเดียว
+    /// — <c>Clients.Groups(kitchen, owner)</c> ไม่ตัดการเชื่อมต่อที่ซ้ำกัน จอของเจ้าของร้านจะได้ event เดียวกันสองครั้ง
+    /// </summary>
+    private ILiveClient Staff => hub.Clients.Group(LiveHub.KitchenGroup);
+
     public async Task OrderCreated(object order, int sessionId, int? primarySessionId = null)
     {
-        await hub.Clients.Groups(LiveHub.KitchenGroup, LiveHub.OwnerGroup).OrderCreated(order);
+        await Staff.OrderCreated(order);
         await hub.Clients.Group(LiveHub.SessionGroup(sessionId)).OrderCreated(order);
         if (primarySessionId is not null && primarySessionId != sessionId)
         {
@@ -32,12 +38,12 @@ public sealed class LiveNotifier(IHubContext<LiveHub, ILiveClient> hub) : ILiveN
     public async Task OrderStatusChanged(object order)
     {
         // ลูกค้าไม่เห็นสถานะรายรอบ จึงส่งเฉพาะครัวและเจ้าของร้าน
-        await hub.Clients.Groups(LiveHub.KitchenGroup, LiveHub.OwnerGroup).OrderStatusChanged(order);
+        await Staff.OrderStatusChanged(order);
     }
 
     public async Task OrderEdited(object order, int sessionId, int? primarySessionId = null)
     {
-        await hub.Clients.Groups(LiveHub.KitchenGroup, LiveHub.OwnerGroup).OrderEdited(order);
+        await Staff.OrderEdited(order);
         await hub.Clients.Group(LiveHub.SessionGroup(sessionId)).OrderEdited(order);
         if (primarySessionId is not null && primarySessionId != sessionId)
         {

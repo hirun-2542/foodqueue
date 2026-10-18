@@ -19,9 +19,9 @@ const minutesTone: Record<TimeTone, string> = {
  * One card of the overview grid (frame `o01-overview`): a free table offers เปิดโต๊ะ, an occupied one
  * shows its package, guests, start–end times, minutes used, kitchen backlog and running total.
  *
- * The server sends `minutesUsed` and both instants, so nothing here reads the clock: the same card
- * renders identical text a second later, and the rail length is the only thing that moves (on the
- * next poll). No countdown exists anywhere on this screen.
+ * `minutesUsed` arrives already measured against the server clock (`useTableOverview`) and both
+ * instants are stored data, so nothing here reads the clock: the number only ever counts up, on the
+ * overview's own tick. No countdown exists anywhere on this screen.
  */
 export function TableCard({
   card,

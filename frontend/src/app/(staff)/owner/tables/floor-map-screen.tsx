@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { TimeRail } from "@/components/time-rail";
 import { clockRange, formatBaht, roundTime } from "@/lib/format";
 import { occupied, useTableOverview } from "@/lib/overview";
+import { LiveProvider } from "@/lib/realtime";
 import type { SessionDetailDto, TableOverviewDto } from "@/lib/types";
 import { useSettings } from "../settings/settings-api";
 import { OpenTableDialog, QrResultDialog } from "../open-table-flow";
@@ -27,9 +28,18 @@ import { FloorPlanEditor } from "./floor-plan-editor";
  * Two states only, exactly as the design demands: ใช้งานอยู่ (Warm Tint with the Tint Line) and ว่าง
  * (Sunken grey). Nothing blinks and nothing pulses — a table with an unstarted order keeps its in-use
  * colour and gains the bell line "ออเดอร์รอรับ". Selecting a tile fills the side panel; a free tile
- * offers เปิดโต๊ะ through the same dialog the overview uses.
+ * offers เปิดโต๊ะ through the same dialog the overview uses. The floor follows the hub (see
+ * `useTableOverview`): a table opened or an order sent on another device shows up without a refresh.
  */
 export function FloorMapScreen() {
+  return (
+    <LiveProvider>
+      <FloorMapBody />
+    </LiveProvider>
+  );
+}
+
+function FloorMapBody() {
   const [isEditing, setIsEditing] = useState(false);
   const [addPending, setAddPending] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);

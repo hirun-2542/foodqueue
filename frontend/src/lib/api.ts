@@ -38,11 +38,7 @@ async function toApiError(res: Response): Promise<ApiError> {
   return new ApiError(code, res.status, message);
 }
 
-/**
- * Same-origin JSON fetch against `/api`. Sends the auth cookie, sets JSON headers for a JSON body,
- * returns the parsed body (undefined for 204), and throws `ApiError` for any non-2xx answer.
- */
-export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function send(path: string, init: RequestInit): Promise<Response> {
   const headers = new Headers(init.headers);
   headers.set("Accept", "application/json");
   if (typeof init.body === "string" && !headers.has("Content-Type")) {
@@ -58,6 +54,33 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   }
 
   if (!res.ok) throw await toApiError(res);
+  return res;
+}
+
+async function parse<T>(res: Response): Promise<T> {
   if (res.status === 204 || res.headers.get("content-length") === "0") return undefined as T;
   return (await res.json()) as T;
+}
+
+/**
+ * Same-origin JSON fetch against `/api`. Sends the auth cookie, sets JSON headers for a JSON body,
+ * returns the parsed body (undefined for 204), and throws `ApiError` for any non-2xx answer.
+ */
+export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+  return parse<T>(await send(path, init));
+}
+
+/**
+ * `apiFetch` plus the server's clock at the moment it answered (epoch ms), read from the response's
+ * HTTP `Date` header (whole seconds). Staff screens that show elapsed minutes against stored
+ * instants use it as their reference so a tablet with a wrong clock still agrees with the shop.
+ * Only when a proxy strips the header does it fall back to this device's clock.
+ */
+export async function apiFetchWithServerTime<T>(
+  path: string,
+  init: RequestInit = {},
+): Promise<{ data: T; serverNow: number }> {
+  const res = await send(path, init);
+  const stamped = Date.parse(res.headers.get("Date") ?? "");
+  return { data: await parse<T>(res), serverNow: Number.isNaN(stamped) ? Date.now() : stamped };
 }
