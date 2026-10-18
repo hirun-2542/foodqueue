@@ -2,6 +2,7 @@
 
 import {
   ArmchairIcon,
+  ArrowLeftIcon,
   ChefHatIcon,
   DoorOpenIcon,
   Loader2Icon,
@@ -11,7 +12,7 @@ import {
   WalletIcon,
   XIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,7 +55,17 @@ const toDraft = (t: TableDto): DraftTable => ({
 
 const clampSeats = (seats: number) => Math.min(SEAT_MAX, Math.max(SEAT_MIN, seats));
 
-export function FloorPlanEditor() {
+export function FloorPlanEditor({
+  onClose,
+  addPending = false,
+  occupiedTableIds,
+}: {
+  onClose: () => void;
+  /** Arrives from the floor's เพิ่มโต๊ะ: put a new tile on the plan straight away. */
+  addPending?: boolean;
+  /** Table ids that hold an open round, from `GET /api/tables/overview` — the floor's only source. */
+  occupiedTableIds: ReadonlySet<number>;
+}) {
   const { data, isPending, isError, error } = useTables();
   const save = useSaveFloorPlan();
 
@@ -62,6 +73,7 @@ export function FloorPlanEditor() {
   // a successful save (or ยกเลิก) drops it again, so the screen always re-reads the server's truth.
   const [draft, setDraft] = useState<DraftTable[] | null>(null);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const consumed = useRef(false);
 
   const serverTables = data ?? [];
   const rows = draft ?? serverTables.map(toDraft);
@@ -74,23 +86,34 @@ export function FloorPlanEditor() {
     });
   };
 
+  /** A new row appended last, where the dashed "เพิ่มโต๊ะ" slot sits in the frame. */
+  const appendRow = (base: DraftTable[], key: string): DraftTable[] => {
+    const nextOrder = base.reduce((max, r) => Math.max(max, r.sortOrder), 0) + 1;
+    const taken = new Set(base.map((r) => r.name.trim().toLowerCase()));
+    let suffix = base.length + 1;
+    while (taken.has(`ใหม่${suffix}`.toLowerCase())) suffix += 1;
+    return [
+      ...base,
+      { key, id: null, name: `ใหม่${suffix}`, seats: 4, zone: null, sortOrder: nextOrder, isActive: true },
+    ];
+  };
+
   const addTable = () => {
     const key = `new-${++nextAddedKey}`;
-    setDraft((current) => {
-      const base = current ?? serverTables.map(toDraft);
-      // SortOrder beyond the current maximum puts the new table last, where the dashed
-      // "เพิ่มโต๊ะ" slot sits in the frame.
-      const nextOrder = base.reduce((max, r) => Math.max(max, r.sortOrder), 0) + 1;
-      const taken = new Set(base.map((r) => r.name.trim().toLowerCase()));
-      let suffix = base.length + 1;
-      while (taken.has(`ใหม่${suffix}`.toLowerCase())) suffix += 1;
-      return [
-        ...base,
-        { key, id: null, name: `ใหม่${suffix}`, seats: 4, zone: null, sortOrder: nextOrder, isActive: true },
-      ];
-    });
+    setDraft((current) => appendRow(current ?? serverTables.map(toDraft), key));
     setSelectedKey(key);
   };
+
+  // The floor's เพิ่มโต๊ะ button opens this screen; `consumed` makes it a one-shot so it never fights
+  // the owner's later edits.
+  useEffect(() => {
+    if (!addPending || isPending || consumed.current) return;
+    consumed.current = true;
+    const key = `new-${++nextAddedKey}`;
+    setDraft((current) => appendRow(current ?? serverTables.map(toDraft), key));
+    setSelectedKey(key);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot on arrival from the floor
+  }, [addPending, isPending]);
 
   const dirty = draft !== null;
   const nameCounts = new Map<string, number>();
@@ -104,11 +127,11 @@ export function FloorPlanEditor() {
 
   const active = rows.filter((row) => row.isActive);
   const totalSeats = active.reduce((sum, row) => sum + row.seats, 0);
-  // Nothing here knows about sessions: which tables hold guests comes from the overview endpoint,
-  // which ticket 08 owns. So every enabled table reads as free and carries the ×, exactly as the
-  // frame assumes. The API still refuses to disable a table that has an Open session (TABLE_OCCUPIED,
-  // proven from the server side in TablesTests) — the screen is optimistic, the server is authoritative.
-  const inUseCount = 0;
+  // Which tables hold guests is known only to the overview endpoint (this ticket); the × on a tile
+  // and the delete button in the panel are for free tables only. The API is still the authority that
+  // refuses to disable an occupied table (TABLE_OCCUPIED) — the screen just stops offering it.
+  const isOccupied = (row: DraftTable) => row.id !== null && occupiedTableIds.has(row.id);
+  const inUseCount = active.filter(isOccupied).length;
 
   // Zones keep first-appearance order in the floor, the way the frame reads left to right.
   const zoneGroups: { zone: string | null; rows: DraftTable[] }[] = [];
@@ -147,6 +170,7 @@ export function FloorPlanEditor() {
         onSuccess: () => {
           reset();
           toast.success("บันทึกผังเรียบร้อย");
+          onClose();
         },
         // The draft stays put on failure: a rejected save must not throw away what the owner typed.
         onError: (cause) =>
@@ -188,6 +212,10 @@ export function FloorPlanEditor() {
           </span>
         </div>
         <div className="flex items-center gap-3">
+          <Button variant="ghost" disabled={save.isPending} onClick={onClose}>
+            <ArrowLeftIcon aria-hidden />
+            กลับไปผัง
+          </Button>
           <Button variant="outline" disabled={!dirty || save.isPending} onClick={reset}>
             ยกเลิก
           </Button>
@@ -231,6 +259,7 @@ export function FloorPlanEditor() {
                         row={row}
                         selected={selected !== null && row.key === selected.key}
                         nameTaken={nameTaken(row.name)}
+                        isOccupied={isOccupied(row)}
                         onSelect={() => setSelectedKey(row.key)}
                         onSeats={(seats) => edit(row, { seats })}
                         onDisable={() => edit(row, { isActive: false })}
@@ -288,11 +317,23 @@ export function FloorPlanEditor() {
                 <h2 className="text-title">ตั้งค่าโต๊ะ {selected.name || "ใหม่"}</h2>
                 <span
                   className={`inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-[12.5px] font-semibold ${
-                    selected.isActive ? "bg-sunken text-ink-2" : "bg-cancel-soft text-cancel-ink"
+                    !selected.isActive
+                      ? "bg-cancel-soft text-cancel-ink"
+                      : isOccupied(selected)
+                        ? "bg-orange-soft text-orange-ink"
+                        : "bg-sunken text-ink-2"
                   }`}
                 >
-                  <i className={`size-1.5 rounded-full ${selected.isActive ? "bg-control-border" : "bg-cancel-dot"}`} />
-                  {selected.isActive ? "ว่าง" : "ปิดใช้งาน"}
+                  <i
+                    className={`size-1.5 rounded-full ${
+                      !selected.isActive
+                        ? "bg-cancel-dot"
+                        : isOccupied(selected)
+                          ? "bg-orange"
+                          : "bg-control-border"
+                    }`}
+                  />
+                  {!selected.isActive ? "ปิดใช้งาน" : isOccupied(selected) ? "ใช้งานอยู่" : "ว่าง"}
                 </span>
               </div>
 
@@ -355,13 +396,16 @@ export function FloorPlanEditor() {
                   <Button
                     variant="destructive"
                     className="w-full"
+                    disabled={isOccupied(selected)}
                     onClick={() => edit(selected, { isActive: false })}
                   >
                     <Trash2Icon className="size-4" aria-hidden />
                     ลบโต๊ะ {selected.name || "ใหม่"}
                   </Button>
                   <span className="mt-2 text-xs text-muted-foreground">
-                    ลบได้เฉพาะโต๊ะที่ว่าง · โต๊ะที่มีลูกค้านั่งอยู่จะลบไม่ได้
+                    {isOccupied(selected)
+                      ? "โต๊ะนี้มีลูกค้านั่งอยู่ · ลบไม่ได้จนกว่าจะปิดบิล"
+                      : "ลบได้เฉพาะโต๊ะที่ว่าง · โต๊ะที่มีลูกค้านั่งอยู่จะลบไม่ได้"}
                   </span>
                 </>
               ) : (
@@ -451,6 +495,7 @@ function TableTile({
   row,
   selected,
   nameTaken,
+  isOccupied,
   onSelect,
   onSeats,
   onDisable,
@@ -458,6 +503,8 @@ function TableTile({
   row: DraftTable;
   selected: boolean;
   nameTaken: boolean;
+  /** Holds an open round: it keeps its in-use tone, gets no ×, and cannot be deleted from the panel. */
+  isOccupied: boolean;
   onSelect: () => void;
   onSeats: (seats: number) => void;
   onDisable: () => void;
@@ -469,11 +516,15 @@ function TableTile({
         row.seats >= 6 ? "h-[136px] rounded-2xl" : "h-[130px]"
       } ${
         row.isActive
-          ? `border-border bg-sunken text-ink-2 ${nameTaken ? "border-cancel-line bg-cancel-soft" : ""}`
+          ? isOccupied
+            ? `border-orange-line bg-orange-soft text-orange-ink ${
+                nameTaken ? "border-cancel-line bg-cancel-soft" : ""
+              }`
+            : `border-border bg-sunken text-ink-2 ${nameTaken ? "border-cancel-line bg-cancel-soft" : ""}`
           : "border-dashed border-control-border bg-surface text-muted-foreground"
       } ${selected ? "outline-2 outline-offset-[10px] outline-ink" : ""}`}
     >
-      {row.isActive && (
+      {row.isActive && !isOccupied && (
         <button
           type="button"
           aria-label={`ลบโต๊ะ ${row.name}`}
@@ -495,7 +546,12 @@ function TableTile({
         </button>
         <span className="flex items-center gap-1 pt-2" aria-hidden>
           {Array.from({ length: shownPips }, (_, i) => (
-            <i key={i} className="size-1.5 rounded-full border border-control-border" />
+            <i
+              key={i}
+              className={`size-1.5 rounded-full ${
+                isOccupied ? "border border-orange-line" : "border border-control-border"
+              }`}
+            />
           ))}
           {row.seats > PIP_MAX && <span className="text-xs">+{row.seats - PIP_MAX}</span>}
         </span>
@@ -504,8 +560,12 @@ function TableTile({
       <Stepper seats={row.seats} label={row.name} onSeats={onSeats} />
 
       <span className="inline-flex items-center gap-1.5 text-label">
-        <i className={`size-1.5 rounded-full ${row.isActive ? "bg-control-border" : "bg-cancel-dot"}`} />
-        {row.isActive ? "ว่าง" : "ปิดใช้งาน"}
+        <i
+          className={`size-1.5 rounded-full ${
+            !row.isActive ? "bg-cancel-dot" : isOccupied ? "bg-orange" : "bg-control-border"
+          }`}
+        />
+        {!row.isActive ? "ปิดใช้งาน" : isOccupied ? "ใช้งานอยู่" : "ว่าง"}
       </span>
     </div>
   );
