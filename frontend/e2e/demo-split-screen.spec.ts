@@ -142,8 +142,10 @@ test("an order sent from the customer pane reaches the kitchen pane and the owne
     .not.toBeNull();
   if (!mine) throw new Error("the submitted round never reached the staff board");
 
-  // The kitchen pane grew a card for that exact round, marked ใหม่ — with no document navigated.
-  const card = kitchen.getByRole("article", { name: `โต๊ะ ${table} รอบที่ ${mine.number}` });
+  // The kitchen pane grew a card for that exact round, marked ใหม่ — with no document navigated. `exact` is
+  // required: the accessible name is matched as a substring otherwise, and "รอบที่ 1" also matches "รอบที่ 10"
+  // once the board carries more than nine rounds of that table.
+  const card = kitchen.getByRole("article", { name: `โต๊ะ ${table} รอบที่ ${mine.number}`, exact: true });
   await expect(card).toBeVisible({ timeout: 10_000 });
   await expect(card.getByText("ใหม่")).toBeVisible();
 
@@ -154,10 +156,12 @@ test("an order sent from the customer pane reaches the kitchen pane and the owne
   await expect(popup.getByText(new RegExp(`^รอบที่ ${mine.number} · ส่ง \\d\\d:\\d\\d$`))).toBeVisible();
 
   // The bot panel reports the same event: it filters the product's events by `isDemoBot`, and the round the
-  // demo handed this viewer is a bot round.
-  await expect(page.getByRole("list", { name: "กิจกรรมล่าสุดจากบอท" }).getByText("สั่งรอบที่")).toBeVisible({
-    timeout: 10_000,
-  });
+  // demo handed this viewer is a bot round. The line is named for this table and round rather than the bare
+  // phrase `สั่งรอบที่`, which every older line on a long-running stack also contains.
+  const botLine = page
+    .getByRole("list", { name: "กิจกรรมล่าสุดจากบอท" })
+    .getByText(`${table} สั่งรอบที่ ${mine.number}`, { exact: false });
+  await expect(botLine.first()).toBeVisible({ timeout: 10_000 });
 
   // Nothing was navigated: the page and all three panes are still the documents they were.
   expect(await loadedDocuments(page)).toBe(loadsBefore);
