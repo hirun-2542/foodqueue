@@ -21,9 +21,12 @@ public interface ISessionService
     /// เปิดโต๊ะว่างหนึ่งรอบ: snapshot แพ็กเกจ ตั้ง <c>EndsAt = OpenedAt + DurationMinutes</c> สร้าง token
     /// แล้วส่ง <c>sessionChanged</c> หลังบันทึกสำเร็จ — โต๊ะที่มี session Open อยู่แล้วได้
     /// <c>TABLE_OCCUPIED</c> โดย partial unique index ในฐานข้อมูลเป็นตัวตัดสินสุดท้าย
+    ///
+    /// <paramref name="isDemoBot"/> ใช้ทำเครื่องหมายรอบที่ Demo Bot เปิด (endpoint demo ส่ง true)
+    /// เพื่อให้บอทแตะเฉพาะรอบของตัวเองและไม่รบกวนโต๊ะที่คนจริงเปิด (ticket 24/25)
     /// </summary>
     Task<SessionDetailDto> OpenAsync(int tableId, int packageId, int adultCount, int childCount,
-        CancellationToken ct);
+        CancellationToken ct, bool isDemoBot = false);
 
     /// <summary>session หรือ <c>SESSION_NOT_FOUND</c> (404) พร้อม Table/Orders/Adjustments/Payment ที่โหลดแล้ว</summary>
     Task<TableSession> RequireAsync(int sessionId, CancellationToken ct);
@@ -78,7 +81,7 @@ public sealed class SessionService(AppDbContext db, IConfiguration config, ILive
         services.GetRequiredService<ILiveNotifier>());
 
     public async Task<SessionDetailDto> OpenAsync(int tableId, int packageId, int adultCount, int childCount,
-        CancellationToken ct)
+        CancellationToken ct, bool isDemoBot = false)
     {
         ValidateCounts(adultCount, childCount);
 
@@ -114,6 +117,7 @@ public sealed class SessionService(AppDbContext db, IConfiguration config, ILive
             OpenedAt = openedAt,
             EndsAt = openedAt.AddMinutes(package.DurationMinutes),
             Status = SessionStatus.Open,
+            IsDemoBot = isDemoBot,
         };
 
         db.TableSessions.Add(session);

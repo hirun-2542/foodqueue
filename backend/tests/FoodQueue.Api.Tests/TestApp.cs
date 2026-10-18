@@ -75,25 +75,31 @@ public sealed class TestApp : WebApplicationFactory<Program>
 {
     private readonly string _connectionString;
     private readonly Action<IServiceCollection>? _testServices;
+    private readonly bool _demo;
 
     /// <summary>connection string ของฐานข้อมูลที่ host นี้ใช้จริง (เทสต์ racing ต้องล็อกในฐานเดียวกัน)</summary>
     public string ConnectionString => _connectionString;
 
-    public TestApp(PostgresFixture postgres, Action<IServiceCollection>? testServices = null)
-        : this(postgres.NewDatabase(), testServices)
+    /// <param name="demo">
+    /// เปิด Demo Mode ของ host นี้ — เทสต์ของ ticket 24 เท่านั้นที่ส่ง true (ค่าเริ่มต้นคือปิด
+    /// ตาม notes/00-CONTRACTS.md "ปิด Demo ในเทสต์ backend และ seed เฉพาะที่แต่ละเคสต้องใช้")
+    /// </param>
+    public TestApp(PostgresFixture postgres, Action<IServiceCollection>? testServices = null, bool demo = false)
+        : this(postgres.NewDatabase(), testServices, demo)
     {
     }
 
-    public TestApp(string connectionString, Action<IServiceCollection>? testServices = null)
+    public TestApp(string connectionString, Action<IServiceCollection>? testServices = null, bool demo = false)
     {
         _connectionString = connectionString;
         _testServices = testServices;
+        _demo = demo;
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:Default", _connectionString);
-        builder.UseSetting("Demo:Enabled", "false");
+        builder.UseSetting("Demo:Enabled", _demo ? "true" : "false");
         builder.UseEnvironment("Testing");
         // Program.cs สร้าง PhysicalFileProvider จากค่านี้ตรง ๆ ซึ่งต้องเป็น absolute path
         // (appsettings.json ตั้ง "uploads" แบบ relative ให้ container ที่ WORKDIR=/app)
