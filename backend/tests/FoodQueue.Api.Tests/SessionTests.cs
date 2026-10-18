@@ -20,6 +20,9 @@ namespace FoodQueue.Api.Tests;
 /// </summary>
 public sealed record OrderCreatedCall(object Order, int SessionId, int? PrimarySessionId);
 
+/// <summary>การแก้/ยกเลิกออเดอร์หนึ่งครั้ง: ไปถึงครัว/เจ้าของร้าน และ group ของ <see cref="SessionId"/> (กับรอบหลักถ้าถูกรวมบิล)</summary>
+public sealed record OrderEditedCall(object Order, int SessionId, int? PrimarySessionId);
+
 /// <summary>
 /// ตัวบันทึก event realtime แทน <see cref="LiveNotifier"/> เพื่อให้เห็น "สิ่งที่ถูกส่งออกจากระบบ"
 /// หลังบันทึกฐานข้อมูลสำเร็จ โดยไม่ต้องมีไคลเอนต์ SignalR จริงในเทสต์
@@ -34,9 +37,18 @@ public sealed class RecordingNotifier : ILiveNotifier
         return Task.CompletedTask;
     }
 
-    public Task OrderStatusChanged(object order) => Task.CompletedTask;
+    /// <summary>ไม่มีปลายทาง session ในสัญญาของเมธอดเลย — บันทึกเพียงว่ามีการประกาศและด้วยข้อมูลใด</summary>
+    public Task OrderStatusChanged(object order)
+    {
+        Events.Enqueue(("orderStatusChanged", order));
+        return Task.CompletedTask;
+    }
 
-    public Task OrderEdited(object order, int sessionId, int? primarySessionId = null) => Task.CompletedTask;
+    public Task OrderEdited(object order, int sessionId, int? primarySessionId = null)
+    {
+        Events.Enqueue(("orderEdited", new OrderEditedCall(order, sessionId, primarySessionId)));
+        return Task.CompletedTask;
+    }
 
     public Task SessionChanged(object summary, int sessionId)
     {
