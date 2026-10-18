@@ -20,7 +20,7 @@ Source: `../spec.md` (user stories 81, 83, 84, 85, 86) และ `../plan.md` (S
 - [x] อัปโหลดรูปเมนูผ่านกลไกจาก ticket 03; ไฟล์ผิดชนิด/เกิน 2MB ถูกปฏิเสธ; เมนูไม่มีรูปแสดง fallback (ไอคอน/ตัวอักษร)
 - [x] สลับ "หมด" แล้วค่า `IsAvailable` เปลี่ยนทันที (การกระจาย event เป็นหน้าที่ ticket 13)
 - [x] หน้าเมนูตรงกับ mockup o09 (ตาราง สวิตช์ availability) และ o10 (drawer แก้ไข)
-- [ ] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
+- [x] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
 
 ## Comments
 
@@ -64,3 +64,7 @@ Evidence:
   `pnpm exec tsc --noEmit` → clean.
 - Ticket 04's per-rank menu ladder on the packages screen now populates by itself, because its query key
   `["menu-items"]` is a prefix of this ticket's — no ticket 04 file was edited.
+- Smoke on the real stack: a real PNG upload to `POST /api/menu-items/{id}/image` → `200` with
+  `imagePath` under `/api/uploads/`; a buffet item submitted with a non-zero price →
+  `400 VALIDATION_FAILED`. The menu screen was captured from the running stack and compared with
+  `design/out/o09-menu.png`.

@@ -25,7 +25,7 @@ plan.md บรรทัด 116 (`POST /api/sessions/{id}/extend`) และบ�
 - [x] void session ที่ไม่มีออเดอร์สำเร็จ → สถานะ Voided โต๊ะว่าง; ที่มีออเดอร์ที่ไม่ถูกยกเลิก → `SESSION_HAS_ORDERS` (เทสต์ seed ออเดอร์เข้าฐานข้อมูลทดสอบตรง ๆ จนกว่า ticket 10 จะมีเส้นทางสั่งจริง)
 - [x] ผลลัพธ์ตรงกับ mockup o02 (ฟอร์มเปิดโต๊ะ) และ o03 (QR ผลลัพธ์); QR สแกนได้จริงจากมือถือเมื่อตั้ง base URL เป็น IP ใน LAN
 - [x] ไม่มี endpoint หรือปุ่ม 'ต่อเวลา' (ตรงกับ mockup o04)
-- [ ] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
+- [x] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
 
 ## Comments
 
@@ -66,3 +66,8 @@ Evidence:
   integration branch.
 - Not verified by this ticket: the `พิมพ์ QR slip` target (`/print/qr/{id}` is ticket 20's route, linked with
   `prefetch={false}` so it does not 404 today) and scanning with a physical phone.
+- Smoke on the real stack: opening an already-occupied table → `409 TABLE_OCCUPIED`
+  (`โต๊ะ A1 มีลูกค้านั่งอยู่แล้ว เปิดรอบซ้อนไม่ได้`); disabling a table that holds an Open session →
+  `409 TABLE_OCCUPIED`. The open-table and QR screens were captured and compared with
+  `design/out/o02-open.png` and `design/out/o03-qr.png`, and the rendered QR decoded to the server's
+  own `qrUrl`.

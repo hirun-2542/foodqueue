@@ -52,3 +52,6 @@ Evidence:
   because the counts are derived from a real `/api/menu-items` query that ticket 05 introduces.
 - `cd backend && dotnet test` → `Passed! - Failed: 0, Passed: 23, Skipped: 0, Total: 23`;
   `cd frontend && pnpm build` → routes emitted, then `pnpm exec tsc --noEmit` → clean.
+- Smoke on the real stack after the merge: `POST /api/packages` created Silver/Gold/Platinum with `201`;
+  a duplicate rank → `409 VALIDATION_FAILED` `ระดับนี้ซ้ำกับ Silver · เลือกระดับ 2 แทน`; and the packages
+  screen was captured from the running stack at 1440×900 against `design/out/o11-packages.png`.

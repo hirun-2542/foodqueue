@@ -22,7 +22,7 @@ plan.md Step 4 ไม่มีฟิลด์ที่นั่ง/โซน —
 - [x] ที่นั่งนอก 1–20 หรือชื่อโต๊ะซ้ำ → `VALIDATION_FAILED` (เทสต์ seam 1)
 - [x] โหมดแก้ไขผังตรงกับ mockup o22 (stepper ที่นั่ง, ปุ่ม × เฉพาะโต๊ะว่าง, ช่องเพิ่มโต๊ะเส้นประ, แผงฟอร์มชื่อ/ที่นั่ง/โซน/ลบ) โดยโต๊ะว่างทุกใบเพราะยังไม่มี session
 - [x] กฎ 'ปิดใช้งานโต๊ะที่มี session Open ไม่ได้' พิสูจน์ใน ticket 07 เมื่อมี session
-- [ ] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
+- [x] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
 
 ## Comments
 
@@ -59,3 +59,6 @@ Evidence:
   positions by zone and order with no drag-and-drop.
 - `cd backend && dotnet test` → `Passed! - Failed: 0, Passed: 60, Skipped: 0, Total: 60` on the merged
   integration branch; `pnpm build` then `pnpm exec tsc --noEmit` → clean.
+- Smoke on the real stack: a duplicate table name → `400 VALIDATION_FAILED`; `seats: 21` →
+  `400 VALIDATION_FAILED`. The floor-edit screen was captured and compared with
+  `design/out/o22-tables-edit.png`.

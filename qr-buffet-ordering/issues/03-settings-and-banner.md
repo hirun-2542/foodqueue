@@ -19,7 +19,7 @@ Source: `../spec.md` (user stories 65, 87, 88, 89, 90) และ `../plan.md` (S
 - [x] อัปโหลดแบนเนอร์ที่ไม่ใช่ jpeg/png/webp หรือเกิน 2MB ถูกปฏิเสธ; ไฟล์ที่ผ่านดึงกลับมาแสดงได้
 - [x] Kitchen เรียก settings → 403
 - [x] หน้าตั้งค่าตรงกับ mockup o13 ส่วนข้อมูลร้าน แบนเนอร์ SC/VAT ลิมิต และ Last order (ตัวอย่างบิลสดแสดงตามค่าที่กรอก)
-- [ ] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
+- [x] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
 
 ## Comments
 
@@ -55,3 +55,7 @@ Evidence:
   without reaching the API; a valid PNG swaps the preview to the returned `/api/uploads/...` path.
 - `cd backend && dotnet test` → `Passed! - Failed: 0, Passed: 32, Skipped: 0, Total: 32`; on the merged
   integration branch `44` tests pass. `pnpm build` then `pnpm exec tsc --noEmit` → clean.
+- Smoke on the real stack: `PUT /api/settings` with SC 10 / VAT 7 → `200`; SC `31` →
+  `400 VALIDATION_FAILED` `ค่าบริการ (%) ต้องอยู่ระหว่าง 0–30`; a real PNG banner upload → `200` with a
+  retrievable `/api/uploads/banner-<guid>.png`. The settings screen was also captured from the running stack
+  at 1440×900 and compared with `design/out/o13-settings.png` (matching geometry, live worked example).
