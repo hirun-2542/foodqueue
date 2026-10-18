@@ -20,11 +20,13 @@ import { useEffect, useRef, useState } from "react";
 import { ApiError } from "@/lib/api";
 import { CartProvider } from "@/lib/cart";
 import { useCustomerMenu, useCustomerSession } from "@/lib/customer";
+import { LiveProvider } from "@/lib/realtime";
 import { formatBaht } from "@/lib/format";
 import type { CustomerCategoryDto, CustomerMenuItemDto, CustomerSessionDto } from "@/lib/types";
 import { CartBar, OrderWindowBanner } from "./cart-bar";
 import { CartSheet } from "./cart-sheet";
 import { QuantityStepper } from "./quantity-stepper";
+import { CustomerLiveSync, OfflineNotice, TableOrders } from "./orders-tab";
 
 /**
  * Copy of the customer screens, verbatim from the approved frames (`notes/10-THAI-COPY.md` §c1-menu,
@@ -64,30 +66,31 @@ export function CustomerMenuScreen({ token }: { token: string }) {
 
   // The cart is per device and lives in this browser (`fq-cart-{token}`); the limits and the ordering
   // window both come from the server's session payload, so no clock of ours decides anything.
+  // The hub connects only for a round that loaded (the hub refuses a closed one); ticket 13 keeps the
+  // table list and the sold-out flags live through it.
   return (
-    <CartProvider
-      token={token}
-      maxQtyPerItem={session.data.maxQtyPerItemPerOrder}
-      maxItems={session.data.maxItemsPerOrder}
-      serverNow={session.data.serverNow}
-      endsAt={session.data.endsAt}
-      warningMinutes={session.data.lastOrderWarningMinutes}
-    >
-      {tab === "orders" ? (
-        <Shell session={session.data} tab={tab} onTab={setTab} onOpenCart={() => setCartOpen(true)} cartOpen={cartOpen} onCartOpenChange={setCartOpen}>
-          <div className="flex flex-1 flex-col items-center justify-center gap-2 px-8 text-center">
-            <ClipboardListIcon className="size-8 text-muted-foreground" strokeWidth={1.5} aria-hidden />
-            <span className="text-title">ออเดอร์ของโต๊ะ</span>
-            <span className="text-body text-muted-foreground">รายการที่โต๊ะสั่งจะขึ้นที่นี่โดยไม่ต้องรีเฟรช</span>
-          </div>
-        </Shell>
-      ) : (
-        <Shell session={session.data} tab={tab} onTab={setTab} onOpenCart={() => setCartOpen(true)} cartOpen={cartOpen} onCartOpenChange={setCartOpen}>
-          <OrderWindowBanner />
-          <MenuBody categories={menu.data.categories} maxQtyPerItemPerOrder={session.data.maxQtyPerItemPerOrder} />
-        </Shell>
-      )}
-    </CartProvider>
+    <LiveProvider token={token}>
+      <CustomerLiveSync token={token} />
+      <CartProvider
+        token={token}
+        maxQtyPerItem={session.data.maxQtyPerItemPerOrder}
+        maxItems={session.data.maxItemsPerOrder}
+        serverNow={session.data.serverNow}
+        endsAt={session.data.endsAt}
+        warningMinutes={session.data.lastOrderWarningMinutes}
+      >
+        {tab === "orders" ? (
+          <Shell session={session.data} tab={tab} onTab={setTab} onOpenCart={() => setCartOpen(true)} cartOpen={cartOpen} onCartOpenChange={setCartOpen}>
+            <TableOrders token={token} menu={menu.data} />
+          </Shell>
+        ) : (
+          <Shell session={session.data} tab={tab} onTab={setTab} onOpenCart={() => setCartOpen(true)} cartOpen={cartOpen} onCartOpenChange={setCartOpen}>
+            <OrderWindowBanner />
+            <MenuBody categories={menu.data.categories} maxQtyPerItemPerOrder={session.data.maxQtyPerItemPerOrder} />
+          </Shell>
+        )}
+      </CartProvider>
+    </LiveProvider>
   );
 }
 
@@ -115,10 +118,14 @@ function Shell({
   return (
     <div className="flex h-dvh flex-col bg-ground">
       <ShopBanner session={session} />
+      <OfflineNotice />
       {children}
-      <div className="flex-none px-4 pb-2">
-        <CartBar onOpen={onOpenCart} />
-      </div>
+      {/* `c3-orders` has no cart bar: the table list is read-only, the cart lives on the menu tab. */}
+      {tab === "menu" && (
+        <div className="flex-none px-4 pb-2">
+          <CartBar onOpen={onOpenCart} />
+        </div>
+      )}
       <TabBar tab={tab} onTab={onTab} />
       <CartSheet open={cartOpen} onOpenChange={onCartOpenChange} />
     </div>
