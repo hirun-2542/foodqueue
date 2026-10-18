@@ -18,6 +18,8 @@ import {
 } from "@/lib/kitchen";
 import { LiveProvider, useLiveOffline } from "@/lib/realtime";
 import type { OrderDto } from "@/lib/types";
+import { CancelOrderDialog } from "./cancel-order-dialog";
+import { OrderActions } from "./order-actions";
 import { OrderCard, STATUS_LABEL } from "./order-card";
 import { type Chime, useChime } from "./use-chime";
 
@@ -27,8 +29,8 @@ const NEW_FOR_MS = 30_000;
 /**
  * `/kitchen` — the kitchen display of frame k1 for a landscape tablet: three columns (รอรับ /
  * กำลังทำ / พร้อมเสิร์ฟ) with counters, the live-connection badge, the chime control and a clock.
- * Owner and Kitchen accounts both use it. Status buttons and cancel belong to ticket 12, which
- * passes them to `OrderCard` as `actions`.
+ * Owner and Kitchen accounts both use it. Each card carries the เริ่มทำ / พร้อมเสิร์ฟ button and the ⋮
+ * that opens the cancel dialog of frame k2 (ticket 12), passed to `OrderCard` as `actions`.
  */
 export function KitchenBoardScreen() {
   return (
@@ -127,6 +129,8 @@ function Board({
 }) {
   const now = useServerTime(serverNow);
   const late = orders.filter((order) => minutesUsed(order.createdAt, now) > LATE_AFTER_MINUTES).length;
+  // The round whose ⋮ was tapped; the dialog keeps this snapshot even if the card changes meanwhile.
+  const [cancelling, setCancelling] = useState<OrderDto | null>(null);
 
   return (
     <Frame chime={chime} now={now} pendingCount={orders.length} lateCount={late}>
@@ -143,13 +147,21 @@ function Board({
                 </p>
               ) : (
                 column.map((order) => (
-                  <OrderCard key={order.id} order={order} status={status} now={now} isNew={fresh.has(order.id)} />
+                  <OrderCard
+                    key={order.id}
+                    order={order}
+                    status={status}
+                    now={now}
+                    isNew={fresh.has(order.id)}
+                    actions={<OrderActions order={order} status={status} onCancel={() => setCancelling(order)} />}
+                  />
                 ))
               )}
             </div>
           </section>
         );
       })}
+      {cancelling ? <CancelOrderDialog order={cancelling} now={now} onClose={() => setCancelling(null)} /> : null}
     </Frame>
   );
 }
