@@ -135,3 +135,34 @@ export function useVoidSession(sessionId: number) {
     onError: (error) => reportFailure(queryClient, sessionId, error, "ยกเลิกโต๊ะไม่สำเร็จ ลองอีกครั้ง"),
   });
 }
+
+// ------------------------------------------------------------------ ย้ายโต๊ะ (ticket 21)
+
+/**
+ * ย้ายโต๊ะ (`POST /api/sessions/{id}/move`): the whole round — orders, bill, adjustments, times, token/QR —
+ * goes to a free active table and the old one is free at once. The answer is the round at its new table.
+ *
+ * A refusal keeps the server's Thai message. `TABLE_OCCUPIED` means the destination was taken a moment
+ * ago (another device opened or moved a round onto it): the floor refetches so the picker greys it out.
+ * The kitchen cards take the new table name from the hub (`orderStatusChanged` re-sends them).
+ */
+export function useMoveSession(sessionId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (tableId: number) =>
+      apiFetch<SessionDetailDto>(`/api/sessions/${sessionId}/move`, {
+        method: "POST",
+        body: JSON.stringify({ tableId }),
+      }),
+    onSuccess: (session) => {
+      writeSession(queryClient, session);
+      toast.success(`ย้ายไปโต๊ะ ${session.tableName} แล้ว`);
+    },
+    onError: (error) => {
+      if (error instanceof ApiError && error.code === "TABLE_OCCUPIED") {
+        void queryClient.invalidateQueries({ queryKey: tableOverviewQueryKey });
+      }
+      reportFailure(queryClient, sessionId, error, "ย้ายโต๊ะไม่สำเร็จ ลองอีกครั้ง");
+    },
+  });
+}

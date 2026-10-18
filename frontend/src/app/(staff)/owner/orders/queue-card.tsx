@@ -7,6 +7,7 @@ import { formatTime, minutesUsed } from "@/lib/format";
 import { type BoardStatus, LATE_AFTER_MINUTES, NEXT_STATUS, useAdvanceOrder } from "@/lib/kitchen";
 import type { OrderDto } from "@/lib/types";
 import { STATUS_LABEL } from "../../kitchen/order-card";
+import { MoveTableAction } from "./move-table-dialog";
 
 const STATUS_BADGE = {
   Pending: "pending",
@@ -142,6 +143,10 @@ export function QueueCard({
         - ticket 22 `รวมบิล` (POST /api/sessions/{sessionId}/merge).
         None is rendered until its ticket lands (ticket 14 acceptance).
       */}
+      {/* ticket 21 — ย้ายโต๊ะ (every status: a Ready round still belongs to a seated table) */}
+      <div className="mt-2 flex gap-2">
+        <MoveTableAction order={order} />
+      </div>
     </article>
   );
 }
