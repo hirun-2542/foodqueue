@@ -181,8 +181,9 @@ export function useServerTime(serverNow: string | number): number {
   const [now, setNow] = useState(() => toMs(serverNow));
 
   useEffect(() => {
+    // offset = นาฬิกาเครื่องเร็วกว่าเซิร์ฟเวอร์เท่าไร → เวลาเซิร์ฟเวอร์ตอนนี้ = นาฬิกาเครื่อง − offset
     const offset = Date.now() - toMs(serverNow);
-    const tick = () => setNow(Date.now() + offset);
+    const tick = () => setNow(Date.now() - offset);
     tick();
     const timer = window.setInterval(tick, 30_000);
     return () => window.clearInterval(timer);

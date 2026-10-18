@@ -86,8 +86,8 @@ export interface RoundTime {
 }
 
 /**
- * Everything a staff screen needs to present one round, from figures the server already computed:
- * `minutesUsed` is the server's reading at request time and the two instants are stored data. Nothing
+ * Everything a staff screen needs to present one round, from server figures: `minutesUsed` is measured
+ * against the server clock (`useTableOverview`) and the two instants are stored data. Nothing
  * here reads the client clock, so the same render always produces the same text and no screen can
  * grow a countdown.
  */

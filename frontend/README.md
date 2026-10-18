@@ -71,10 +71,13 @@ src/app/page.tsx          / → redirect to /login
 src/app/login/page.tsx    metadata wrapper
 src/app/login/login-form.tsx  the credential form from design/out/l1,l2 login mockups
 src/app/providers.tsx     TanStack QueryClientProvider + Toaster
-src/lib/api.ts            apiFetch<T> (credentials: "include") + ApiError { code, status, message }
+src/lib/api.ts            apiFetch<T> (credentials: "include") + ApiError { code, status, message };
+                          apiFetchWithServerTime<T> also returns the server clock from the `Date` header
 src/lib/types.ts          API DTOs, error codes, live-event payloads
 src/lib/format.ts         formatBaht / formatTime / formatDate (Asia/Bangkok) / minutesUsed / clockRange
 src/lib/realtime.ts       useLiveConnection / LiveProvider / useLiveEvent / useLiveOffline
+src/lib/kitchen.ts        kitchen board query (GET /api/orders) merged live from the hub events
+src/app/(staff)/kitchen/  the k1 board: columns, order card (ticket 12 adds `actions`), chime
 e2e/smoke.spec.ts         login form is visible at /login (Playwright)
 ```
 

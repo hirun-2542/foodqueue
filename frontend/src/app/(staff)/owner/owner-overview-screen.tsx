@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ApiError } from "@/lib/api";
 import { roundTime } from "@/lib/format";
 import { occupied, useTableOverview } from "@/lib/overview";
+import { LiveProvider } from "@/lib/realtime";
 import type { SessionDetailDto } from "@/lib/types";
 import { useSettings } from "./settings/settings-api";
 import { OpenTableDialog, QrResultDialog } from "./open-table-flow";
@@ -15,14 +16,22 @@ import { TableCard } from "./table-card";
  * `/owner` — the table grid of frame `o01-overview` (desktop) and `o16-owner-mobile` (phone), driven
  * by `GET /api/tables/overview`.
  *
- * Every figure on a card comes from the server: `minutesUsed` is the server's reading at request time
- * and `openedAt`/`endsAt` are stored data, so nothing is derived from the browser clock and no screen
- * can grow a countdown. The grid refreshes on an interval (`useTableOverview`) until ticket 11 wires
- * `sessionChanged`/`orderCreated` from the hub.
+ * Every figure on a card comes from the server: `openedAt`/`endsAt` are stored data and ใช้ไป N นาที
+ * is measured against the server clock, so nothing is derived from the browser clock and no screen
+ * can grow a countdown. The grid refetches when the hub reports `sessionChanged`/`orderCreated` (and
+ * the other floor events, see `useTableOverview`), not on an interval.
  *
  * The KPI band above the grid is ticket 23's (`GET /api/reports/summary`): it is not faked here.
  */
 export function OwnerOverviewScreen() {
+  return (
+    <LiveProvider>
+      <OwnerOverviewBody />
+    </LiveProvider>
+  );
+}
+
+function OwnerOverviewBody() {
   const overview = useTableOverview();
   const settings = useSettings();
 

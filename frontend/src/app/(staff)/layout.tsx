@@ -120,6 +120,10 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
     );
   }
 
+  // The kitchen display is a full-screen board with its own header bar (frame k1): a landscape
+  // tablet needs all 1280px for the three columns, so no sidebar or tab bar there.
+  if (pathname.startsWith(staffRoutes.kitchen)) return children;
+
   const visibleNav = navItems.filter((item) => !item.ownerOnly || me.role === "Owner");
 
   return (

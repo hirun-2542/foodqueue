@@ -1,27 +1,61 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { apiFetch } from "@/lib/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { apiFetchWithServerTime } from "@/lib/api";
+import { useServerTime } from "@/lib/cart";
+import { minutesUsed } from "@/lib/format";
+import { useLiveEvent } from "@/lib/realtime";
 import type { TableOverviewDto } from "@/lib/types";
 
 /**
  * The floor as one request: every active table plus the open round of each, with the numbers the
- * screens display already computed by the server.
+ * screens display already computed by the server. Must be used inside `<LiveProvider>`.
  *
- * Ticket 11 replaces the interval with `sessionChanged`/`orderCreated` from the hub; until then a
- * fixed refetch is what makes a table opened on another device show up as ใช้งานอยู่, and what keeps
- * ใช้ไป N นาที moving without the client ever reading its own clock.
+ * No polling (ticket 11): the overview is refetched when the hub says something on the floor
+ * changed — `sessionChanged` (a table opened, moved, merged or adjusted), `orderCreated`,
+ * `orderStatusChanged`/`orderEdited` (orders waiting and the running total) and `sessionClosed`
+ * (paid or voided) — and after every reconnect (`useLiveConnection` invalidates every query).
+ * Between refetches ใช้ไป N นาที keeps moving from the stored `openedAt` against the server clock
+ * (the response's `Date` header plus the time elapsed since), never against the device's own clock.
  */
-const REFRESH_MS = 10_000;
-
 export const tableOverviewQueryKey = ["tables", "overview"] as const;
 
+interface OverviewSnapshot {
+  cards: TableOverviewDto[];
+  serverNow: number;
+}
+
 export function useTableOverview() {
-  return useQuery({
+  const queryClient = useQueryClient();
+  const query = useQuery({
     queryKey: tableOverviewQueryKey,
-    queryFn: () => apiFetch<TableOverviewDto[]>("/api/tables/overview"),
-    refetchInterval: REFRESH_MS,
+    queryFn: async (): Promise<OverviewSnapshot> => {
+      const { data, serverNow } = await apiFetchWithServerTime<TableOverviewDto[]>("/api/tables/overview");
+      return { cards: data, serverNow };
+    },
   });
+
+  const refresh = () => void queryClient.invalidateQueries({ queryKey: tableOverviewQueryKey });
+  useLiveEvent("sessionChanged", refresh);
+  useLiveEvent("sessionClosed", refresh);
+  useLiveEvent("orderCreated", refresh);
+  useLiveEvent("orderStatusChanged", refresh);
+  useLiveEvent("orderEdited", refresh);
+
+  // Before the first answer there are no cards to age, so the placeholder reference is never shown.
+  const now = useServerTime(query.data?.serverNow ?? 0);
+  const cards = useMemo(
+    () =>
+      query.data?.cards.map((card) =>
+        card.openedAt == null || card.minutesUsed == null
+          ? card
+          : { ...card, minutesUsed: minutesUsed(card.openedAt, now) },
+      ),
+    [query.data, now],
+  );
+
+  return { ...query, data: cards };
 }
 
 /**
