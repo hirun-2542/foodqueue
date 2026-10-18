@@ -7,6 +7,7 @@ import { formatTime, minutesUsed } from "@/lib/format";
 import { type BoardStatus, LATE_AFTER_MINUTES, NEXT_STATUS, useAdvanceOrder } from "@/lib/kitchen";
 import type { OrderDto } from "@/lib/types";
 import { STATUS_LABEL } from "../../kitchen/order-card";
+import { EditOrderAction } from "./edit-order-dialog";
 
 const STATUS_BADGE = {
   Pending: "pending",
@@ -109,6 +110,11 @@ export function QueueCard({
         </div>
       ) : null}
 
+      {/* ticket 17 — the owner's last edit reads like a cancel reason: what changed and why */}
+      {order.editReason ? (
+        <p className="mt-2 text-[13px] leading-normal text-ink-2">แก้ไขแล้ว · {order.editReason}</p>
+      ) : null}
+
       <div className="mt-4 grow" />
       <div className="flex gap-2 border-t border-border pt-3">
         {status === "Ready" ? (
@@ -135,6 +141,12 @@ export function QueueCard({
           <EllipsisVerticalIcon className="size-5" strokeWidth={1.75} aria-hidden />
         </Button>
       </div>
+      {/* ticket 17 — แก้ไข: Pending/Preparing only (Ready is not editable); button + dialog in ./edit-order-dialog */}
+      {status !== "Ready" ? (
+        <div className="mt-2 flex gap-2">
+          <EditOrderAction order={order} />
+        </div>
+      ) : null}
       {/*
         Mount point: the card's secondary action row of frame o08 goes here, under the status button —
         - ticket 17 `แก้ไข` (owner edits a Pending/Preparing round, POST /api/orders/{id}/edit; not on Ready),

@@ -52,6 +52,9 @@ export interface OrderItemDto {
   quantity: number;
   unitPrice: number;
   note: string | null;
+  /** The OrderItem row — what `POST /api/orders/{id}/edit` addresses (ticket 17). */
+  id: number;
+  menuItemId: number;
 }
 
 export interface OrderDto {
@@ -64,6 +67,8 @@ export interface OrderDto {
   createdAt: string;
   updatedAt: string;
   items: OrderItemDto[];
+  /** Reason of the owner's last edit (reduce/remove lines, ticket 17); null = never edited. */
+  editReason?: string | null;
 }
 
 export interface BillAlaCarteLineDto {

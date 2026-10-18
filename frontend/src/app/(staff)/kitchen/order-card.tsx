@@ -93,7 +93,9 @@ export function OrderCard({
         </div>
       </div>
 
-      <ul className={`flex flex-col gap-0.5 px-3 pt-2 ${hasFooter || notes.length > 0 ? "" : "pb-3"}`}>
+      <ul
+        className={`flex flex-col gap-0.5 px-3 pt-2 ${hasFooter || notes.length > 0 || order.editReason ? "" : "pb-3"}`}
+      >
         {order.items.map((item, index) => (
           <li key={index} className="flex gap-2 text-[18px] leading-normal">
             <b className="min-w-8 font-semibold tabular-nums">×{item.quantity}</b>
@@ -103,7 +105,7 @@ export function OrderCard({
       </ul>
 
       {notes.length > 0 ? (
-        <div className={`flex flex-col gap-1.5 px-3 pt-2 ${hasFooter ? "" : "pb-3"}`}>
+        <div className={`flex flex-col gap-1.5 px-3 pt-2 ${hasFooter || order.editReason ? "" : "pb-3"}`}>
           {notes.map((item, index) => (
             <p
               key={index}
@@ -114,6 +116,13 @@ export function OrderCard({
             </p>
           ))}
         </div>
+      ) : null}
+
+      {/* ticket 17 — the owner's last edit (lines reduced/removed) reads like a cancel reason */}
+      {order.editReason ? (
+        <p className={`px-3 pt-2 text-[15px] leading-normal text-ink-2 ${hasFooter ? "" : "pb-3"}`}>
+          แก้ไขแล้ว · {order.editReason}
+        </p>
       ) : null}
 
       {hasFooter ? (
