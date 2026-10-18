@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { ApiError, apiFetch, apiFetchWithServerTime } from "@/lib/api";
 import { tableOverviewQueryKey } from "@/lib/overview";
 import { useLiveEvent } from "@/lib/realtime";
-import type { BillDto, PaymentInput, SessionDetailDto } from "@/lib/types";
+import type { BillDto, MergePreviewDto, PaymentInput, SessionDetailDto } from "@/lib/types";
 
 /** Body of `POST /api/sessions` — counts are the wire names the API freezes. */
 export interface OpenSessionInput {
@@ -205,4 +205,70 @@ export function billTotalWithout(bill: BillDto, removed: number): number {
   const service = percentOfSatang(subtotal, bill.serviceChargePercent);
   const vat = percentOfSatang(subtotal + service, bill.vatPercent);
   return (subtotal + service + vat) / 100;
+}
+
+// ------------------------------------------------------------------ รวมบิล (ticket 22)
+
+/** Body of `POST /api/sessions/{id}/merge`: the other rounds to fold into this round's bill. */
+export interface MergeSessionsInput {
+  sessionIds: number[];
+}
+
+/**
+ * รวมบิล (`POST /api/sessions/{id}/merge`): the rounds named join this round's bill, stay Open and keep
+ * ordering through their own QR, and the answer is the primary round with the merged bill. Merging is not
+ * reversible — the server refuses a child, a self-merge, a paid/voided round and a round that is already
+ * a bill's owner (`VALIDATION_FAILED` / `SESSION_CLOSED`), with the Thai sentence this shows as-is.
+ * Every affected device hears `sessionChanged`, and the floor redraws from the overview.
+ */
+export function useMergeSessions(primarySessionId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: MergeSessionsInput) =>
+      apiFetch<SessionDetailDto>(`/api/sessions/${primarySessionId}/merge`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      }),
+    onSuccess: (session) => {
+      writeSession(queryClient, session);
+      // The floor changed for everyone: drop the dialog's preview so it refetches on the next open.
+      void queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[2] === "merge-preview" && query.queryKey[1] === primarySessionId,
+      });
+      toast.success(`รวมบิลเข้าที่โต๊ะ ${session.tableName} แล้ว · ลูกค้าสั่งผ่าน QR เดิมได้`);
+    },
+    onError: (error) => reportFailure(queryClient, primarySessionId, error, "รวมบิลไม่สำเร็จ ลองอีกครั้ง"),
+  });
+}
+
+export const mergePreviewQueryKey = (primarySessionId: number, selected: number[]) =>
+  ["sessions", primarySessionId, "merge-preview", [...selected].sort((a, b) => a - b)] as const;
+
+/**
+ * The merge dialog's own data (`POST /api/sessions/{id}/merge/preview`, ticket 22): the primary round,
+ * the tables that can join it and the merged bill for the current selection. It is the same
+ * `BillCalculator` the real bill uses, so the numbers shown before confirming are the numbers that will
+ * exist. Read-only: confirming still runs every rule again on the server.
+ */
+export function useMergePreview(primarySessionId: number, selected: number[]) {
+  const queryClient = useQueryClient();
+  const query = useQuery({
+    queryKey: mergePreviewQueryKey(primarySessionId, selected),
+    queryFn: () =>
+      apiFetch<MergePreviewDto>(`/api/sessions/${primarySessionId}/merge/preview`, {
+        method: "POST",
+        body: JSON.stringify({ sessionIds: selected }),
+      }),
+    enabled: Number.isInteger(primarySessionId) && primarySessionId > 0,
+    // The floor moved (a table paid or opened elsewhere): the cached table list is stale, so refetch
+    // rather than letting the owner confirm against tables the server will refuse.
+    staleTime: 0,
+    gcTime: 0,
+  });
+
+  // Any round on the floor moving invalidates this list (a table paid, opened or merged elsewhere).
+  const refresh = () => void queryClient.invalidateQueries({ queryKey: ["sessions", primarySessionId] });
+  useLiveEvent("sessionChanged", refresh);
+  useLiveEvent("sessionClosed", refresh);
+  return query;
 }

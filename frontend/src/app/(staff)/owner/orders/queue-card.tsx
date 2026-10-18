@@ -8,6 +8,7 @@ import { type BoardStatus, LATE_AFTER_MINUTES, NEXT_STATUS, useAdvanceOrder } fr
 import type { OrderDto } from "@/lib/types";
 import { STATUS_LABEL } from "../../kitchen/order-card";
 import { EditOrderAction } from "./edit-order-dialog";
+import { MergeBillAction } from "./merge-bill-dialog";
 import { MoveTableAction } from "./move-table-dialog";
 
 const STATUS_BADGE = {
@@ -149,15 +150,16 @@ export function QueueCard({
         </div>
       ) : null}
       {/*
-        Mount point: the card's secondary action row of frame o08 goes here, under the status button —
-        - ticket 17 `แก้ไข` (owner edits a Pending/Preparing round, POST /api/orders/{id}/edit; not on Ready),
-        - ticket 21 `ย้ายโต๊ะ` (POST /api/sessions/{sessionId}/move),
-        - ticket 22 `รวมบิล` (POST /api/sessions/{sessionId}/merge).
-        None is rendered until its ticket lands (ticket 14 acceptance).
+        The card's secondary action row of frame o08, under the status button: `แก้ไข` (ticket 17,
+        Pending/Preparing only), `ย้ายโต๊ะ` (ticket 21, every status) and `รวมบิล` (ticket 22, every status).
       */}
       {/* ticket 21 — ย้ายโต๊ะ (every status: a Ready round still belongs to a seated table) */}
       <div className="mt-2 flex gap-2">
         <MoveTableAction order={order} />
+      </div>
+      {/* ticket 22 — รวมบิล: the whole round joins another round's bill (frame o19) */}
+      <div className="mt-2 flex gap-2">
+        <MergeBillAction order={order} />
       </div>
     </article>
   );
