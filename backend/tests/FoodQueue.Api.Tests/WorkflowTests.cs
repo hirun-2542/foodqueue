@@ -265,7 +265,7 @@ public class WorkflowTests(PostgresFixture postgres)
         var session = await OpenSessionAsync(app, owner);
         var orderId = await SubmitAsync(app, session, Line(menu.MeatId, 1));
 
-        await using var holder = new NpgsqlConnection(postgres.ConnectionString);
+        await using var holder = new NpgsqlConnection(app.ConnectionString);
         await holder.OpenAsync();
         // แอปในเทสต์ใช้ connection string เดียวกับ fixture จึงเป็นฐานข้อมูลเดียวกัน
         var database = holder.Database;
@@ -303,7 +303,7 @@ public class WorkflowTests(PostgresFixture postgres)
     /// <summary>รอจน Postgres รายงานว่ามี UPDATE ของตาราง Orders รอล็อกอยู่ครบจำนวน (ไม่มีการ sleep)</summary>
     private async Task WaitForBlockedOrderUpdatesAsync(string database, int expected)
     {
-        await using var probe = new NpgsqlConnection(postgres.ConnectionString);
+        await using var probe = new NpgsqlConnection(postgres.ConnectionString);  // probe อ่าน pg_stat_activity ของทั้ง cluster
         await probe.OpenAsync();
         await using var count = new NpgsqlCommand("""
             SELECT count(*) FROM pg_stat_activity
