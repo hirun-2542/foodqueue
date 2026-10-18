@@ -415,3 +415,38 @@ export interface DailyRow {
   revenue: number;
   bills: number;
 }
+/** Which 80mm document a print screen asks for (`GET /api/sessions/{id}/print-data?doc=`). */
+export type PrintDocument = "qr" | "prebill" | "receipt";
+
+/**
+ * `GET /api/sessions/{id}/print-data` (ticket 20): everything the three 80mm documents render —
+ * the shop header block, the round's identity and times, the server's single calculator's bill,
+ * the payment when the round is Paid, and the customer QR URL. `payment` is absent until then, and
+ * a receipt request for a round that is not Paid is refused with `SESSION_CLOSED`.
+ */
+export interface PrintDataDto {
+  settings: SettingsDto;
+  sessionId: number;
+  tableName: string;
+  packageName: string;
+  adults: number;
+  children: number;
+  openedAt: string;
+  endsAt: string;
+  bill: BillDto;
+  payment?: PaymentDto | null;
+  qrUrl: string;
+}
+
+/** One paid bill of `GET /api/sessions/history` (ticket 20, frame o15) — one receipt per row. */
+export interface PaidBillDto {
+  sessionId: number;
+  receiptNo: string;
+  paidAt: string;
+  tableName: string;
+  packageName: string;
+  /** Adults + children of the bill, including the rounds merged into it. */
+  guests: number;
+  method: PaymentMethod;
+  total: number;
+}

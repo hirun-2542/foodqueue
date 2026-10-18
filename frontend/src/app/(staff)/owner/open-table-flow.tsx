@@ -299,8 +299,7 @@ export function QrResultDialog({ session, onClose }: { session: SessionDetailDto
           <Button type="button" variant="ghost" onClick={onClose}>
             เสร็จสิ้น
           </Button>
-          {/* หน้าพิมพ์ 80mm เป็นของ ticket 20 — ลิงก์ชี้ไปที่เส้นทางจริงของมันและปิด prefetch
-              เพราะเส้นทางนั้นยังไม่มี จนกว่า ticket 20 จะสร้าง (ไม่พิมพ์เองที่นี่) */}
+          {/* หน้าพิมพ์ QR slip 80mm ของ ticket 20 (`/print/qr/[sessionId]`) เป็นแท็บใหม่ ไม่พิมพ์ในนี้ */}
           <Button asChild size="lg">
             <Link href={`/print/qr/${session.id}`} prefetch={false} target="_blank" rel="noreferrer">
               <PrinterIcon aria-hidden />
