@@ -9,6 +9,7 @@ import {
   QrCodeIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { QRCodeSVG } from "qrcode.react";
 import { type FormEvent, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,8 +24,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { ApiError } from "@/lib/api";
 import { formatBaht, formatTime } from "@/lib/format";
+import { formatPromptPayId, promptPayPayload } from "@/lib/promptpay";
 import { usePaySession } from "@/lib/sessions";
 import type { BlockingOrderDto, PaymentMethod, SessionDetailDto } from "@/lib/types";
+import { useSettings } from "../../settings/settings-api";
 
 /**
  * Ticket 18 — frames `o06` (cash dialog) and `o07` (paid) of `/owner/sessions/[id]`.
@@ -35,7 +38,9 @@ import type { BlockingOrderDto, PaymentMethod, SessionDetailDto } from "@/lib/ty
  * `ปิดบิลแล้ว` well that `o07` puts under the bill.
  *
  * Every rule is the server's (`POST /api/sessions/{id}/payment`): this file only decides what to show.
- * PromptPay renders disabled with a message until ticket 19 builds the QR — no empty QR is ever shown.
+ * Ticket 19 owns the PromptPay QR: it is built from the shop's `promptPayId` and the bill total in
+ * `@/lib/promptpay`, and when no ID is configured the option stays disabled with a message — no empty
+ * or placeholder QR is ever shown.
  */
 
 const METHOD_LABELS: Record<PaymentMethod, string> = {
@@ -51,8 +56,8 @@ const CONFIRM_LABELS: Record<PaymentMethod, string> = {
   PromptPay: "ยืนยันว่าได้รับเงินแล้ว",
 };
 
-/** Ticket 19 owns the PromptPay QR; until it lands the option is shown, disabled and explained. */
-const PROMPTPAY_PENDING = "ยังไม่เปิดให้ใช้ PromptPay · ระบบจะแสดง QR ตามยอดบิลเมื่อพร้อมใช้งาน";
+/** Ticket 19 / plan.md: without a configured PromptPay ID there is no honest QR to show, so the choice is closed. */
+const PROMPTPAY_UNAVAILABLE = "ยังไม่ได้ตั้งค่า PromptPay ID";
 
 /** The same Thai labels the bill's rounds carry (`session-detail-screen.tsx`), for the blocking list. */
 const ROUND_STATUS: Record<BlockingOrderDto["status"], string> = {
@@ -168,12 +173,20 @@ export function PaidNotice({ session }: { session: SessionDetailDto }) {
   );
 }
 
-/** `o06`: the total, the three methods, the cash the owner received and the change, then `o07` on success. */
+/** `o05`/`o06`: the total, the three methods, the PromptPay QR or the cash the owner received, then `o07`. */
 function PaymentDialog({ session, onClose }: { session: SessionDetailDto; onClose: () => void }) {
   const pay = usePaySession(session.id);
+  const settings = useSettings();
   const [method, setMethod] = useState<PaymentMethod>("Cash");
   const [amount, setAmount] = useState("");
   const total = session.bill.total;
+  const promptPayId = settings.data?.promptPayId ?? null;
+  // The whole QR decision, from the shop's ID and this bill's total: no ID → no payload → the choice stays shut.
+  const payload = promptPayPayload(promptPayId, total);
+  // The caption frame `o05` prints under the QR; empty when there is no ID, in which case no QR is rendered.
+  const promptPayLabel = promptPayId === null ? "" : formatPromptPayId(promptPayId);
+  // Settings still in flight: the option is shut (no payload yet) but must not claim the shop is unconfigured.
+  const promptPayUnconfigured = payload === null && !settings.isPending;
   const typed = amount.trim();
   const parsed = Number(typed);
   const cashValid = typed !== "" && Number.isFinite(parsed) && parsed >= 0;
@@ -183,6 +196,7 @@ function PaymentDialog({ session, onClose }: { session: SessionDetailDto; onClos
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (method === "Cash" && !cashValid) return;
+    if (method === "PromptPay" && payload === null) return;
     pay.mutate(method === "Cash" ? { method, amountReceived: parsed } : { method });
   };
 
@@ -265,7 +279,7 @@ function PaymentDialog({ session, onClose }: { session: SessionDetailDto; onClos
 
         <div className="flex w-full gap-1 rounded-lg bg-sunken p-1" role="group" aria-label="วิธีชำระเงิน">
           {(["Cash", "PromptPay", "Card"] as const).map((option) => {
-            const disabled = option === "PromptPay";
+            const disabled = option === "PromptPay" && payload === null;
             const selected = option === method;
             return (
               <button
@@ -273,7 +287,7 @@ function PaymentDialog({ session, onClose }: { session: SessionDetailDto; onClos
                 type="button"
                 aria-pressed={selected}
                 disabled={disabled}
-                title={disabled ? PROMPTPAY_PENDING : undefined}
+                title={promptPayUnconfigured ? PROMPTPAY_UNAVAILABLE : undefined}
                 onClick={() => setMethod(option)}
                 className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-md text-body font-semibold transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${
                   selected
@@ -296,9 +310,11 @@ function PaymentDialog({ session, onClose }: { session: SessionDetailDto; onClos
           })}
         </div>
 
-        <p className="text-xs text-muted-foreground">
-          {METHOD_LABELS.PromptPay}: {PROMPTPAY_PENDING}
-        </p>
+        {promptPayUnconfigured ? (
+          <p className="text-xs text-muted-foreground">
+            {METHOD_LABELS.PromptPay}: {PROMPTPAY_UNAVAILABLE}
+          </p>
+        ) : null}
 
         <form onSubmit={submit} className="flex flex-col gap-3">
           {method === "Cash" ? (
@@ -341,14 +357,37 @@ function PaymentDialog({ session, onClose }: { session: SessionDetailDto; onClos
                 </span>
               </div>
             </>
-          ) : (
+          ) : method === "PromptPay" && payload !== null ? (
+            /* `o05`: the QR carries the bill's total; the owner confirms by hand (no gateway, no auto-check). */
+            <div className="flex flex-col items-center rounded-xl bg-sunken p-4 text-center">
+              <div className="flex size-[244px] items-center justify-center rounded-xl border border-border bg-surface">
+                <QRCodeSVG
+                  value={payload}
+                  size={198}
+                  level="M"
+                  marginSize={0}
+                  title={`PromptPay QR ยอด ${formatBaht(total)}`}
+                />
+              </div>
+              <p className="mt-3 text-body font-semibold">
+                สแกนเพื่อจ่าย <span className="tabular-nums">{formatBaht(total)}</span>
+              </p>
+              <p className="mt-0.5 text-label text-muted-foreground">
+                PromptPay {promptPayLabel}
+                {settings.data?.name ? ` · ${settings.data.name}` : ""}
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground">
+                เงินโอนเข้าบัญชีร้านโดยตรง · กดยืนยันเมื่อเห็นยอดเข้าแล้ว
+              </p>
+            </div>
+          ) : method === "Card" ? (
             <div className="flex items-center justify-between gap-3 rounded-lg bg-sunken px-4 py-3 text-label">
               <span className="text-muted-foreground">รับเต็มจำนวน</span>
               <span>
                 {formatBaht(total)} · เงินทอน {formatBaht(0)}
               </span>
             </div>
-          )}
+          ) : null}
 
           {shortPaid ? (
             <p className="rounded-lg bg-cancel-soft px-3 py-2 text-label text-cancel-ink" role="status">
@@ -379,7 +418,9 @@ function PaymentDialog({ session, onClose }: { session: SessionDetailDto; onClos
             <Button
               type="submit"
               size="lg"
-              disabled={pay.isPending || (method === "Cash" && !cashValid)}
+              disabled={
+                pay.isPending || (method === "Cash" && !cashValid) || (method === "PromptPay" && payload === null)
+              }
             >
               {pay.isPending ? "กำลังบันทึก…" : CONFIRM_LABELS[method]}
             </Button>
