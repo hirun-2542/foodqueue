@@ -480,6 +480,40 @@ public partial class MergeBillTests(PostgresFixture postgres)
         Assert.Equal("Paid", (await OkAsync(await PayAsync(world.Owner, world.A1.Id, "Card")))
             .GetProperty("status").GetString());
     }
+    /// <summary>
+    /// ticket 19: บิลที่ถูกรวมชำระด้วย PromptPay ได้ผ่านเส้นทางเดียวกัน — ไม่มีการรับเงินที่หน้าเคาน์เตอร์
+    /// (รับเท่ากับยอดรวมพอดี เงินทอน 0) และออกใบเสร็จใบเดียวให้ยอดรวมของทุกรอบ
+    /// </summary>
+    [Fact]
+    public async Task A_merged_bill_can_be_paid_by_promptpay_with_one_receipt_and_nothing_tendered()
+    {
+        using var app = new TestApp(postgres);
+        var world = await WorldAsync(app);
+        await OkAsync(await MergeAsync(world.Owner, world.A1.Id, world.A2.Id));
+
+        // PromptPay: ค่าที่ส่งมากับ amountReceived ไม่มีความหมาย รับเท่ากับยอดรวมของบิลที่รวมแล้วเสมอ
+        var paid = await OkAsync(await PayAsync(world.Owner, world.A1.Id, "PromptPay", 9999m));
+
+        var payment = paid.GetProperty("payment");
+        Assert.Equal("PromptPay", payment.GetProperty("method").GetString());
+        Assert.Matches(ReceiptFormat(), payment.GetProperty("receiptNo").GetString());
+        Assert.Equal(2364.59m, payment.GetProperty("total").GetDecimal());
+        Assert.Equal(2364.59m, payment.GetProperty("amountReceived").GetDecimal());
+        Assert.Equal(0m, payment.GetProperty("change").GetDecimal());
+
+        // ใบเสร็จใบเดียวที่รอบหลัก และทุกรอบที่รวมเป็น Paid พร้อมกัน
+        var stored = Assert.Single(await StoredPaymentsAsync(app));
+        Assert.Equal(world.A1.Id, stored.TableSessionId);
+        Assert.Equal(PaymentMethod.PromptPay, stored.Method);
+        Assert.Equal(SessionStatus.Paid, (await StoredAsync(app, world.A1.Id)).Status);
+        Assert.Equal(SessionStatus.Paid, (await StoredAsync(app, world.A2.Id)).Status);
+
+        // รอบลูกใช้ token เดิมสั่งเพิ่มไม่ได้
+        using var childCustomer = app.CreateClient();
+        await AssertRefusedAsync(await SubmitRawAsync(childCustomer, world.A2, Line(world.Menu.MeatId, 1)),
+            HttpStatusCode.Conflict, ErrorCodes.SessionClosed);
+    }
+
     [Fact]
     public async Task Paying_once_makes_every_merged_round_paid_with_one_receipt_and_frees_every_table()
     {

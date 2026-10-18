@@ -572,6 +572,63 @@ public partial class PaymentTests(PostgresFixture postgres)
     // ------------------------------------------------------------------ เวลา และสิทธิ์
 
     [Fact]
+    public async Task PromptPay_records_the_method_with_nothing_tendered_and_closes_like_cash()
+    {
+        using var app = new TestApp(postgres);
+        var world = await WorldAsync(app);
+        var session = await FrameB2Async(app, world.Owner, world.Menu, world.PackageId);
+        var ownerCookie = await LiveClient.AuthCookieAsync(app, "DemoSeed:OwnerEmail");
+        await using var ownerLive = await LiveClient.ConnectAsync(app, cookie: ownerCookie);
+        await using var customer = await LiveClient.ConnectAsync(app, token: session.Token);
+
+        // PromptPay carries no amount: what the client sends for Cash must be ignored, exactly as for Card.
+        var paid = await OkAsync(await PayAsync(world.Owner, session.Id, "PromptPay", 5000m));
+
+        Assert.Equal("Paid", paid.GetProperty("status").GetString());
+        var payment = paid.GetProperty("payment");
+        Assert.Equal("PromptPay", payment.GetProperty("method").GetString());
+        // The total is what was asked, not what was tendered; no change comes back.
+        Assert.Equal(1441.83m, payment.GetProperty("total").GetDecimal());
+        Assert.Equal(1441.83m, payment.GetProperty("amountReceived").GetDecimal());
+        Assert.Equal(0m, payment.GetProperty("change").GetDecimal());
+        // Receipt in the same format, from the same sequence — the same shape Cash produces.
+        var receipt = payment.GetProperty("receiptNo").GetString()!;
+        var match = ReceiptFormat().Match(receipt);
+        Assert.True(match.Success, receipt);
+        Assert.Equal(Bkk.DateOf(payment.GetProperty("paidAt").GetDateTimeOffset()).ToString("yyyyMMdd", CultureInfo.InvariantCulture),
+            match.Groups[1].Value);
+
+        // The stored row is the cash row with a different method: identical split of the bill at payment time.
+        var stored = Assert.Single(await StoredPaymentsAsync(app, session.Id));
+        Assert.Equal(PaymentMethod.PromptPay, stored.Method);
+        Assert.Equal(
+            (997m, 178m, 50m, 1225m, 122.50m, 94.33m, 1441.83m, 1441.83m, 0m),
+            (stored.BuffetTotal, stored.AlaCarteTotal, stored.AdjustmentTotal, stored.Subtotal, stored.ServiceCharge,
+                stored.Vat, stored.Total, stored.AmountReceived, stored.Change));
+        Assert.Equal(SessionStatus.Paid, (await StoredSessionAsync(app, session.Id)).Status);
+
+        // Same events as cash: the table hears sessionClosed (then the server drops its socket), the owner
+        // hears sessionChanged(Paid) + sessionClosed. The customer is disconnected by the payment, so it
+        // cannot take part in a barrier after it — its event is awaited directly, as ticket 18's own test does.
+        await customer.Inbox.WaitForAsync("sessionClosed",
+            e => e.GetProperty("sessionId").GetInt32() == session.Id, LiveClient.Within);
+        await LiveClient.BarrierAsync(app, ownerLive);
+        var changed = Assert.Single(ownerLive.Inbox.Of("sessionChanged"),
+            e => e.GetProperty("id").GetInt32() == session.Id);
+        Assert.Equal("Paid", changed.GetProperty("status").GetString());
+        Assert.Single(ownerLive.Inbox.Of("sessionClosed"),
+            e => e.GetProperty("sessionId").GetInt32() == session.Id);
+
+        // Paid means paid: the round's token can no longer order and a second attempt is ALREADY_PAID.
+        using var table = app.CreateClient();
+        await AssertRefusedAsync(await SubmitRawAsync(table, session, Line(world.Menu.MeatId, 1)),
+            HttpStatusCode.Conflict, ErrorCodes.SessionClosed);
+        await AssertRefusedAsync(await PayAsync(world.Owner, session.Id, "PromptPay"),
+            HttpStatusCode.Conflict, ErrorCodes.AlreadyPaid);
+        Assert.Single(await StoredPaymentsAsync(app, session.Id));
+    }
+
+    [Fact]
     public async Task A_round_past_its_end_time_can_no_longer_order_but_can_still_be_paid()
     {
         using var app = new TestApp(postgres);
