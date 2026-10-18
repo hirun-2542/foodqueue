@@ -70,6 +70,8 @@ export function useCustomerLive(token: string) {
 
   useLiveEvent("orderCreated", () => void queryClient.invalidateQueries({ queryKey: customerOrdersQuery(token) }));
   useLiveEvent("orderEdited", () => void queryClient.invalidateQueries({ queryKey: customerOrdersQuery(token) }));
+  // `sessionChanged`: the shop moved this round to another table (ticket 21) — the header shows the new name.
+  useLiveEvent("sessionChanged", () => void queryClient.invalidateQueries({ queryKey: customerSessionQuery(token) }));
   useLiveEvent("menuItemChanged", (change) => {
     const menu = queryClient.getQueryData<CustomerMenuDto>(customerMenuQuery(token));
     const next = menu && applyMenuItemChange(menu, change);
