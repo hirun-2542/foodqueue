@@ -484,3 +484,23 @@ export interface PaidBillDto {
   method: PaymentMethod;
   total: number;
 }
+
+/** The demo role a staff button signs in as (`POST /api/demo/login`). */
+export type DemoRole = "Owner" | "Kitchen";
+
+/**
+ * `GET /api/demo/status` (ticket 24) — the single switch of Demo Mode. The demo card on `/login`
+ * renders only when `enabled` is true; with the demo off the endpoint itself answers **404**, which
+ * `useDemoStatus` reads as "disabled" so the toggle is one config value and nothing else.
+ */
+export interface DemoStatusDto {
+  enabled: boolean;
+}
+
+/**
+ * `POST /api/demo/customer-session` (ticket 24): the token of the round the demo bot has open, or of a
+ * round opened for the viewer (Gold, 2 adults) when there was none. `TABLE_OCCUPIED` when no table is free.
+ */
+export interface DemoCustomerSessionDto {
+  token: string;
+}
