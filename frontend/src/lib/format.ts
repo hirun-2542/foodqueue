@@ -44,6 +44,26 @@ export function formatDate(value: Instant): string {
   return date.format(toMs(value));
 }
 
+const weekday = new Intl.DateTimeFormat("th-TH", { timeZone: TIME_ZONE, weekday: "long" });
+
+/** Weekday and date in Bangkok, as the staff headings write it: `ศุกร์ 16 ต.ค. 2569`. */
+export function formatDayHeading(value: Instant): string {
+  return `${weekday.format(toMs(value)).replace(/^วัน/, "")} ${formatDate(value)}`;
+}
+
+// en-CA formats as yyyy-MM-dd, the API's `date` query format.
+const dayKey = new Intl.DateTimeFormat("en-CA", {
+  timeZone: TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/** The Bangkok calendar day of an instant as `2026-10-16` — the `date` filter of `GET /api/orders`. */
+export function bangkokDay(value: Instant): string {
+  return dayKey.format(toMs(value));
+}
+
 /** Whole minutes elapsed since `openedAt`, never negative (clock skew). */
 export function minutesUsed(openedAt: Instant, now: Instant): number {
   return Math.max(0, Math.floor((toMs(now) - toMs(openedAt)) / 60_000));

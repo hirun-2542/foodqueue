@@ -40,8 +40,11 @@ export function KitchenBoardScreen() {
   );
 }
 
-/** Cards that arrived over the hub in the last NEW_FOR_MS; the first load highlights nothing. */
-function useFreshOrders() {
+/**
+ * Cards that arrived over the hub in the last NEW_FOR_MS; the first load highlights nothing.
+ * The owner's order queue (ticket 14) highlights its new cards the same way.
+ */
+export function useFreshOrders() {
   const [fresh, setFresh] = useState<ReadonlySet<number>>(() => new Set());
   const timers = useRef(new Map<number, number>());
 

@@ -15,6 +15,7 @@ export const staffRoutes = {
   settings: "/owner/settings",
   tables: "/owner/tables",
   menu: "/owner/menu",
+  orders: "/owner/orders",
 } as const;
 
 /** Home screen of each staff role — the one place this mapping is written down. */
