@@ -4,6 +4,7 @@ import {
   ArmchairIcon,
   BookOpenIcon,
   ChefHatIcon,
+  ClipboardListIcon,
   LayoutGridIcon,
   Loader2Icon,
   LogOutIcon,
@@ -33,6 +34,7 @@ const navItems = [
   { href: staffRoutes.tables, label: "โต๊ะ", icon: ArmchairIcon, ownerOnly: true },
   { href: staffRoutes.settings, label: "ตั้งค่า", icon: SettingsIcon, ownerOnly: true },
   { href: staffRoutes.kitchen, label: "จอครัว", icon: ChefHatIcon, ownerOnly: false },
+  { href: staffRoutes.orders, label: "ออเดอร์", icon: ClipboardListIcon, ownerOnly: true },
 ];
 
 /**
