@@ -3,6 +3,7 @@ using FoodQueue.Api.Contracts;
 using FoodQueue.Api.Data;
 using FoodQueue.Api.Data.Entities;
 using FoodQueue.Api.Features.Uploads;
+using FoodQueue.Api.Realtime;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodQueue.Api.Features.Menu;
@@ -28,8 +29,8 @@ public sealed record AvailabilityRequest(bool? IsAvailable);
 /// เพิ่ม/แก้เมนูโดยเลือกชนิด Buffet (มีแพ็กเกจขั้นต่ำ ราคา 0) หรือ AlaCarte (มีราคา ไม่มีแพ็กเกจขั้นต่ำ),
 /// อัปโหลดรูปผ่าน store กลางของ ticket 03 และสลับ "หมด" ได้ทันที
 ///
-/// ไม่ส่ง event realtime จากที่นี่: การกระจาย <c>menuItemChanged</c> เป็นหน้าที่ ticket 13
-/// ที่นี่เพียงทำให้การเปลี่ยนสถานะตรวจสอบได้ผ่าน GET และแถวในฐานข้อมูล
+/// เมื่อ IsAvailable/IsActive ของเมนูเปลี่ยน จะส่ง <c>menuItemChanged</c> ถึง group menu หลังบันทึกสำเร็จ
+/// (ticket 13) เพื่อให้จอลูกค้าเปลี่ยนเป็นแถวสีเทา + ป้าย "หมด" ได้ทันทีโดยไม่ต้องรีเฟรช
 /// </summary>
 public sealed class MenuEndpoints : IEndpointModule
 {
@@ -158,14 +159,20 @@ public sealed class MenuEndpoints : IEndpointModule
     }
 
     private static async Task<IResult> UpdateItemAsync(int id, MenuItemRequest request, AppDbContext db,
-        CancellationToken ct)
+        ILiveNotifier notifier, CancellationToken ct)
     {
         var item = await db.MenuItems.FirstOrDefaultAsync(m => m.Id == id, ct)
             ?? throw ItemMissing();
 
         var values = await ValidateItemAsync(request, item, db, ct);
+        var flagsChanged = item.IsAvailable != values.IsAvailable || item.IsActive != values.IsActive;
         Apply(item, values);
         await db.SaveChangesAsync(ct);
+
+        if (flagsChanged)
+        {
+            await notifier.MenuItemChanged(item.Id, item.IsAvailable, item.IsActive);
+        }
 
         return Results.Ok(item.ToDto());
     }
@@ -175,7 +182,7 @@ public sealed class MenuEndpoints : IEndpointModule
     /// UI ใช้ค่านี้เป็นคำตอบสุดท้ายหลัง optimistic update
     /// </summary>
     private static async Task<IResult> SetAvailabilityAsync(int id, AvailabilityRequest request, AppDbContext db,
-        CancellationToken ct)
+        ILiveNotifier notifier, CancellationToken ct)
     {
         if (request.IsAvailable is null)
         {
@@ -187,6 +194,7 @@ public sealed class MenuEndpoints : IEndpointModule
 
         item.IsAvailable = request.IsAvailable.Value;
         await db.SaveChangesAsync(ct);
+        await notifier.MenuItemChanged(item.Id, item.IsAvailable, item.IsActive);
 
         return Results.Ok(item.ToDto());
     }
