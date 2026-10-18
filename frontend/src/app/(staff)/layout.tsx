@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { StaffRole } from "@/lib/types";
 import { isUnauthenticated, staffRoutes, useLogout, useMe } from "@/lib/auth";
+import { NewOrderAlertScope } from "./new-order-alert";
 
 const roleLabel: Record<StaffRole, string> = { Owner: "เจ้าของร้าน", Kitchen: "ครัว" };
 
@@ -186,7 +187,10 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
           </Button>
         </header>
 
-        <main className="min-w-0 flex-1 px-4 pt-5 pb-24 lg:px-8 lg:pt-0 lg:pb-10">{children}</main>
+        {/* Ticket 15: the owner-wide new-order popup (o20/o21) and the one live connection owner screens share. */}
+        <main className="min-w-0 flex-1 px-4 pt-5 pb-24 lg:px-8 lg:pt-0 lg:pb-10">
+          <NewOrderAlertScope enabled={me.role === "Owner"}>{children}</NewOrderAlertScope>
+        </main>
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 z-10 grid border-t border-border bg-surface pb-2 lg:hidden">

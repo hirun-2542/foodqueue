@@ -9,9 +9,12 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
  * Browsers only let a page make sound after the user has interacted with it (autoplay policy): an
  * `AudioContext` created before that stays "suspended". So the chime is armed by the first tap or key
  * press anywhere on the screen, and until then the sound control says so instead of claiming "เปิด".
- * The mute choice is kept per device in localStorage.
+ * A page reached by in-app navigation after such a tap (e.g. the login button) already carries the
+ * browser's sticky user activation, so it is armed at once without a second tap.
+ * The mute choice is kept per device in localStorage, under the key of the screen that owns the
+ * control (the kitchen board and the owner's new-order popup mute independently).
  */
-const MUTED_KEY = "fq-kitchen-muted";
+export const KITCHEN_MUTED_KEY = "fq-kitchen-muted";
 
 /** A burst of orders gets one chime, not one per card. */
 const MIN_GAP_MS = 1_500;
@@ -27,12 +30,12 @@ function subscribeMuted(listener: () => void): () => void {
   };
 }
 
-function readMuted(): boolean {
-  return window.localStorage.getItem(MUTED_KEY) === "1";
+function readMuted(key: string): boolean {
+  return window.localStorage.getItem(key) === "1";
 }
 
-function writeMuted(muted: boolean): void {
-  window.localStorage.setItem(MUTED_KEY, muted ? "1" : "0");
+function writeMuted(key: string, muted: boolean): void {
+  window.localStorage.setItem(key, muted ? "1" : "0");
   for (const listener of mutedListeners) listener();
 }
 
@@ -45,8 +48,8 @@ export interface Chime {
   play: () => void;
 }
 
-export function useChime(): Chime {
-  const muted = useSyncExternalStore(subscribeMuted, readMuted, () => false);
+export function useChime(mutedKey: string = KITCHEN_MUTED_KEY): Chime {
+  const muted = useSyncExternalStore(subscribeMuted, () => readMuted(mutedKey), () => false);
   const [armed, setArmed] = useState(false);
   const audio = useRef<AudioContext | null>(null);
   const lastPlayed = useRef(Number.NEGATIVE_INFINITY);
@@ -64,6 +67,7 @@ export function useChime(): Chime {
     };
     window.addEventListener("pointerdown", arm, true);
     window.addEventListener("keydown", arm, true);
+    if (navigator.userActivation?.hasBeenActive) arm();
     return () => {
       window.removeEventListener("pointerdown", arm, true);
       window.removeEventListener("keydown", arm, true);
@@ -95,5 +99,7 @@ export function useChime(): Chime {
     });
   }, [muted]);
 
-  return { muted, armed, setMuted: writeMuted, play };
+  const setMuted = useCallback((next: boolean) => writeMuted(mutedKey, next), [mutedKey]);
+
+  return { muted, armed, setMuted, play };
 }
