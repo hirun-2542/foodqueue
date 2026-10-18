@@ -14,6 +14,7 @@ import {
   use,
   useEffect,
   useEffectEvent,
+  useMemo,
   useState,
   useSyncExternalStore,
 } from "react";
@@ -145,18 +146,37 @@ export function useLiveConnection({ token }: { token?: string } = {}): LiveConne
   return useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
 }
 
-const LiveContext = createContext<LiveConnection | null>(null);
+interface LiveScope {
+  live: LiveConnection;
+  token: string | undefined;
+}
 
-/** Opens the live connection for everything rendered inside it. Mount once per screen tree. */
-export function LiveProvider({ token, children }: { token?: string; children: ReactNode }) {
+const LiveContext = createContext<LiveScope | null>(null);
+
+function OwnLiveConnection({ token, children }: { token?: string; children?: ReactNode }) {
   const live = useLiveConnection({ token });
-  return createElement(LiveContext, { value: live }, children);
+  const scope = useMemo(() => ({ live, token }), [live, token]);
+  return createElement(LiveContext, { value: scope }, children);
+}
+
+/**
+ * Opens the live connection for everything rendered inside it. Mount once per screen tree.
+ *
+ * Inside another provider for the same audience (same `token`, or both staff) it reuses that
+ * connection instead of opening a second one: the staff layout holds one connection for the owner's
+ * new-order popup (ticket 15), and every owner screen's own `<LiveProvider>` shares it, so a page
+ * change neither reconnects nor misses an `orderCreated`.
+ */
+export function LiveProvider({ token, children }: { token?: string; children: ReactNode }) {
+  const outer = use(LiveContext);
+  if (outer && outer.token === token) return children;
+  return createElement(OwnLiveConnection, { token }, children);
 }
 
 function useLiveContext(): LiveConnection {
-  const live = use(LiveContext);
-  if (!live) throw new Error("useLiveEvent/useLiveOffline must be used inside <LiveProvider>");
-  return live;
+  const scope = use(LiveContext);
+  if (!scope) throw new Error("useLiveEvent/useLiveOffline must be used inside <LiveProvider>");
+  return scope.live;
 }
 
 /** Subscribes to one hub event for the lifetime of the component; `handler` may change freely. */
