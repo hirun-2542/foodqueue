@@ -93,6 +93,8 @@ public sealed class CustomerEndpoints : IEndpointModule
     /// <summary>
     /// รอบของ token นี้ หรือปฏิเสธ: ไม่พบ → <c>SESSION_NOT_FOUND</c> (จอ "QR ไม่ถูกต้อง"),
     /// พบแต่ไม่ Open → <c>SESSION_CLOSED</c> (ปิดบิล/ยกเลิกแล้ว token ใช้ไม่ได้ — spec 29, 76)
+    /// พร้อม <c>closedAs</c> (<c>Paid</c>/<c>Voided</c>) และ <c>shopName</c> เพื่อให้จอลูกค้าขึ้น "ขอบคุณที่ใช้บริการ"
+    /// (c6-end, ticket 18) เฉพาะรอบที่ชำระแล้ว — ไม่มียอดเงินใด ๆ ในคำตอบนี้ (spec 27)
     /// </summary>
     private static async Task<TableSession> RequireOpenSessionAsync(string token, HttpContext http,
         CancellationToken ct)
@@ -106,8 +108,16 @@ public sealed class CustomerEndpoints : IEndpointModule
 
         if (session.Status != SessionStatus.Open)
         {
+            var settings = await SettingsAsync(http, ct);
             throw new AppException(ErrorCodes.SessionClosed, ErrorCodes.StatusFor(ErrorCodes.SessionClosed),
-                "โต๊ะนี้ปิดบิลแล้ว · QR นี้ใช้สั่งอาหารไม่ได้อีก");
+                session.Status == SessionStatus.Paid
+                    ? "ชำระเงินเรียบร้อยแล้ว · QR นี้ปิดใช้งานแล้ว"
+                    : "โต๊ะนี้ปิดบิลแล้ว · QR นี้ใช้สั่งอาหารไม่ได้อีก",
+                new Dictionary<string, object?>
+                {
+                    ["closedAs"] = session.Status.ToString(),
+                    ["shopName"] = settings.Name,
+                });
         }
 
         return session;

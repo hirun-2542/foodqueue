@@ -38,6 +38,25 @@ export interface ProblemDetails {
   detail?: string;
   code?: string;
   message?: string;
+  /** `ORDERS_IN_PROGRESS` (ticket 18): the rounds that still block closing, as the server named them. */
+  orders?: BlockingOrderDto[];
+  /** `SESSION_CLOSED`: `Paid` when the bill was settled, `Voided` when the round was cancelled. */
+  closedAs?: SessionStatus;
+  /** `SESSION_CLOSED` on a paid round: the shop's name for the customer's thanks screen. */
+  shopName?: string;
+}
+
+/** One order that still blocks closing the bill (the `orders` of `ORDERS_IN_PROGRESS`). */
+export interface BlockingOrderDto {
+  id: number;
+  number: number;
+  status: OrderStatus;
+}
+
+/** Body of `POST /api/sessions/{id}/payment`. `amountReceived` is only read when the method is Cash. */
+export interface PaymentInput {
+  method: PaymentMethod;
+  amountReceived?: number;
 }
 
 export interface MeDto {

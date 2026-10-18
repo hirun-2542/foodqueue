@@ -173,6 +173,18 @@ public sealed class OrderService(AppDbContext db, ILiveNotifier notifier) : IOrd
         for (var attempt = 0; ; attempt++)
         {
             await using var transaction = await db.Database.BeginTransactionAsync(ct);
+
+            // แข่งกับการปิดบิล (ticket 18): การชำระล็อกแถว session FOR UPDATE ระหว่างตรวจ "ไม่มีออเดอร์ค้าง"
+            // ตรงนี้ล็อก FOR SHARE แล้วอ่านสถานะล่าสุดอีกครั้ง — ออเดอร์ที่ส่งมาระหว่างจ่ายจึงรอจนจ่ายเสร็จแล้วได้
+            // SESSION_CLOSED แทนที่จะเข้าไปค้างในบิลที่ปิดแล้ว (หรือถ้าบันทึกก่อน การชำระจะเห็นมันแล้วปฏิเสธ)
+            var status = await db.Database
+                .SqlQuery<string>($"SELECT \"Status\" AS \"Value\" FROM \"TableSessions\" WHERE \"Id\" = {sessionId} FOR SHARE")
+                .SingleAsync(ct);
+            if (status != nameof(SessionStatus.Open))
+            {
+                throw Closed();
+            }
+
             var next = (await db.Orders
                 .Where(o => o.TableSessionId == sessionId)
                 .MaxAsync(o => (int?)o.Number, ct) ?? 0) + 1;

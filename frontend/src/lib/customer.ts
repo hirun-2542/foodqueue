@@ -79,6 +79,9 @@ export function useCustomerLive(token: string) {
       void queryClient.invalidateQueries({ queryKey: customerMenuQuery(token) });
     }
   });
+  // The round was paid or voided (ticket 18): the QR is dead, so refetch — the session answer becomes the
+  // `SESSION_CLOSED` the screen switches on (thanks screen when the bill was settled).
+  useLiveEvent("sessionClosed", () => void queryClient.invalidateQueries({ queryKey: customerSessionQuery(token) }));
 }
 
 /**

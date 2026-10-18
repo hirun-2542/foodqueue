@@ -27,6 +27,7 @@ import { CartBar, OrderWindowBanner } from "./cart-bar";
 import { CartSheet } from "./cart-sheet";
 import { QuantityStepper } from "./quantity-stepper";
 import { CustomerLiveSync, OfflineNotice, TableOrders } from "./orders-tab";
+import { ThanksScreen } from "./thanks-screen";
 
 /**
  * Copy of the customer screens, verbatim from the approved frames (`notes/10-THAI-COPY.md` §c1-menu,
@@ -435,13 +436,19 @@ function TabButton({
 }
 
 /**
- * A QR that is not there, or a round that is closed and can be paid but not ordered from. The
- * "ขอบคุณที่ใช้บริการ" screen of `c6-end` belongs to the paid flow (ticket 10/18), not here, so this
- * state states the fact and offers a refetch — the guest may be holding a slip the staff just printed.
+ * A QR that is not there, or a round that is closed. A round whose bill was settled gets frame `c6-end`'s
+ * "ขอบคุณที่ใช้บริการ" phone (ticket 18) — the server marks it with `closedAs: "Paid"`, and no money appears
+ * anywhere on it (spec 27). Any other closure states the fact and offers a refetch — the guest may be holding
+ * a slip the staff just printed.
  */
 function QrProblem({ error }: { error: unknown }) {
   const queryClient = useQueryClient();
   const unknownQr = error instanceof ApiError && error.code === "SESSION_NOT_FOUND";
+  const paid = error instanceof ApiError && error.code === "SESSION_CLOSED" && error.problem.closedAs === "Paid";
+
+  if (paid) {
+    return <ThanksScreen shopName={error.problem.shopName ?? null} />;
+  }
 
   return (
     <div className="flex h-dvh flex-col items-center justify-center gap-3 bg-ground px-8 text-center">

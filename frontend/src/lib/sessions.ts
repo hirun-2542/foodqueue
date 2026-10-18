@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { ApiError, apiFetch, apiFetchWithServerTime } from "@/lib/api";
 import { tableOverviewQueryKey } from "@/lib/overview";
 import { useLiveEvent } from "@/lib/realtime";
-import type { SessionDetailDto } from "@/lib/types";
+import type { PaymentInput, SessionDetailDto } from "@/lib/types";
 
 /** Body of `POST /api/sessions` — counts are the wire names the API freezes. */
 export interface OpenSessionInput {
@@ -120,6 +120,25 @@ export function useRemoveAdjustment(sessionId: number) {
       apiFetch<SessionDetailDto>(`/api/sessions/${sessionId}/adjustments/${adjustmentId}`, { method: "DELETE" }),
     onSuccess: (session) => writeSession(queryClient, session),
     onError: (error) => reportFailure(queryClient, sessionId, error, "ลบรายการปรับยอดไม่สำเร็จ ลองอีกครั้ง"),
+  });
+}
+
+/**
+ * รับชำระเงิน (`POST /api/sessions/{id}/payment`, ticket 18): closes the bill and answers with the whole round
+ * including `payment` (method, amount received, change, receipt number). The server owns every rule — Open
+ * round, no Pending/Preparing order, Cash ≥ total, one receipt per round — so a refusal arrives as an
+ * `ApiError` with the rule's `code` and Thai message; `ORDERS_IN_PROGRESS` also names the blocking rounds.
+ * A success is put into the cache, and the hub's `sessionClosed` refreshes every other device.
+ */
+export function usePaySession(sessionId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: PaymentInput) =>
+      apiFetch<SessionDetailDto>(`/api/sessions/${sessionId}/payment`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      }),
+    onSuccess: (session) => writeSession(queryClient, session),
   });
 }
 
