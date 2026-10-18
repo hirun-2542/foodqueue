@@ -1,6 +1,7 @@
 "use client";
 
 import { PlusIcon } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TimeRail } from "@/components/time-rail";
@@ -63,12 +64,18 @@ export function TableCard({
 
   return (
     <li
-      className={`flex min-h-44 flex-col gap-2.5 rounded-xl border bg-surface p-4 ${
+      className={`relative flex min-h-44 flex-col gap-2.5 rounded-xl border bg-surface p-4 hover:bg-sunken/40 ${
         time.isOver ? "border-orange-strong" : time.isLastOrder ? "border-orange-line" : "border-border"
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <b className="text-[20px] leading-tight font-semibold lg:text-[22px]">{card.name}</b>
+        {/* The whole card opens the round's detail (`/owner/sessions/[id]`, ticket 16): a stretched link. */}
+        <Link
+          href={`/owner/sessions/${session.sessionId}`}
+          className="text-[20px] leading-tight font-semibold after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-ring lg:text-[22px]"
+        >
+          {card.name}
+        </Link>
         <span className="flex flex-wrap items-center justify-end gap-1.5">
           {time.isOver ? (
             <Badge variant="cancelled" className="before:hidden">
