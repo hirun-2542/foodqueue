@@ -18,9 +18,13 @@ plan.md บรรทัด 21, 74, 141, 247: ขั้น Served และกา
 
 ## Acceptance criteria
 
-- [ ] ข้ามขั้น Pending→Ready ถูกปฏิเสธ; เลื่อนต่อจาก Ready ไม่ได้; ยกเลิกออเดอร์ที่ Cancelled แล้วถูกปฏิเสธ; ยกเลิกต้องมีเหตุผล (1–200 ตัวอักษร) (เทสต์ seam 1)
-- [ ] ส่งการเลื่อนสถานะพร้อมกันสองคำขอ → สำเร็จหนึ่ง ปฏิเสธหนึ่ง (`INVALID_STATUS_TRANSITION`)
-- [ ] `orderStatusChanged` ถึง kitchen และ owner เท่านั้น ลูกค้าไม่ได้รับ (เทสต์ seam 1); การยกเลิกส่ง `orderEdited` ถึง kitchen/owner/session
-- [ ] ออเดอร์ที่ถูกยกเลิกไม่ถูกคิดเงิน (พิสูจน์ผ่านบิลใน ticket 16)
-- [ ] จอตรงกับ mockup k1 (ปุ่ม เริ่มทำ / พร้อมเสิร์ฟ, "รอพนักงานนำไปเสิร์ฟ") และ k2 (dialog ยกเลิกพร้อมเหตุผลและ chip ลัด)
-- [ ] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
+- [x] ข้ามขั้น Pending→Ready ถูกปฏิเสธ; เลื่อนต่อจาก Ready ไม่ได้; ยกเลิกออเดอร์ที่ Cancelled แล้วถูกปฏิเสธ; ยกเลิกต้องมีเหตุผล (1–200 ตัวอักษร) (เทสต์ seam 1)
+- [x] ส่งการเลื่อนสถานะพร้อมกันสองคำขอ → สำเร็จหนึ่ง ปฏิเสธหนึ่ง (`INVALID_STATUS_TRANSITION`)
+- [x] `orderStatusChanged` ถึง kitchen และ owner เท่านั้น ลูกค้าไม่ได้รับ (เทสต์ seam 1); การยกเลิกส่ง `orderEdited` ถึง kitchen/owner/session
+- [x] ออเดอร์ที่ถูกยกเลิกไม่ถูกคิดเงิน (พิสูจน์ผ่านบิลใน ticket 16)
+- [x] จอตรงกับ mockup k1 (ปุ่ม เริ่มทำ / พร้อมเสิร์ฟ, "รอพนักงานนำไปเสิร์ฟ") และ k2 (dialog ยกเลิกพร้อมเหตุผลและ chip ลัด)
+- [x] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
+- Smoke on the real `docker compose` stack through Caddy, as a Kitchen account at 1280×800: pressing `เริ่มทำ`
+  on the top card moved it out of `รอรับ` (3 → 2), and pressing `พร้อมเสิร์ฟ` moved it into `พร้อมเสิร์ฟ`
+  (counter 1) where the card reads `รอพนักงานนำไปเสิร์ฟ` with its `⋯` control — the whole flow ran against the
+  real API, not a stub, and both the status-filtered list and the board counters followed it.
