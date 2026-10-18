@@ -29,12 +29,12 @@ const roleLabel: Record<StaffRole, string> = { Owner: "เจ้าของร�
  */
 const navItems = [
   { href: staffRoutes.owner, label: "ภาพรวม", icon: LayoutGridIcon, ownerOnly: true },
+  { href: staffRoutes.orders, label: "ออเดอร์", icon: ClipboardListIcon, ownerOnly: true },
   { href: staffRoutes.menu, label: "เมนูอาหาร", icon: BookOpenIcon, ownerOnly: true },
   { href: staffRoutes.packages, label: "แพ็กเกจ", icon: PackageIcon, ownerOnly: true },
   { href: staffRoutes.tables, label: "โต๊ะ", icon: ArmchairIcon, ownerOnly: true },
   { href: staffRoutes.settings, label: "ตั้งค่า", icon: SettingsIcon, ownerOnly: true },
   { href: staffRoutes.kitchen, label: "จอครัว", icon: ChefHatIcon, ownerOnly: false },
-  { href: staffRoutes.orders, label: "ออเดอร์", icon: ClipboardListIcon, ownerOnly: true },
 ];
 
 /**
