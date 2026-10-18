@@ -92,6 +92,12 @@ public record ReportSummaryDto(
     int BillCount,
     int GuestCount,
     decimal AvgPerGuest,
+    /// <summary>
+    /// ยอดขายของเมื่อวาน "ถึงเวลาเดียวกัน" ของวันนี้ — เฉพาะช่วง <c>today</c> (ช่วงอื่นเป็น null)
+    /// แถบ KPI ของหน้าภาพรวมเทียบกับตัวเลขนี้ ไม่ได้ให้ไคลเอนต์เดาเอง · null = ยังเทียบไม่ได้
+    /// (เช่น ยังไม่มียอดเมื่อวานถึงเวลานี้) แล้วหน้าจอไม่แสดงบรรทัดเทียบ
+    /// </summary>
+    decimal? PreviousRevenue,
     IReadOnlyList<PackageMixRow> PackageMix,
     IReadOnlyList<TopItemRow> TopItems,
     IReadOnlyList<HourlyRow> Hourly,
