@@ -6,6 +6,7 @@ import {
   CircleAlertIcon,
   FileTextIcon,
   QrCodeIcon,
+  ReceiptTextIcon,
   TimerOffIcon,
   Trash2Icon,
   UsersIcon,
@@ -164,14 +165,23 @@ function SessionDetailBody({ sessionId }: { sessionId: number }) {
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
-        {/* หน้าพิมพ์ใบแจ้งยอด 80mm เป็นของ ticket 20 (`/print/prebill/[sessionId]`) — ลิงก์ชี้ไปที่เส้นทางจริงของมัน
-            และปิด prefetch จนกว่า ticket 20 จะสร้าง (แบบเดียวกับปุ่มพิมพ์ QR slip ของ ticket 07) */}
-        <Button asChild variant="outline">
-          <Link href={`/print/prebill/${session.id}`} prefetch={false} target="_blank" rel="noreferrer">
-            <FileTextIcon className="size-4" aria-hidden />
-            พิมพ์ใบแจ้งยอด
-          </Link>
-        </Button>
+        {/* ปุ่มพิมพ์ของ ticket 20: รอบที่ยังไม่ชำระพิมพ์ใบแจ้งยอด รอบที่ชำระแล้วพิมพ์ใบเสร็จ (frame o07
+            เปลี่ยนปุ่มนี้เป็น "พิมพ์ใบเสร็จ" ทั้งหัวหน้าและในการ์ดบิล) — ทั้งคู่เปิดหน้าพิมพ์ 80 มม. เป็นแท็บใหม่ */}
+        {session.status === "Paid" ? (
+          <Button asChild variant="outline">
+            <Link href={`/print/receipt/${session.id}`} prefetch={false} target="_blank" rel="noreferrer">
+              <ReceiptTextIcon className="size-4" aria-hidden />
+              พิมพ์ใบเสร็จ
+            </Link>
+          </Button>
+        ) : (
+          <Button asChild variant="outline">
+            <Link href={`/print/prebill/${session.id}`} prefetch={false} target="_blank" rel="noreferrer">
+              <FileTextIcon className="size-4" aria-hidden />
+              พิมพ์ใบแจ้งยอด
+            </Link>
+          </Button>
+        )}
         <Button variant="outline" disabled={!isOpen} onClick={() => setShowQr(true)}>
           <QrCodeIcon className="size-4" aria-hidden />
           แสดง QR
