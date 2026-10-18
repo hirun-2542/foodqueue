@@ -76,7 +76,9 @@ export interface BillAlaCarteLineDto {
 export interface BillAdjustmentDto {
   id: number;
   description: string;
+  /** Positive adds to the bill, negative is a discount. */
   amount: number;
+  createdAt: string;
 }
 
 export interface BillDto {
@@ -110,6 +112,7 @@ export interface SessionDetailDto {
   id: number;
   tableId: number;
   tableName: string;
+  zone?: string | null;
   packageName: string;
   packageRank: number;
   adults: number;
@@ -119,6 +122,8 @@ export interface SessionDetailDto {
   status: SessionStatus;
   qrUrl: string;
   isDemoBot: boolean;
+  /** Set when this round's bill was merged into another round's (ticket 22). */
+  mergedIntoSessionId?: number | null;
   bill: BillDto;
   orders: OrderDto[];
   adjustments: BillAdjustmentDto[];

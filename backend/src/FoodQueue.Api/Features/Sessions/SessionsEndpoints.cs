@@ -11,11 +11,14 @@ namespace FoodQueue.Api.Features.Sessions;
 /// </summary>
 public sealed record OpenSessionRequest(int? TableId, int? PackageId, int? AdultCount, int? ChildCount);
 
+/// <summary>คำขอปรับยอด: <c>amount</c> บวก = เพิ่มยอด ลบ = ส่วนลด (ไม่มีค่า = ปฏิเสธด้วยข้อความไทย)</summary>
+public sealed record AdjustmentRequest(string? Description, decimal? Amount);
+
 /// <summary>
 /// รอบการนั่งของเจ้าของร้าน: เปิดโต๊ะพร้อม QR เฉพาะรอบ ดูรายละเอียด/รายการ/ประวัติ และยกเลิกรอบที่เปิดผิด
 /// เฉพาะเจ้าของร้าน (<c>OwnerOnly</c>) — ครัวเห็นเฉพาะจอครัว ไม่เห็นข้อมูลการเงิน
 /// ไม่มีเส้นทาง "ต่อเวลา" โดยเจตนา: EndsAt ถูกตรึงไว้ที่ OpenedAt + DurationMinutes ของแพ็กเกจ
-/// (การปรับยอด/ย้ายโต๊ะ/รวมบิล/ชำระเงิน/ข้อมูลพิมพ์เป็นของ ticket 16, 21, 22, 18, 20 ตามลำดับ)
+/// (ย้ายโต๊ะ/รวมบิล/ชำระเงิน/ข้อมูลพิมพ์เป็นของ ticket 21, 22, 18, 20 ตามลำดับ)
 /// </summary>
 public sealed class SessionsEndpoints : IEndpointModule
 {
@@ -31,6 +34,8 @@ public sealed class SessionsEndpoints : IEndpointModule
         group.MapGet("", ListAsync);
         group.MapGet("/{id:int}", GetAsync);
         group.MapPost("/{id:int}/void", VoidAsync);
+        group.MapPost("/{id:int}/adjustments", AddAdjustmentAsync);
+        group.MapDelete("/{id:int}/adjustments/{adjId:int}", RemoveAdjustmentAsync);
     }
 
     private static async Task<IResult> OpenAsync(OpenSessionRequest request, HttpContext http,
@@ -90,6 +95,16 @@ public sealed class SessionsEndpoints : IEndpointModule
 
     private static async Task<IResult> VoidAsync(int id, HttpContext http, CancellationToken ct) =>
         Results.Ok(await SessionService.From(http.RequestServices).VoidAsync(id, ct));
+
+    /// <summary>ทั้งสองเส้นทางคืนรายละเอียด session พร้อมบิลที่คำนวณใหม่ เพื่อให้หน้าจอวาดบิลจากคำตอบได้ทันที</summary>
+    private static async Task<IResult> AddAdjustmentAsync(int id, AdjustmentRequest request, HttpContext http,
+        CancellationToken ct) =>
+        Results.Ok(await BillAdjustmentService.From(http.RequestServices)
+            .AddAsync(id, request.Description, request.Amount, ct));
+
+    private static async Task<IResult> RemoveAdjustmentAsync(int id, int adjId, HttpContext http,
+        CancellationToken ct) =>
+        Results.Ok(await BillAdjustmentService.From(http.RequestServices).RemoveAsync(id, adjId, ct));
 
     private static AppException Invalid(string message) =>
         new(ErrorCodes.ValidationFailed, ErrorCodes.StatusFor(ErrorCodes.ValidationFailed), message);
