@@ -54,3 +54,29 @@ export function useDemoCustomerSession() {
       apiFetch<DemoCustomerSessionDto>("/api/demo/customer-session", { method: "POST" }),
   });
 }
+
+export const demoSplitScreenQueryKey = ["demo", "split-screen"] as const;
+
+/**
+ * The two steps `/demo` (ticket 26) must take before it can draw anything, in this order: sign in as the
+ * demo **Owner** (`POST /api/demo/login` — an Owner reaches the kitchen board too, so one sign-in covers
+ * both staff panes) and then ask for the customer round (`POST /api/demo/customer-session`) whose token
+ * the left pane opens.
+ *
+ * They are one query rather than two mutations because the order is the contract, not a user action:
+ * a query runs them once per page load, keeps the pair in the cache (a remount or a tab refocus does not
+ * sign in again), and hands the screen both a token and the failure to show. Every failure keeps its
+ * server Thai message, so `TABLE_OCCUPIED` reads exactly as the login card shows it.
+ */
+export function useDemoSplitScreen() {
+  return useQuery({
+    queryKey: demoSplitScreenQueryKey,
+    queryFn: async (): Promise<DemoCustomerSessionDto> => {
+      await apiFetch<void>("/api/demo/login", { method: "POST", body: JSON.stringify({ role: "Owner" }) });
+      return apiFetch<DemoCustomerSessionDto>("/api/demo/customer-session", { method: "POST" });
+    },
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
+}
