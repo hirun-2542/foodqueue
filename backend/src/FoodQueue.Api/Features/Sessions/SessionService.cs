@@ -229,6 +229,13 @@ public sealed class SessionService(AppDbContext db, IConfiguration config, ILive
                 "รอบนี้ปิดไปแล้ว ยกเลิกไม่ได้");
         }
 
+        // รอบที่ถูกรวมเข้าบิลอื่น: การยกเลิกรอบลูกจะทิ้งออเดอร์ของมันไว้นอกบิลหลักที่ยังคิดเงินอยู่ จึงยกเลิกที่นี่ไม่ได้
+        if (session.MergedIntoSessionId is not null)
+        {
+            throw new AppException(ErrorCodes.SessionHasOrders, ErrorCodes.StatusFor(ErrorCodes.SessionHasOrders),
+                "ยกเลิกโต๊ะไม่ได้ เพราะรอบนี้ถูกรวมเข้าบิลของอีกโต๊ะอยู่ · ยกเลิกรอบหลักแทน");
+        }
+
         var hasOrders = await db.Orders
             .AnyAsync(o => o.TableSessionId == session.Id && o.Status != OrderStatus.Cancelled, ct);
         if (hasOrders)

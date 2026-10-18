@@ -166,3 +166,31 @@ Evidence:
   re-exercise the reports screen; I only saw the merged single row and summed `guests 7` in the history API.
   I also did not test `MoveTableAction`/`ออเดอร์` movement, nor a merge attempted concurrently from two
   browsers (`FOR UPDATE` deadlock ordering) — both are outside this ticket's own behaviour.
+
+### Defect found and fixed after the review (2026-10-18)
+
+A round merged into another round's bill could be closed **on its own**. `SessionMergeService` leaves the child
+`Open` (so its QR keeps working, which the ticket requires) but `PaymentService.PayAsync` only guarded
+`Status != Open`, and `ComputeBillAsync(child)` finds no children — so paying the child issued a receipt for the
+child's own subtotal while the primary's bill still counted the same food.
+
+Reproduced on the real stack before the fix: merge B4 into B3, then
+`POST /api/sessions/{B4}/payment {"method":"Cash"}` → **200** with `receiptNo R20261018-000940`, `total ฿721.50`,
+while `GET /api/sessions/{B3}` stayed `total ฿1,443.00` (the child's food billed twice) and the history showed
+one receipt. The UI offered the button too: the session screen mounts `PaymentPanel` for any `Open` round.
+
+Fixed at the root in three places, each verified:
+
+- `PaymentService.PayAsync` refuses a round whose `MergedIntoSessionId` is set, with **400 `VALIDATION_FAILED`**
+  `โต๊ะ B4 ถูกรวมเข้าบิลของโต๊ะ B3 อยู่แล้ว · รับชำระที่บิลหลัก`, before any money or `Payment` row exists.
+- `SessionService.VoidAsync` refuses the same round (**409 `SESSION_HAS_ORDERS`**), because voiding a child would
+  strand its orders outside a primary that still bills them.
+- `payment-panel.tsx` renders the merged notice instead of the `รับชำระเงิน` button: measured in the browser,
+  the child's screen has **0** payment buttons and shows `รอบนี้ถูกรวมอยู่ในบิลของอีกโต๊ะ` /
+  `รับชำระที่บิลหลัก · ปิดบิลที่นี่ไม่ได้`, while the primary still has 1.
+
+Regression test `A_merged_child_cannot_be_paid_or_voided_on_its_own` in `MergeBillTests.cs` drives the whole
+sequence through HTTP and then proves the primary still pays correctly (one receipt, ฿2,364.59). It was
+**proven red first** with the two guards reverted (`Expected: BadRequest, Actual: OK`) and green with them
+restored. `cd backend && dotnet test` → `Passed! - Failed: 0, Passed: 247, Skipped: 0, Total: 247`;
+`pnpm build` then `pnpm exec tsc --noEmit` → clean; `pnpm lint` → clean.

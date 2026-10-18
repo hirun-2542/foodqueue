@@ -43,12 +43,13 @@ function LineThumb({ line }: { line: CartLine }) {
  * บรรทัดที่มีหมายเหตุอยู่แล้วแสดงช่องกรอกให้เลย
  */
 function NoteButton({ line, onExpand }: { line: CartLine; onExpand: () => void }) {
+  // The customer's phone needs a 44px target (DESIGN); the pencil is 16px, centred inside a 44px box.
   return (
     <button
       type="button"
       aria-label={`เพิ่มหมายเหตุของ ${line.name}`}
       onClick={onExpand}
-      className="inline-flex size-7 flex-none items-center justify-center rounded-sm text-muted-foreground hover:bg-sunken"
+      className="inline-flex size-11 flex-none items-center justify-center rounded-full text-muted-foreground hover:bg-sunken"
     >
       <PencilIcon className="size-4" strokeWidth={1.75} aria-hidden />
     </button>
@@ -127,10 +128,9 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
           <Button
             type="button"
             variant="ghost"
-            size="sm"
             disabled={empty}
             onClick={clear}
-            className="text-ink-2"
+            className="h-11 text-ink-2"
           >
             <Trash2Icon aria-hidden />
             ล้างตะกร้า

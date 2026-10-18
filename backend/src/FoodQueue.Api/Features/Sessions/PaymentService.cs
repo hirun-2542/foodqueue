@@ -78,7 +78,17 @@ public sealed class PaymentService(AppDbContext db, ISessionService sessions, IL
                     : $"โต๊ะ {TableName(session)} ถูกยกเลิกไปแล้ว · ไม่มีบิลให้รับชำระ");
         }
 
-        // 2. ไม่มีออเดอร์ที่ครัวยังทำไม่เสร็จ (Ready ไม่ขวาง) — ออเดอร์ของรอบที่ถูกรวมก็อยู่ในบิลนี้
+        // 2. ต้องไม่ใช่รอบที่ถูกรวมเข้าบิลอื่น (ticket 22): รอบลูกยัง Open และยังสั่งผ่าน QR เดิมได้ แต่มันเป็นส่วนหนึ่ง
+        //    ของบิลหลัก — ถ้าปิดที่นี่ บิลลูกจะคิดแค่ยอดของตัวเอง ขณะที่รอบหลักยังคิดออเดอร์ของมันอยู่ = คิดเงินซ้ำ
+        if (session.MergedIntoSessionId is { } primaryId)
+        {
+            var primary = await db.TableSessions.AsNoTracking().Include(s => s.Table)
+                .FirstOrDefaultAsync(s => s.Id == primaryId, ct);
+            throw Invalid(
+                $"โต๊ะ {TableName(session)} ถูกรวมเข้าบิลของโต๊ะ {primary?.Table?.Name ?? primaryId.ToString()} อยู่แล้ว · รับชำระที่บิลหลัก");
+        }
+
+        // 3. ไม่มีออเดอร์ที่ครัวยังทำไม่เสร็จ (Ready ไม่ขวาง) — ออเดอร์ของรอบที่ถูกรวมก็อยู่ในบิลนี้
         //    จึงขวางด้วย และถูกเรียกชื่อพร้อมโต๊ะของมันเพราะเลขรอบซ้ำกันข้ามโต๊ะได้
         var blocking = session.Orders
             .Select(o => (Order: o, Table: TableName(session)))
@@ -103,7 +113,7 @@ public sealed class PaymentService(AppDbContext db, ISessionService sessions, IL
                 });
         }
 
-        // 3. ยอดที่รับ
+        // 4. ยอดที่รับ
         var bill = await sessions.ComputeBillAsync(session, ct);
         var received = bill.Total;
         if (method == PaymentMethod.Cash)

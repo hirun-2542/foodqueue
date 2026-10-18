@@ -610,6 +610,46 @@ public partial class MergeBillTests(PostgresFixture postgres)
             r => r.GetProperty("quantity").GetInt32() == 2);
     }
 
+    /// <summary>
+    /// รอบที่ถูกรวมเข้าบิลอื่นยัง Open เพื่อให้ลูกค้าสั่งผ่าน QR เดิมได้ — จึงต้องไม่มีทางปิดมันเองได้
+    /// ไม่งั้นบิลลูกจะออกใบเสร็จสำหรับยอดของตัวเอง ขณะที่บิลหลักยังคิดออเดอร์ชุดเดียวกันอยู่ = คิดเงินซ้ำ
+    /// (พบจริงบน stack: ปิดรอบลูกด้วยเงินสดได้ใบเสร็จ R20261018-000940 ฿721.50 และยอดของรอบหลักยังเป็น ฿1,443.00)
+    /// </summary>
+    [Fact]
+    public async Task A_merged_child_cannot_be_paid_or_voided_on_its_own()
+    {
+        using var app = new TestApp(postgres);
+        var world = await WorldAsync(app);
+        var merged = await OkAsync(await MergeAsync(world.Owner, world.A1.Id, world.A2.Id));
+
+        // บิลหลักคิดออเดอร์ของรอบลูกแล้ว (ยอดรวมเท่ากับที่ mockup o19 ให้) และรอบลูกยัง Open แต่ชี้มาที่บิลหลัก
+        Assert.Equal(2364.59m, Bill(merged).Total);
+        Assert.Equal(world.A1.Id, (await DetailAsync(world.Owner, world.A2.Id))
+            .GetProperty("mergedIntoSessionId").GetInt32());
+
+        // ชำระที่รอบลูกไม่ได้ — ต้องบอกให้ไปจ่ายที่บิลหลัก และต้องไม่มีเงินหรือใบเสร็จเกิดขึ้นเลย
+        var refused = await AssertRefusedAsync(await PayAsync(world.Owner, world.A2.Id, "Cash", 999_99m),
+            HttpStatusCode.BadRequest, ErrorCodes.ValidationFailed);
+        Assert.Contains(world.A1.TableName, refused.GetProperty("message").GetString());
+        Assert.Empty(await StoredPaymentsAsync(app));
+        Assert.Equal(SessionStatus.Open, (await StoredAsync(app, world.A2.Id)).Status);
+        Assert.Equal(SessionStatus.Open, (await StoredAsync(app, world.A1.Id)).Status);
+
+        // ยกเลิกรอบลูกก็ไม่ได้ด้วยเหตุผลเดียวกัน (ออเดอร์ของมันอยู่ในบิลหลัก)
+        await AssertRefusedAsync(await world.Owner.PostAsync($"/api/sessions/{world.A2.Id}/void", null),
+            HttpStatusCode.Conflict, ErrorCodes.SessionHasOrders);
+        Assert.Equal(SessionStatus.Open, (await StoredAsync(app, world.A2.Id)).Status);
+
+        // และตัวเลขยังคิดครั้งเดียว: ยอดรวมทั้งบิลไม่ขยับหลังความพยายามทั้งสองครั้ง
+        Assert.Equal(2364.59m, Bill(await DetailAsync(world.Owner, world.A1.Id)).Total);
+
+        // บิลหลักยังปิดได้ตามปกติ — ใบเสร็จใบเดียว ยอดรวม ยอดเดียว
+        var paid = await OkAsync(await PayAsync(world.Owner, world.A1.Id, "Cash", 2400m));
+        Assert.Equal(2364.59m, paid.GetProperty("payment").GetProperty("total").GetDecimal());
+        Assert.Single(await StoredPaymentsAsync(app));
+        Assert.Equal(SessionStatus.Paid, (await StoredAsync(app, world.A2.Id)).Status);
+    }
+
     private static JsonElement RowFor(JsonElement overview, string tableName) =>
         overview.EnumerateArray().Single(t => t.GetProperty("name").GetString() == tableName);
 }

@@ -5,6 +5,7 @@ import {
   CheckIcon,
   CircleAlertIcon,
   CreditCardIcon,
+  MergeIcon,
   PrinterIcon,
   QrCodeIcon,
 } from "lucide-react";
@@ -85,6 +86,22 @@ export function PaymentPanel({ session }: { session: SessionDetailDto }) {
 
   if (session.status !== "Open") {
     return null;
+  }
+
+  // A round merged into another one (ticket 22) is part of the primary's bill: closing it here would charge its
+  // own lines while the primary still bills the same food, so the only honest action is to send the owner there.
+  if (session.mergedIntoSessionId != null) {
+    return (
+      <div className="mt-3 border-t border-border pt-3">
+        <div className="rounded-lg bg-sunken px-3 py-2 text-label text-ink-2">
+          <span className="flex items-center gap-2 font-semibold">
+            <MergeIcon className="size-4" strokeWidth={1.75} aria-hidden />
+            รอบนี้ถูกรวมอยู่ในบิลของอีกโต๊ะ
+          </span>
+          <p className="mt-1 font-normal">รับชำระที่บิลหลัก · ปิดบิลที่นี่ไม่ได้</p>
+        </div>
+      </div>
+    );
   }
 
   return (

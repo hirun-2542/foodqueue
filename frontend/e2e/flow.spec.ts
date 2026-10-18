@@ -228,6 +228,39 @@ async function expectTouchTarget(target: Locator, what: string) {
   expect(box!.height, `${what} height`).toBeGreaterThanOrEqual(MIN_TARGET_PX);
 }
 
+/**
+ * Every visible interactive control on a customer screen, measured — not just the ones this file happens to
+ * name. Picking controls by hand is how a 28px note button and a `size="sm"` `ล้างตะกร้า` sat on the phone
+ * through an earlier pass of this very gate: the named assertions passed because they never looked at those two.
+ *
+ * One deliberate exclusion, stated rather than silently applied: the sticky category rail is a horizontally
+ * scrolling strip, and each tab is as wide as its Thai label (measured: 18–59px wide, 44px tall in a 44px strip,
+ * exactly as `design/src/frames/c1-menu.html` draws it). Requiring 44px of width there would redesign the
+ * frame's rail, so the rail's own tabs are excluded by their container and everything else must clear 44 on
+ * **both** sides.
+ */
+async function expectEveryTouchTarget(page: Page, screen: string) {
+  const controls = await page.evaluate((min) => {
+    const rows: Array<{ label: string; w: number; h: number }> = [];
+    for (const el of document.querySelectorAll<HTMLElement>('button, a[href], [role="button"]')) {
+      if (el.offsetParent === null) continue;
+      if (el.closest("nav.sticky")) continue; // the category rail (see above)
+      const rect = el.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) continue;
+      if (rect.width >= min && rect.height >= min) continue;
+      rows.push({
+        label: (el.getAttribute("aria-label") ?? el.textContent ?? el.tagName).trim().replace(/\s+/g, " ").slice(0, 44),
+        w: +rect.width.toFixed(1),
+        h: +rect.height.toFixed(1),
+      });
+    }
+    return rows;
+  }, MIN_TARGET_PX);
+  console.log(`touch sweep ${screen}: ${controls.length} control(s) below ${MIN_TARGET_PX}px on a side`);
+  for (const row of controls) console.log(`  ${row.w}×${row.h} px · ${row.label}`);
+  expect(controls, `${screen}: controls under ${MIN_TARGET_PX}px`).toEqual([]);
+}
+
 type Rgb = readonly [number, number, number];
 
 /** A computed `rgb()`/`rgba()` colour; a translucent one has no fixed ratio and is refused. */
@@ -362,6 +395,7 @@ test("owner opens a table, a phone orders from its QR, the kitchen serves it liv
   });
   await customer.screenshot({ path: "test-results/27-c1-menu.png" });
   await expectNoHorizontalScroll(customer, "menu (c1)");
+  await expectEveryTouchTarget(customer, "menu (c1)");
 
   // Each dish is taken from the category the shop lists it under, so a same-named dish another run added
   // elsewhere on the menu cannot stand in for it.
@@ -396,6 +430,7 @@ test("owner opens a table, a phone orders from its QR, the kitchen serves it liv
   await expectTouchTarget(sheet.getByRole("button", { name: `ลด ${firstItem.name}`, exact: true }), `cart stepper − "${firstItem.name}"`);
   await customer.screenshot({ path: "test-results/27-c2-cart.png", animations: "disabled" });
   await expectNoHorizontalScroll(customer, "cart sheet (c2)");
+  await expectEveryTouchTarget(customer, "cart sheet (c2)");
 
   // ── Kitchen: the round appears in รอรับ within 5 s, through the hub, with no reload ─────────────────────────
   const cardName = `โต๊ะ ${tableName} รอบที่ 1`;
