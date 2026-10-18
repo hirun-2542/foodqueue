@@ -1,6 +1,7 @@
 # 12: ครัวเลื่อนสถานะ เริ่มทำ/พร้อมเสิร์ฟ และยกเลิกพร้อมเหตุผล
 
 Status: ready-for-agent
+State: closed
 
 Source: `../spec.md` (user stories 37, 38, 39, 102) และ `../plan.md` (Step 7 (workflow, cancel), Step 13); ถ้า spec กับ plan ขัดกัน ให้ยึด spec; หน้าจอที่ออกแบบแล้ว: frame k1, k2 ใน `../../design/out/`
 
@@ -24,6 +25,16 @@ plan.md บรรทัด 21, 74, 141, 247: ขั้น Served และกา
 - [x] ออเดอร์ที่ถูกยกเลิกไม่ถูกคิดเงิน (พิสูจน์ผ่านบิลใน ticket 16)
 - [x] จอตรงกับ mockup k1 (ปุ่ม เริ่มทำ / พร้อมเสิร์ฟ, "รอพนักงานนำไปเสิร์ฟ") และ k2 (dialog ยกเลิกพร้อมเหตุผลและ chip ลัด)
 - [x] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
+
+## Comments
+
+### 12 — ครัวเลื่อนสถานะ เริ่มทำ/พร้อมเสิร์ฟ และยกเลิกพร้อมเหตุผล
+
+Resolution: the kitchen advances a round Pending→Preparing→Ready with a conditional update, cancelling
+carries a reason, and the board is the only place either happens.
+
+Evidence:
+
 - Smoke on the real `docker compose` stack through Caddy, as a Kitchen account at 1280×800: pressing `เริ่มทำ`
   on the top card moved it out of `รอรับ` (3 → 2), and pressing `พร้อมเสิร์ฟ` moved it into `พร้อมเสิร์ฟ`
   (counter 1) where the card reads `รอพนักงานนำไปเสิร์ฟ` with its `⋯` control — the whole flow ran against the
