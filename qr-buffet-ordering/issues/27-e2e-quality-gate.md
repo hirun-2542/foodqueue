@@ -81,7 +81,7 @@ Evidence:
 - **Numbers from this branch** (`/home/novanod/Documents/ProjectPort/FoodQueue` @ `67f3a7e`, against a private
   `docker compose -p fq27` stack on :8090 whose volumes were **destroyed and recreated** so the demo seeder ran
   from empty — the shared stack on :8080 was never touched):
-  `cd backend && dotnet test` → `Passed! - Failed: 0, Passed: 246, Skipped: 0, Total: 246`;
+  `cd backend && dotnet test` → `Passed! - Failed: 0, Passed: 247, Skipped: 0, Total: 247`;
   `pnpm build` → compiled, `pnpm exec tsc --noEmit` → clean, `pnpm lint` → 0 findings over 108 files;
   `cd frontend && pnpm exec playwright test` → **33 passed, 7 skipped, 0 failed, 0 flaky** in 40.4 s with the
   default worker count. The 7 skips are the viewport-project skips the desktop-only and demo-switch specs
@@ -105,3 +105,22 @@ Evidence:
   final clean run (and 20/20 on their own with `--repeat-each=2` at 1 worker; the file already documents
   `--workers=1` because the popup is shop-wide).
 - The README's documented commands are unchanged and are exactly the two lines above.
+
+### Follow-up after the review (2026-10-18)
+
+Two defects that this ticket's own quality gate should have caught were found after it closed, and both are now
+fixed and covered by the gate itself:
+
+- **A merged child round could be paid on its own** (ticket 22's bill): reproduced live, fixed in
+  `PaymentService`/`SessionService`, with a regression test proven red before the fix. The full record is under
+  `22-merge-bills.md`, section "Defect found and fixed after the review".
+- **Two controls on the customer's phone were under 44px** — `ล้างตะกร้า` at **115×36 px** and the per-line note
+  button at **28×28 px** — because the gate measured a hand-picked list of controls rather than all of them. Both
+  are now 44px, and `frontend/e2e/flow.spec.ts` sweeps every visible control on the menu and cart screens on both
+  sides (excluding only the category rail, whose tabs are label-width by design). Proven red-then-green by
+  reverting only those two controls: the sweep then reported exactly those three undersized controls and the flow
+  failed; with the fix it reports zero and passes.
+
+Numbers at the final revision: `cd backend && dotnet test` →
+`Passed! - Failed: 0, Passed: 247, Skipped: 0, Total: 247`; `pnpm build` then `pnpm exec tsc --noEmit` → clean;
+`pnpm lint` → clean; `cd frontend && pnpm exec playwright test` → **33 passed, 7 skipped, 0 failed**.
