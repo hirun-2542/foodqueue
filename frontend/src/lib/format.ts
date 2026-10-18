@@ -68,3 +68,47 @@ const bahtWhole = new Intl.NumberFormat("th-TH", {
 export function formatBahtWhole(amount: number): string {
   return bahtWhole.format(amount);
 }
+
+/** Time-rail fill: Ember before the Last-order tick, Seating Orange after it, cancel red once over. */
+export type TimeTone = "elapsed" | "late" | "over";
+
+export interface RoundTime {
+  /** Whole minutes the round lasts: `endsAt − openedAt` from the server. */
+  duration: number;
+  /** Minutes still available, never negative; 0 once the round is over. */
+  left: number;
+  /** Ordering is still open and only the shop's warning window (or less) remains. */
+  isLastOrder: boolean;
+  /** `endsAt` has passed: new ordering is closed, the bill can still be adjusted and paid. */
+  isOver: boolean;
+  /** Time-rail geometry, both 0–100. */
+  rail: { elapsed: number; mark: number; tone: TimeTone };
+}
+
+/**
+ * Everything a staff screen needs to present one round, from figures the server already computed:
+ * `minutesUsed` is the server's reading at request time and the two instants are stored data. Nothing
+ * here reads the client clock, so the same render always produces the same text and no screen can
+ * grow a countdown.
+ */
+export function roundTime(
+  minutesUsed: number,
+  openedAt: Instant,
+  endsAt: Instant,
+  lastOrderWarningMinutes: number,
+): RoundTime {
+  const duration = Math.max(0, Math.round((toMs(endsAt) - toMs(openedAt)) / 60_000));
+  const used = Math.max(0, minutesUsed);
+  const left = Math.max(0, duration - used);
+  const isOver = left <= 0;
+  const mark = duration > 0 ? Math.min(100, ((duration - lastOrderWarningMinutes) / duration) * 100) : 0;
+  const elapsed = duration > 0 ? Math.min(100, (used / duration) * 100) : 0;
+
+  return {
+    duration,
+    left,
+    isLastOrder: !isOver && left <= lastOrderWarningMinutes,
+    isOver,
+    rail: { elapsed, mark, tone: isOver ? "over" : left <= lastOrderWarningMinutes ? "late" : "elapsed" },
+  };
+}
