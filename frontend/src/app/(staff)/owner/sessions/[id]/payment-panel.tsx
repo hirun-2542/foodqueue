@@ -260,7 +260,7 @@ function PaymentDialog({ session, onClose }: { session: SessionDetailDto; onClos
     <Dialog open onOpenChange={(open) => (open ? undefined : onClose())}>
       <DialogContent className="sm:max-w-[560px]" showCloseButton={false}>
         <DialogHeader className="flex-row items-center justify-between gap-3">
-          <DialogTitle>รับชำระเงิน · โต๊ะ {session.tableName}</DialogTitle>
+          <DialogTitle className="text-headline">รับชำระเงิน · โต๊ะ {session.tableName}</DialogTitle>
           <Badge variant="accent" className="before:hidden">
             {session.packageName}
           </Badge>
