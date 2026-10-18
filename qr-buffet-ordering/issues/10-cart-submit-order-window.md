@@ -23,8 +23,8 @@ plan.md Step 12 บรรทัด 202–207: นับถอยหลัง `mm
 - [x] สั่งสำเร็จสองรอบได้เลขรอบ 1 และ 2 (max+1 ใน transaction เดียว retry หนึ่งครั้งเมื่อชน unique); หน้าจอลูกค้าไม่แสดงเลขรอบ
 - [x] ตั้ง EndsAt ผ่านข้อมูลทดสอบ (ไม่ sleep) แล้วสั่ง → `SESSION_EXPIRED`; หน้าจอแสดง c5 "หมดเวลาสั่งอาหาร" และ Last order ตามค่าที่ตั้งใน ticket 03 โดยไม่มีตัวนับถอยหลัง
 - [x] ข้อความภาษาไทยชัดเจนเมื่อสั่งไม่ได้ (เกินลิมิต หมดเวลา เมนูหมด เมนูไม่อยู่ในแพ็กเกจ)
-- [ ] หน้าจอตรงกับ mockup c2 (cart sheet) และ c5 (Last order, ครบลิมิต, หมดเวลา)
-- [ ] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
+- [x] หน้าจอตรงกับ mockup c2 (cart sheet) และ c5 (Last order, ครบลิมิต, หมดเวลา)
+- [x] สร้างครบทุกชั้นที่ slice นี้แตะ (schema/API/UI) พร้อมเทสต์ seam 1 ตามหัวข้อ Testing Decisions ของ spec และ smoke run บน stack จริง (`docker compose up`) ที่เห็นพฤติกรรมของ ticket นี้ด้วยตา; โมเดลที่เพิ่มเข้า migration `Initial` ตัวเดียว (ดู ticket 01)
 
 ## Comments
 
