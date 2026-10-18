@@ -51,6 +51,8 @@ export interface BlockingOrderDto {
   id: number;
   number: number;
   status: OrderStatus;
+  /** The round's table. Round numbers repeat across tables, so a merged bill names the table too. */
+  tableName: string;
 }
 
 /** Body of `POST /api/sessions/{id}/payment`. `amountReceived` is only read when the method is Cash. */
@@ -202,6 +204,38 @@ export interface MenuItemChangedEvent {
 /** Payload of the `sessionClosed` hub event. */
 export interface SessionClosedEvent {
   sessionId: number;
+}
+
+/** One table of the merge dialog (`POST /api/sessions/{id}/merge/preview`, ticket 22). */
+export interface MergePreviewTableDto {
+  sessionId: number;
+  tableName: string;
+  packageName: string;
+  adults: number;
+  children: number;
+  openedAt: string;
+  /** The round's own subtotal before service charge — the number the dialog lists per table. */
+  subtotal: number;
+  total: number;
+}
+
+/**
+ * What the merge dialog needs before confirming (frame o19): the primary round, the rounds already
+ * chosen (`mergeable`), the rest that can still be chosen (`candidates`) and the merged `bill` the one
+ * server calculator produced for that selection — so the preview is the bill that will exist.
+ */
+export interface MergePreviewDto {
+  primarySessionId: number;
+  primaryTableName: string;
+  primaryPackageName: string;
+  primaryAdults: number;
+  primaryChildren: number;
+  primaryOpenedAt: string;
+  primarySubtotal: number;
+  primaryTotal: number;
+  mergeable: MergePreviewTableDto[];
+  candidates: MergePreviewTableDto[];
+  bill: BillDto;
 }
 
 /** Every server → client event on `/hubs/live`, keyed by event name. */

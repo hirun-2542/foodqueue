@@ -9,8 +9,11 @@ using Npgsql;
 
 namespace FoodQueue.Api.Features.Sessions;
 
-/// <summary>ออเดอร์ที่ยังค้างในครัวและขวางการปิดบิล — ส่งไปกับ <c>ORDERS_IN_PROGRESS</c> ใน field <c>orders</c></summary>
-public sealed record BlockingOrderDto(int Id, int Number, string Status);
+/// <summary>
+/// ออเดอร์ที่ยังค้างในครัวและขวางการปิดบิล — ส่งไปกับ <c>ORDERS_IN_PROGRESS</c> ใน field <c>orders</c>
+/// <c>TableName</c> มีความจำเป็นกับบิลรวม (ticket 22): เลขรอบซ้ำกันข้ามโต๊ะได้ เจ้าของร้านจึงต้องรู้ว่ารอบไหนของโต๊ะไหน
+/// </summary>
+public sealed record BlockingOrderDto(int Id, int Number, string Status, string TableName);
 
 /// <summary>
 /// การปิดบิล (spec "การปิดบิล", user stories 69, 70, 72, 74–77) — จุดเดียวที่ endpoint และ Demo bot (ticket 25)
@@ -52,6 +55,20 @@ public sealed class PaymentService(AppDbContext db, ISessionService sessions, IL
 
         var session = await sessions.RequireAsync(sessionId, ct);
 
+        // บิลรวม (ticket 22): ทุกรอบที่ถูกรวมเข้าบิลนี้ปิดพร้อมกันเมื่อบิลหลักถูกชำระ — ล็อกแถวของมันไว้ก่อน
+        // เพื่อไม่ให้มีออเดอร์ใหม่หรือการรวมรอบที่กำลังจะปิดเข้ามาระหว่างนี้
+        var merged = await db.TableSessions
+            .Include(s => s.Table)
+            .Include(s => s.Orders).ThenInclude(o => o.Items)
+            .Where(s => s.MergedIntoSessionId == session.Id)
+            .OrderBy(s => s.Id)
+            .ToListAsync(ct);
+        foreach (var child in merged)
+        {
+            await db.Database.ExecuteSqlInterpolatedAsync(
+                $"SELECT 1 FROM \"TableSessions\" WHERE \"Id\" = {child.Id} FOR UPDATE", ct);
+        }
+
         // 1. ต้อง Open
         if (session.Status != SessionStatus.Open)
         {
@@ -61,20 +78,28 @@ public sealed class PaymentService(AppDbContext db, ISessionService sessions, IL
                     : $"โต๊ะ {TableName(session)} ถูกยกเลิกไปแล้ว · ไม่มีบิลให้รับชำระ");
         }
 
-        // 2. ไม่มีออเดอร์ที่ครัวยังทำไม่เสร็จ (Ready ไม่ขวาง)
+        // 2. ไม่มีออเดอร์ที่ครัวยังทำไม่เสร็จ (Ready ไม่ขวาง) — ออเดอร์ของรอบที่ถูกรวมก็อยู่ในบิลนี้
+        //    จึงขวางด้วย และถูกเรียกชื่อพร้อมโต๊ะของมันเพราะเลขรอบซ้ำกันข้ามโต๊ะได้
         var blocking = session.Orders
-            .Where(o => o.Status is OrderStatus.Pending or OrderStatus.Preparing)
-            .OrderBy(o => o.Number)
+            .Select(o => (Order: o, Table: TableName(session)))
+            .Concat(merged.SelectMany(child => child.Orders.Select(o => (Order: o, Table: TableName(child)))))
+            .Where(x => x.Order.Status is OrderStatus.Pending or OrderStatus.Preparing)
+            .OrderBy(x => x.Order.Id)
             .ToList();
         if (blocking.Count > 0)
         {
-            var rounds = string.Join(", ", blocking.Select(o =>
-                $"รอบที่ {o.Number} ({(o.Status == OrderStatus.Pending ? "รอรับ" : "กำลังทำ")})"));
+            var primaryTable = TableName(session);
+            var rounds = string.Join(", ", blocking.Select(x =>
+                $"{(x.Table == primaryTable ? "" : $"โต๊ะ {x.Table} ")}รอบที่ {x.Order.Number} " +
+                $"({(x.Order.Status == OrderStatus.Pending ? "รอรับ" : "กำลังทำ")})"));
             throw new AppException(ErrorCodes.OrdersInProgress, ErrorCodes.StatusFor(ErrorCodes.OrdersInProgress),
                 $"ยังปิดบิลไม่ได้ · มีออเดอร์ค้างในครัว: {rounds}",
                 new Dictionary<string, object?>
                 {
-                    ["orders"] = blocking.Select(o => new BlockingOrderDto(o.Id, o.Number, o.Status.ToString())).ToList(),
+                    ["orders"] = blocking
+                        .Select(x => new BlockingOrderDto(x.Order.Id, x.Order.Number, x.Order.Status.ToString(),
+                            x.Table))
+                        .ToList(),
                 });
         }
 
@@ -125,6 +150,14 @@ public sealed class PaymentService(AppDbContext db, ISessionService sessions, IL
         session.Status = SessionStatus.Paid;
         session.ClosedAt = paidAt;
 
+        // ทุกรอบที่ถูกรวมเข้าบิลนี้ปิดพร้อมกัน — โต๊ะว่างทั้งหมด และ token ของแต่ละรอบสั่งไม่ได้อีก
+        // (ใบเสร็จใบเดียวอยู่ที่ session หลักเท่านั้น: Payment มี unique index บน TableSessionId)
+        foreach (var child in merged)
+        {
+            child.Status = SessionStatus.Paid;
+            child.ClosedAt = paidAt;
+        }
+
         try
         {
             await db.SaveChangesAsync(ct);
@@ -140,6 +173,13 @@ public sealed class PaymentService(AppDbContext db, ISessionService sessions, IL
 
         var detail = await sessions.MapDetailAsync(session, ct);
         // sessionChanged ก่อน: sessionClosed ตัดการเชื่อมต่อของลูกค้ารอบนี้ (LiveNotifier)
+        // ทุกรอบที่ถูกรวมปิดไปพร้อมกัน จึงประกาศของมันด้วย เพื่อให้จอที่เปิดรอบนั้นอยู่รู้ตัวทันที
+        foreach (var child in merged)
+        {
+            await notifier.SessionChanged(sessions.MapSummary(child), child.Id);
+            await notifier.SessionClosed(child.Id);
+        }
+
         await notifier.SessionChanged(sessions.MapSummary(session), session.Id);
         await notifier.SessionClosed(session.Id);
         return detail;

@@ -98,7 +98,8 @@ export function PaymentPanel({ session }: { session: SessionDetailDto }) {
           <ul className="mt-1 font-normal">
             {blocking.map((order) => (
               <li key={order.id}>
-                รอบที่ <span className="tabular-nums">{order.number}</span> · {ROUND_STATUS[order.status]}
+                {order.tableName === session.tableName ? null : `โต๊ะ ${order.tableName} `}รอบที่{" "}
+                <span className="tabular-nums">{order.number}</span> · {ROUND_STATUS[order.status]}
               </li>
             ))}
           </ul>
@@ -362,7 +363,8 @@ function PaymentDialog({ session, onClose }: { session: SessionDetailDto; onClos
                 <ul className="mt-1 font-normal">
                   {blocking.map((order) => (
                     <li key={order.id}>
-                      รอบที่ <span className="tabular-nums">{order.number}</span> · {ROUND_STATUS[order.status]}
+                      {order.tableName === session.tableName ? null : `โต๊ะ ${order.tableName} `}รอบที่{" "}
+                <span className="tabular-nums">{order.number}</span> · {ROUND_STATUS[order.status]}
                     </li>
                   ))}
                 </ul>
