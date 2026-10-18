@@ -13,17 +13,23 @@ public sealed class AppExceptionHandler(IProblemDetailsService problemDetails) :
         }
 
         http.Response.StatusCode = app.Status;
+        var details = new ProblemDetails
+        {
+            Status = app.Status,
+            Title = app.Message,
+            Detail = app.Message,
+            Extensions = { ["code"] = app.Code, ["message"] = app.Message },
+        };
+        foreach (var (key, value) in app.Extensions)
+        {
+            details.Extensions[key] = value;
+        }
+
         return await problemDetails.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = http,
             Exception = app,
-            ProblemDetails = new ProblemDetails
-            {
-                Status = app.Status,
-                Title = app.Message,
-                Detail = app.Message,
-                Extensions = { ["code"] = app.Code, ["message"] = app.Message },
-            },
+            ProblemDetails = details,
         });
     }
 }

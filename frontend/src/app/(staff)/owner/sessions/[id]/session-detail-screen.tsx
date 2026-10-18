@@ -38,6 +38,8 @@ import {
 import type { BillDto, OrderDto, OrderStatus, SessionDetailDto } from "@/lib/types";
 import { QrResultDialog } from "../../open-table-flow";
 import { useSettings } from "../../settings/settings-api";
+// Ticket 18: the payment dialog lives in its own file so this screen only mounts it (see the mount points below).
+import { PaidNotice, PaymentPanel } from "./payment-panel";
 
 /** A round's single status. Ready is the last one — nothing marks a round "served" (spec). */
 const ORDER_STATUS: Record<OrderStatus, { label: string; badge: "pending" | "preparing" | "ready" | "cancelled" }> = {
@@ -208,6 +210,8 @@ function SessionDetailBody({ sessionId }: { sessionId: number }) {
               </p>
             </div>
           ) : null}
+          {/* append: ticket 18 — o07's "ปิดบิลแล้ว" well once the round is Paid. */}
+          <PaidNotice session={session} />
         </div>
       </div>
 
@@ -460,9 +464,13 @@ function BillCard({
     <section className="rounded-xl border border-border bg-surface p-4">
       <div className="mb-2 flex items-center justify-between gap-2">
         <h2 className="text-title">บิล</h2>
-        <Badge variant="accent" className="before:hidden">
-          {session.packageName} · <span className="tabular-nums">{durationMinutes}</span> นาที
-        </Badge>
+        <div className="flex items-center gap-2">
+          {/* append: ticket 18 — o07's "ชำระแล้ว" badge on the paid bill. */}
+          {session.status === "Paid" ? <Badge variant="ready">ชำระแล้ว</Badge> : null}
+          <Badge variant="accent" className="before:hidden">
+            {session.packageName} · <span className="tabular-nums">{durationMinutes}</span> นาที
+          </Badge>
+        </div>
       </div>
 
       <div className="text-xs font-semibold text-muted-foreground">ค่าบุฟเฟ่ต์</div>
@@ -528,7 +536,9 @@ function BillCard({
         <span className="tabular-nums">{formatBaht(bill.total)}</span>
       </div>
 
-      {/* mount: ticket 18 — สถานะพร้อมปิดบิล ("ออเดอร์เสิร์ฟครบแล้ว · ปิดบิลได้") และปุ่ม "รับชำระเงิน" (primary) */}
+      {/* mount: ticket 18 — สถานะพร้อมปิดบิล ("ออเดอร์เสิร์ฟครบแล้ว · ปิดบิลได้") และปุ่ม "รับชำระเงิน" (primary)
+          รวมถึงแถว ชำระเมื่อ/รับเงิน/เงินทอน/เลขที่ใบเสร็จ ของ o07 เมื่อปิดบิลแล้ว */}
+      <PaymentPanel session={session} />
     </section>
   );
 }

@@ -4,16 +4,20 @@ import type { ApiErrorCode, ProblemDetails } from "@/lib/types";
  * A failed API call. `message` is Thai and safe to show as-is.
  * `code` is the server's stable error code, or null when the response carried none
  * (401/403, proxy errors, network failure: check `status` instead; 0 means the request never got an answer).
+ * `problem` is the whole ProblemDetails body (empty when there was none), so a screen can read a rule's
+ * extra fields — e.g. the `orders` that block `ORDERS_IN_PROGRESS`, or `closedAs` on `SESSION_CLOSED`.
  */
 export class ApiError extends Error {
   readonly code: ApiErrorCode | null;
   readonly status: number;
+  readonly problem: Readonly<ProblemDetails>;
 
-  constructor(code: ApiErrorCode | null, status: number, message: string) {
+  constructor(code: ApiErrorCode | null, status: number, message: string, problem: ProblemDetails = {}) {
     super(message);
     this.name = "ApiError";
     this.code = code;
     this.status = status;
+    this.problem = problem;
   }
 }
 
@@ -35,7 +39,7 @@ async function toApiError(res: Response): Promise<ApiError> {
   // Only a coded FoodQueue problem carries Thai text in detail/title; framework defaults are English.
   const message =
     body?.message ?? (code ? (body?.detail ?? body?.title) : undefined) ?? fallbackMessage(res.status);
-  return new ApiError(code, res.status, message);
+  return new ApiError(code, res.status, message, body ?? {});
 }
 
 async function send(path: string, init: RequestInit): Promise<Response> {

@@ -63,10 +63,15 @@ public sealed class LiveNotifier(IHubContext<LiveHub, ILiveClient> hub) : ILiveN
             .MenuItemChanged(new { menuItemId, isAvailable, isActive });
     }
 
+    /// <summary>
+    /// แจ้งรอบที่ปิดแล้ว (session+owner) แล้วตัดการเชื่อมต่อของลูกค้ารอบนั้น: token ใช้ต่อ hub ไม่ได้อีกตั้งแต่ commit
+    /// และ <c>sessionClosed</c> ถูกเขียนลงการเชื่อมต่อก่อนการปิดเสมอ จอของลูกค้าจึงได้รับก่อนหลุด
+    /// </summary>
     public async Task SessionClosed(int sessionId)
     {
         await hub.Clients.Group(LiveHub.SessionGroup(sessionId)).SessionClosed(new { sessionId });
         await hub.Clients.Group(LiveHub.OwnerGroup).SessionClosed(new { sessionId });
+        CustomerConnections.For(hub).Abort(sessionId);
     }
 
     public async Task SessionClosedMany(IEnumerable<int> sessionIds)

@@ -12,9 +12,10 @@ namespace FoodQueue.Api.Realtime;
 /// ลูกค้าเข้าด้วย session token ที่ต้องเป็น session Open เท่านั้น และเห็นเฉพาะ group ของตัวเองกับ menu
 /// Staff เข้า group ตาม role (Owner: owner+kitchen+menu, Kitchen: kitchen+menu)
 /// การเชื่อมต่อที่ไม่มีทั้ง token และ role ของพนักงานถูกตัดทันที — ไม่มีใครควรค้างอยู่โดยไม่มี group
+/// การเชื่อมต่อของลูกค้าถูกจดไว้ใน <see cref="CustomerConnections"/> เพื่อให้การปิดรอบตัดการเชื่อมต่อได้ (ticket 18)
 /// </summary>
 [AllowAnonymous]
-public class LiveHub(AppDbContext db) : Hub<ILiveClient>
+public class LiveHub(AppDbContext db, IHubContext<LiveHub, ILiveClient> hubContext) : Hub<ILiveClient>
 {
     public const string KitchenGroup = "kitchen";
     public const string OwnerGroup = "owner";
@@ -36,6 +37,7 @@ public class LiveHub(AppDbContext db) : Hub<ILiveClient>
                 return;
             }
 
+            CustomerConnections.For(hubContext).Add(session.Id, Context);
             await Groups.AddToGroupAsync(Context.ConnectionId, SessionGroup(session.Id));
             await Groups.AddToGroupAsync(Context.ConnectionId, MenuGroup);
             await base.OnConnectedAsync();
@@ -62,6 +64,12 @@ public class LiveHub(AppDbContext db) : Hub<ILiveClient>
         await Groups.AddToGroupAsync(Context.ConnectionId, MenuGroup);
 
         await base.OnConnectedAsync();
+    }
+
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        CustomerConnections.For(hubContext).Remove(Context.ConnectionId);
+        return base.OnDisconnectedAsync(exception);
     }
 }
 

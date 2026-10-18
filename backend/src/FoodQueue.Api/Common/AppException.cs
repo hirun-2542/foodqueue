@@ -1,10 +1,18 @@
 namespace FoodQueue.Api.Common;
 
-/// <summary>ข้อผิดพลาดทางธุรกิจที่แปลงเป็น ProblemDetails พร้อม field `code` คงที่และข้อความไทย</summary>
-public sealed class AppException(string code, int status, string message) : Exception(message)
+/// <summary>
+/// ข้อผิดพลาดทางธุรกิจที่แปลงเป็น ProblemDetails พร้อม field `code` คงที่และข้อความไทย
+/// <paramref name="extensions"/> (ไม่บังคับ) คือ field เพิ่มเติมที่ผู้เรียกใช้ตัดสินใจบนหน้าจอได้โดยไม่ต้องแกะข้อความ
+/// เช่น ออเดอร์ที่ขวางการปิดบิล (ticket 18) — ชื่อ key ต้องเป็น camelCase ตามสาย JSON
+/// </summary>
+public sealed class AppException(string code, int status, string message,
+    IReadOnlyDictionary<string, object?>? extensions = null) : Exception(message)
 {
+    private static readonly IReadOnlyDictionary<string, object?> None = new Dictionary<string, object?>();
+
     public string Code { get; } = code;
     public int Status { get; } = status;
+    public IReadOnlyDictionary<string, object?> Extensions { get; } = extensions ?? None;
 }
 
 public static class ErrorCodes
