@@ -43,7 +43,8 @@ export interface CartMenuItem {
   name: string;
   kind: MenuItemKind;
   price: number;
-  imagePath: string | null;
+  /** The API omits null fields, so a menu row without a photo arrives as `undefined` rather than null. */
+  imagePath?: string | null;
 }
 
 /** หนึ่งบรรทัดในตะกร้า: เก็บ snapshot ไว้ ตะกร้าจึงยังแสดงได้ก่อนเมนูโหลดเสร็จ */

@@ -18,9 +18,13 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { ApiError } from "@/lib/api";
+import { CartProvider } from "@/lib/cart";
 import { useCustomerMenu, useCustomerSession } from "@/lib/customer";
 import { formatBaht } from "@/lib/format";
 import type { CustomerCategoryDto, CustomerMenuItemDto, CustomerSessionDto } from "@/lib/types";
+import { CartBar, OrderWindowBanner } from "./cart-bar";
+import { CartSheet } from "./cart-sheet";
+import { QuantityStepper } from "./quantity-stepper";
 
 /**
  * Copy of the customer screens, verbatim from the approved frames (`notes/10-THAI-COPY.md` §c1-menu,
@@ -46,6 +50,7 @@ export function CustomerMenuScreen({ token }: { token: string }) {
   const session = useCustomerSession(token);
   const menu = useCustomerMenu(token);
   const [tab, setTab] = useState<"menu" | "orders">("menu");
+  const [cartOpen, setCartOpen] = useState(false);
 
   if (session.isPending || menu.isPending) {
     return <MenuSkeleton />;
@@ -57,22 +62,32 @@ export function CustomerMenuScreen({ token }: { token: string }) {
     return <QrProblem error={session.error ?? menu.error} />;
   }
 
-  if (tab === "orders") {
-    return (
-      <Shell session={session.data} tab={tab} onTab={setTab}>
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 px-8 text-center">
-          <ClipboardListIcon className="size-8 text-muted-foreground" strokeWidth={1.5} aria-hidden />
-          <span className="text-title">ออเดอร์ของโต๊ะ</span>
-          <span className="text-body text-muted-foreground">รายการที่โต๊ะสั่งจะขึ้นที่นี่โดยไม่ต้องรีเฟรช</span>
-        </div>
-      </Shell>
-    );
-  }
-
+  // The cart is per device and lives in this browser (`fq-cart-{token}`); the limits and the ordering
+  // window both come from the server's session payload, so no clock of ours decides anything.
   return (
-    <Shell session={session.data} tab={tab} onTab={setTab}>
-      <MenuBody categories={menu.data.categories} maxQtyPerItemPerOrder={session.data.maxQtyPerItemPerOrder} />
-    </Shell>
+    <CartProvider
+      token={token}
+      maxQtyPerItem={session.data.maxQtyPerItemPerOrder}
+      maxItems={session.data.maxItemsPerOrder}
+      serverNow={session.data.serverNow}
+      endsAt={session.data.endsAt}
+      warningMinutes={session.data.lastOrderWarningMinutes}
+    >
+      {tab === "orders" ? (
+        <Shell session={session.data} tab={tab} onTab={setTab} onOpenCart={() => setCartOpen(true)} cartOpen={cartOpen} onCartOpenChange={setCartOpen}>
+          <div className="flex flex-1 flex-col items-center justify-center gap-2 px-8 text-center">
+            <ClipboardListIcon className="size-8 text-muted-foreground" strokeWidth={1.5} aria-hidden />
+            <span className="text-title">ออเดอร์ของโต๊ะ</span>
+            <span className="text-body text-muted-foreground">รายการที่โต๊ะสั่งจะขึ้นที่นี่โดยไม่ต้องรีเฟรช</span>
+          </div>
+        </Shell>
+      ) : (
+        <Shell session={session.data} tab={tab} onTab={setTab} onOpenCart={() => setCartOpen(true)} cartOpen={cartOpen} onCartOpenChange={setCartOpen}>
+          <OrderWindowBanner />
+          <MenuBody categories={menu.data.categories} maxQtyPerItemPerOrder={session.data.maxQtyPerItemPerOrder} />
+        </Shell>
+      )}
+    </CartProvider>
   );
 }
 
@@ -84,18 +99,28 @@ function Shell({
   session,
   tab,
   onTab,
+  onOpenCart,
+  cartOpen,
+  onCartOpenChange,
   children,
 }: {
   session: CustomerSessionDto;
   tab: "menu" | "orders";
   onTab: (tab: "menu" | "orders") => void;
+  onOpenCart: () => void;
+  cartOpen: boolean;
+  onCartOpenChange: (open: boolean) => void;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex h-dvh flex-col bg-ground">
       <ShopBanner session={session} />
       {children}
+      <div className="flex-none px-4 pb-2">
+        <CartBar onOpen={onOpenCart} />
+      </div>
       <TabBar tab={tab} onTab={onTab} />
+      <CartSheet open={cartOpen} onOpenChange={onCartOpenChange} />
     </div>
   );
 }
@@ -280,8 +305,9 @@ function MenuRow({ item, categoryName }: { item: CustomerMenuItemDto; categoryNa
           <MenuRowMeta item={item} />
         )}
       </div>
-      {/* Sold-out rows are the only ones with a control: it is what says "สั่งไม่ได้" without colour. */}
-      {soldOut && <SoldOutControl />}
+      {/* An orderable row carries the +/− control; a sold-out row keeps the inert glyph, which is
+          what says "สั่งไม่ได้" beyond colour alone. */}
+      {soldOut ? <SoldOutControl /> : <QuantityStepper item={item} compact />}
     </li>
   );
 }
