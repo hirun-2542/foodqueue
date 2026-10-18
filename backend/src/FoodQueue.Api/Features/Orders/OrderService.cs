@@ -244,7 +244,8 @@ public sealed class OrderService(AppDbContext db, ILiveNotifier notifier) : IOrd
         order.CreatedAt,
         order.UpdatedAt,
         order.Items.Select(i => new OrderItemDto(i.NameSnapshot, i.KindSnapshot.ToString(), i.UnitPrice,
-            i.Quantity, i.Note)).ToList());
+            i.Quantity, i.Note, i.Id, i.MenuItemId)).ToList(),
+        order.EditReason);
 
     private static AppException Closed() =>
         new(ErrorCodes.SessionClosed, ErrorCodes.StatusFor(ErrorCodes.SessionClosed),

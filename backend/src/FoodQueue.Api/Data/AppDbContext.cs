@@ -74,6 +74,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         {
             e.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
             e.Property(x => x.CancelReason).HasMaxLength(200);
+            e.Property(x => x.EditReason).HasMaxLength(200);
             e.HasIndex(x => new { x.TableSessionId, x.Number }).IsUnique();
             e.HasOne(x => x.TableSession).WithMany(s => s.Orders).HasForeignKey(x => x.TableSessionId);
         });

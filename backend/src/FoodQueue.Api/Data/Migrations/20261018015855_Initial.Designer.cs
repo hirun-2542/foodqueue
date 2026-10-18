@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FoodQueue.Api.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261017200519_Initial")]
+    [Migration("20261018015855_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -209,6 +209,10 @@ namespace FoodQueue.Api.Data.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EditReason")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<int>("Number")
                         .HasColumnType("integer");

@@ -19,10 +19,13 @@ public record SettingsDto(string Name, string Address, string Phone, string? Tax
     string? BannerImagePath, decimal ServiceChargePercent, decimal VatPercent, int MaxQtyPerItemPerOrder,
     int MaxItemsPerOrder, int LastOrderWarningMinutes);
 
-public record OrderItemDto(string Name, string Kind, decimal UnitPrice, int Quantity, string? Note);
+/// <summary><c>Id</c> = แถว OrderItem (ใช้ระบุบรรทัดตอนแก้ออเดอร์), <c>MenuItemId</c> = เมนูต้นทาง (รูปย่อ)</summary>
+public record OrderItemDto(string Name, string Kind, decimal UnitPrice, int Quantity, string? Note, int Id,
+    int MenuItemId);
 
+/// <summary><c>EditReason</c> = เหตุผลของการแก้ไขครั้งล่าสุด (ticket 17); null = ไม่เคยแก้</summary>
 public record OrderDto(int Id, int SessionId, string TableName, int Number, string Status, string? CancelReason,
-    DateTimeOffset CreatedAt, DateTimeOffset UpdatedAt, IReadOnlyList<OrderItemDto> Items);
+    DateTimeOffset CreatedAt, DateTimeOffset UpdatedAt, IReadOnlyList<OrderItemDto> Items, string? EditReason);
 
 public record AdjustmentDto(int Id, string Description, decimal Amount, DateTimeOffset CreatedAt);
 
@@ -124,7 +127,8 @@ public static class DtoMapping
     public static OrderDto ToDto(this Order o) => new(o.Id, o.TableSessionId, o.TableSession?.Table?.Name ?? "",
         o.Number, o.Status.ToString(), o.CancelReason, o.CreatedAt, o.UpdatedAt,
         o.Items.Select(i => new OrderItemDto(i.NameSnapshot, i.KindSnapshot.ToString(), i.UnitPrice, i.Quantity,
-            i.Note)).ToList());
+            i.Note, i.Id, i.MenuItemId)).ToList(),
+        o.EditReason);
 
     public static AdjustmentDto ToDto(this BillAdjustment a) =>
         new(a.Id, a.Description, a.Amount, a.CreatedAt);

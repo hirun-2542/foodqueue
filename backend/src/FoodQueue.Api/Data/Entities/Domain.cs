@@ -88,6 +88,8 @@ public class Order
     public int Number { get; set; }
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
     public string? CancelReason { get; set; }
+    /// <summary>เหตุผลของการแก้ไขครั้งล่าสุด (ลดจำนวน/นำรายการออก, ticket 17) — null = ไม่เคยแก้</summary>
+    public string? EditReason { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public List<OrderItem> Items { get; set; } = [];

@@ -172,3 +172,50 @@ export function useCancelOrder() {
   });
 }
 
+// ------------------------------------------------------------------ แก้ออเดอร์ (ticket 17)
+
+/** The server's limit on an edit reason (Order.EditReason, 1–200 characters). */
+export const EDIT_REASON_MAX = 200;
+
+/** The reason chips of the edit dialog (frame o17); a tap makes that chip the reason. */
+export const EDIT_REASON_CHIPS = ["ลูกค้าเอาออก", "วัตถุดิบหมด", "สั่งผิด"] as const;
+
+/** One changed line of `POST /api/orders/{id}/edit`: the OrderItem row and its new quantity (0 = removed). */
+export interface OrderEditLine {
+  itemId: number;
+  quantity: number;
+}
+
+/**
+ * The owner reduces or removes lines of a Pending/Preparing round (OwnerOnly). Removing every line
+ * cancels the round with the reason; otherwise the status stays. `ORDER_NOT_EDITABLE` means the
+ * kitchen moved the round on (Ready) or it was cancelled meanwhile: the board refetches like any
+ * other stale action, and the server's sentence says why.
+ */
+export function useEditOrder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ order, reason, items }: { order: OrderDto; reason: string; items: OrderEditLine[] }) =>
+      apiFetch<OrderDto>(`/api/orders/${order.id}/edit`, {
+        method: "POST",
+        body: JSON.stringify({ reason, items }),
+      }),
+    onSuccess: (saved) => {
+      putOnBoard(queryClient, saved);
+      toast.success(
+        saved.status === "Cancelled"
+          ? `ยกเลิกออเดอร์ ${saved.tableName} รอบที่ ${saved.number} แล้ว`
+          : `บันทึกการแก้ไข ${saved.tableName} รอบที่ ${saved.number} แล้ว`,
+      );
+    },
+    onError: (error, { order }) => {
+      if (error instanceof ApiError && error.code === "ORDER_NOT_EDITABLE") {
+        void queryClient.invalidateQueries({ queryKey: kitchenBoardQueryKey });
+        toast.warning(`โต๊ะ ${order.tableName} รอบที่ ${order.number}: ${error.message}`);
+        return;
+      }
+      reportFailure(queryClient, error, order, "บันทึกการแก้ไขไม่สำเร็จ ลองอีกครั้ง");
+    },
+  });
+}
+

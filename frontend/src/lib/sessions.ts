@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { ApiError, apiFetch, apiFetchWithServerTime } from "@/lib/api";
 import { tableOverviewQueryKey } from "@/lib/overview";
 import { useLiveEvent } from "@/lib/realtime";
-import type { PaymentInput, SessionDetailDto } from "@/lib/types";
+import type { BillDto, PaymentInput, SessionDetailDto } from "@/lib/types";
 
 /** Body of `POST /api/sessions` — counts are the wire names the API freezes. */
 export interface OpenSessionInput {
@@ -184,4 +184,25 @@ export function useMoveSession(sessionId: number) {
       reportFailure(queryClient, sessionId, error, "ย้ายโต๊ะไม่สำเร็จ ลองอีกครั้ง");
     },
   });
+}
+
+// ------------------------------------------------------------------ ผลต่อยอดบิล (ticket 17)
+
+/** `satang × percent%` rounded half away from zero to whole satang — BillCalculator.Round2, in integers. */
+function percentOfSatang(satang: number, percent: number): number {
+  const product = satang * Math.round(percent * 100);
+  return Math.sign(product) * Math.floor((Math.abs(product) + 5000) / 10000);
+}
+
+/**
+ * The bill total if `removed` baht left the subtotal (lines taken out of a round, before saving):
+ * the server's rule — service charge on the subtotal, VAT on subtotal + service, each rounded to two
+ * decimals half away from zero — computed in whole satang so no float drift can flip a rounding. The
+ * saved bill still comes from the server; this only previews the edit dialog's "before → after".
+ */
+export function billTotalWithout(bill: BillDto, removed: number): number {
+  const subtotal = Math.round(bill.subtotal * 100) - Math.round(removed * 100);
+  const service = percentOfSatang(subtotal, bill.serviceChargePercent);
+  const vat = percentOfSatang(subtotal + service, bill.vatPercent);
+  return (subtotal + service + vat) / 100;
 }

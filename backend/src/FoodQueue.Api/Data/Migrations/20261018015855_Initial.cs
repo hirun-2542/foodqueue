@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -335,6 +335,7 @@ namespace FoodQueue.Api.Data.Migrations
                     Number = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     CancelReason = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    EditReason = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
