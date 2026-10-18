@@ -348,3 +348,65 @@ export interface CustomerOrderItemDto {
   note: string | null;
   imagePath?: string | null;
 }
+
+/** The three windows of `GET /api/reports/summary` — Bangkok days, each one including today. */
+export type ReportRange = "today" | "7d" | "30d";
+
+/**
+ * `GET /api/reports/summary?range=` (ticket 23). Only Paid bills count, at the total frozen when they
+ * were paid; a merged bill is one bill whose guests are summed and whose package is the primary
+ * session's. `hourly` always carries the 24 hours 0–23 and `daily` every day of the range.
+ */
+export interface ReportSummaryDto {
+  revenue: number;
+  billCount: number;
+  guestCount: number;
+  /** Revenue ÷ guests, 0 when there are no guests. */
+  avgPerGuest: number;
+  /**
+   * Yesterday's revenue up to this time of day — only with `range=today` (the API drops it otherwise)
+   * and only when yesterday has something to compare with, so the screen drops the comparison line
+   * rather than inventing a base.
+   */
+  previousRevenue?: number | null;
+  /** Ordered by package rank. */
+  packageMix: PackageMixRow[];
+  /** At most 10, most served first; cancelled orders are not counted. */
+  topItems: TopItemRow[];
+  hourly: HourlyRow[];
+  /** Ordered by total, largest first. */
+  paymentMix: PaymentMixRow[];
+  daily: DailyRow[];
+}
+
+export interface PackageMixRow {
+  name: string;
+  /** Bills of this package. */
+  sessions: number;
+  guests: number;
+  revenue: number;
+}
+
+export interface TopItemRow {
+  name: string;
+  quantity: number;
+}
+
+export interface HourlyRow {
+  /** Bangkok hour, 0–23. */
+  hour: number;
+  revenue: number;
+}
+
+export interface PaymentMixRow {
+  method: PaymentMethod;
+  count: number;
+  total: number;
+}
+
+export interface DailyRow {
+  /** Bangkok calendar day, `yyyy-MM-dd`. */
+  date: string;
+  revenue: number;
+  bills: number;
+}

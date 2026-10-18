@@ -132,3 +132,38 @@ export function roundTime(
     rail: { elapsed, mark, tone: isOver ? "over" : left <= lastOrderWarningMinutes ? "late" : "elapsed" },
   };
 }
+
+const count = new Intl.NumberFormat("th-TH", { maximumFractionDigits: 0 });
+
+/** `1184` → `1,184` — counts and chart values in whole numbers, no currency sign. */
+export function formatCount(value: number): string {
+  return count.format(value);
+}
+
+/** 00:00 Bangkok of a `yyyy-MM-dd` calendar day (the reports' `daily[].date`), as epoch ms. */
+export function bangkokDayStart(day: string): number {
+  return Date.parse(`${day}T00:00:00+07:00`);
+}
+
+const weekdayNarrow = new Intl.DateTimeFormat("th-TH", { timeZone: TIME_ZONE, weekday: "narrow" });
+const dayOfMonth = new Intl.DateTimeFormat("th-TH", { timeZone: TIME_ZONE, day: "numeric" });
+const dayMonth = new Intl.DateTimeFormat("th-TH", { timeZone: TIME_ZONE, day: "numeric", month: "short" });
+
+/** Daily-chart tick for a `yyyy-MM-dd` day, as frame `o14` writes it: `อา.11`, `ศ.16`. */
+export function formatDayTick(day: string): string {
+  const at = bangkokDayStart(day);
+  return `${weekdayNarrow.format(at)}.${dayOfMonth.format(at)}`;
+}
+
+/**
+ * Span of `yyyy-MM-dd` days as the report headings write it: `10–16 ต.ค.`, or `17 ก.ย.–16 ต.ค.` across
+ * a month boundary, with the Buddhist-era year appended when `withYear`.
+ */
+export function formatDayRange(first: string, last: string, withYear: boolean): string {
+  const to = bangkokDayStart(last);
+  const end = withYear ? formatDate(to) : dayMonth.format(to);
+  if (first === last) return end;
+  const from = bangkokDayStart(first);
+  const start = first.slice(0, 7) === last.slice(0, 7) ? dayOfMonth.format(from) : dayMonth.format(from);
+  return `${start}–${end}`;
+}
