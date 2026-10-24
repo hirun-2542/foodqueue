@@ -113,13 +113,13 @@ UI ภาษาไทยทั้งหมด mobile-first สไตล์ Moder
 ## สถาปัตยกรรม
 
 ```mermaid
-flowchart LR
+flowchart TB
   C[ลูกค้า · มือถือ]
   K[ครัว · แท็บเล็ต]
   O[เจ้าของร้าน]
-  Caddy["Caddy :8080"]
-  Web["Next.js"]
-  Api["ASP.NET Core<br/>+ SignalR"]
+  Caddy["Caddy :8080 — origin เดียว"]
+  Web["Next.js — หน้าจอ"]
+  Api["ASP.NET Core + SignalR"]
   Db[("PostgreSQL")]
 
   C --> Caddy
