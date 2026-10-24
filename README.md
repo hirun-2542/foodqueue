@@ -4,7 +4,7 @@
 
 UI ภาษาไทยทั้งหมด mobile-first สไตล์ Modern Minimal (ขาวสะอาด + ส้ม) รันในเครื่องได้ด้วย `docker compose` คำสั่งเดียว
 
-![หน้าจอ Demo แบบ 3 มุมมองพร้อมกัน](docs/screenshots/15-demo-split.png)
+<img src="docs/screenshots/15-demo-split.png" width="900" alt="หน้าจอ Demo แบบ 3 มุมมองพร้อมกัน">
 
 ---
 
@@ -84,27 +84,27 @@ UI ภาษาไทยทั้งหมด mobile-first สไตล์ Moder
 
 | เมนู | ตะกร้า | ออเดอร์ของโต๊ะ |
 |---|---|---|
-| ![](docs/screenshots/02-customer-menu.png) | ![](docs/screenshots/03-customer-cart.png) | ![](docs/screenshots/04-customer-orders.png) |
+| <img src="docs/screenshots/02-customer-menu.png" width="240" alt="เมนูลูกค้า"> | <img src="docs/screenshots/03-customer-cart.png" width="240" alt="ตะกร้า"> | <img src="docs/screenshots/04-customer-orders.png" width="240" alt="ออเดอร์ของโต๊ะ"> |
 
 ### ครัว — บอร์ด real-time บนแท็บเล็ตแนวนอน
 
-![จอครัว](docs/screenshots/05-kitchen-board.png)
+<img src="docs/screenshots/05-kitchen-board.png" width="900" alt="จอครัว">
 
 ### เจ้าของร้าน
 
 | ภาพรวม | ผังโต๊ะ | ออเดอร์ |
 |---|---|---|
-| ![](docs/screenshots/06-owner-overview.png) | ![](docs/screenshots/07-owner-tables.png) | ![](docs/screenshots/08-owner-orders.png) |
+| <img src="docs/screenshots/06-owner-overview.png" width="420" alt="ภาพรวม"> | <img src="docs/screenshots/07-owner-tables.png" width="420" alt="ผังโต๊ะ"> | <img src="docs/screenshots/08-owner-orders.png" width="420" alt="ออเดอร์"> |
 
 | รายงาน | ประวัติการชำระ | เมนูอาหาร |
 |---|---|---|
-| ![](docs/screenshots/09-owner-reports.png) | ![](docs/screenshots/10-owner-history.png) | ![](docs/screenshots/11-owner-menu.png) |
+| <img src="docs/screenshots/09-owner-reports.png" width="420" alt="รายงาน"> | <img src="docs/screenshots/10-owner-history.png" width="420" alt="ประวัติการชำระ"> | <img src="docs/screenshots/11-owner-menu.png" width="420" alt="เมนูอาหาร"> |
 
 ### เอกสารพิมพ์ 80 มม.
 
 | QR slip | ใบแจ้งยอด | ใบเสร็จ |
 |---|---|---|
-| ![](docs/screenshots/13-qr-slip.png) | ![](docs/screenshots/12-prebill.png) | ![](docs/screenshots/14-receipt.png) |
+| <img src="docs/screenshots/13-qr-slip.png" width="280" alt="QR slip"> | <img src="docs/screenshots/12-prebill.png" width="280" alt="ใบแจ้งยอด"> | <img src="docs/screenshots/14-receipt.png" width="280" alt="ใบเสร็จ"> |
 
 ภาพทั้งหมดถ่ายจากระบบที่รันจริงบนเครื่องนี้ (`docker compose` + Demo Mode) ไม่ใช่ภาพ mockup — ชุด mockup ต้นแบบอยู่ใน [`design/src/frames/`](design/src/frames) และเรนเดอร์เป็น PNG ได้ด้วย `node design/build.mjs` (ผลลัพธ์อยู่ที่ `design/out/` ซึ่งไม่ถูก commit)
 
@@ -195,7 +195,7 @@ PUBLIC_BASE_URL=http://192.168.1.20:8080 docker compose up -d
 
 เปิด `/login` แล้วใช้การ์ด **ทดลองใช้งาน** — เข้าใช้เป็นเจ้าของร้านหรือครัวได้โดยไม่ต้องพิมพ์รหัสผ่าน หรือกด **ดูทั้ง 3 มุมมองพร้อมกัน** ไปที่ `/demo`
 
-![หน้าเข้าสู่ระบบ พร้อมการ์ดทดลองใช้งาน](docs/screenshots/01-login.png)
+<img src="docs/screenshots/01-login.png" width="820" alt="หน้าเข้าสู่ระบบ พร้อมการ์ดทดลองใช้งาน">
 
 บัญชีพนักงานของ demo (มีเฉพาะเมื่อ Demo Mode เปิด และ seed จากฐานข้อมูลว่าง):
 
