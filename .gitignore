@@ -9,3 +9,4 @@ uploads/
 test-results/
 playwright-report/
 design/src/_built/
+.omp/

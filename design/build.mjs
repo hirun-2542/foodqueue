@@ -7,12 +7,18 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, statSy
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { createRequire } from 'node:module';
+
 const here = dirname(fileURLToPath(import.meta.url));
 const FRAMES = join(here, 'src/frames');
 const BUILT = join(here, 'src/_built');
 const OUT = join(here, 'out');
 const ICON_DIR = process.env.ICON_DIR || join(here, 'icons');
-const PW = process.env.PW_CORE || '/home/novanod/.npm/_npx/e41f203b7505f1fb/node_modules/playwright-core/index.mjs';
+// Playwright comes from the frontend install (pnpm store); override with PW_CORE for another copy.
+const testJson = createRequire(join(here, '..', 'frontend', 'package.json')).resolve('@playwright/test/package.json');
+const testRequire = createRequire(testJson);
+const PW = process.env.PW_CORE
+  || join(dirname(testRequire.resolve('playwright-core/package.json')), 'index.mjs');
 const { chromium } = await import(pathToFileURL(PW).href);
 
 mkdirSync(BUILT, { recursive: true });
