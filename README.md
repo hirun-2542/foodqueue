@@ -114,18 +114,17 @@ UI ภาษาไทยทั้งหมด mobile-first สไตล์ Moder
 
 ```mermaid
 flowchart LR
-  subgraph devices["อุปกรณ์"]
-    C[ลูกค้า · มือถือ]
-    K[ครัว · แท็บเล็ต]
-    O[เจ้าของร้าน]
-  end
-
-  Caddy["Caddy :8080<br/>origin เดียว"]
-  Web["Next.js<br/>App Router"]
-  Api["ASP.NET Core<br/>Minimal APIs + SignalR"]
+  C[ลูกค้า · มือถือ]
+  K[ครัว · แท็บเล็ต]
+  O[เจ้าของร้าน]
+  Caddy["Caddy :8080"]
+  Web["Next.js"]
+  Api["ASP.NET Core<br/>+ SignalR"]
   Db[("PostgreSQL")]
 
-  C & K & O --> Caddy
+  C --> Caddy
+  K --> Caddy
+  O --> Caddy
   Caddy --> Web
   Caddy --> Api
   Api --> Db
