@@ -114,27 +114,25 @@ UI ภาษาไทยทั้งหมด mobile-first สไตล์ Moder
 
 ```mermaid
 flowchart LR
-  subgraph Devices
-    C[มือถือลูกค้า<br/>สแกน QR]
-    K[แท็บเล็ตครัว]
+  subgraph devices["อุปกรณ์"]
+    C[ลูกค้า · มือถือ]
+    K[ครัว · แท็บเล็ต]
     O[เจ้าของร้าน]
   end
 
   Caddy["Caddy :8080<br/>origin เดียว"]
-  Web["web — Next.js 16<br/>App Router :3000"]
-  Api["api — ASP.NET Core 10<br/>Minimal APIs :8080"]
-  Db[("PostgreSQL 17")]
-  Hub["SignalR<br/>/hubs/live"]
+  Web["Next.js<br/>App Router"]
+  Api["ASP.NET Core<br/>Minimal APIs + SignalR"]
+  Db[("PostgreSQL")]
 
-  C --> Caddy
-  K --> Caddy
-  O --> Caddy
-  Caddy -- "/" --> Web
-  Caddy -- "/api/*" --> Api
-  Caddy -- "/hubs/*" --> Hub
-  Api <--> Db
-  Hub -. events .-> C
+  C & K & O --> Caddy
+  Caddy --> Web
+  Caddy --> Api
+  Api --> Db
+  Api -. live events .-> Caddy
 ```
+
+ทุกคำขอ — หน้าเว็บ, `/api/*` และ WebSocket `/hubs/*` — ผ่าน Caddy พอร์ตเดียว และ event real-time ไหลย้อนกลับทางเดิม
 
 - **Single origin**: ทุกอย่างอยู่หลัง Caddy ที่ `http://localhost:8080` — cookie auth และ WebSocket ของ SignalR จึงทำงานได้โดยไม่ต้องมี CORS หรือ proxy WebSocket ใน Next (ดู [`docs/adr/0002-single-origin-caddy.md`](docs/adr/0002-single-origin-caddy.md))
 - **Backend**: modular monolith แบบ vertical slice ตามฟีเจอร์ (`Auth`, `Tables`, `Packages`, `Menu`, `Sessions`, `Orders`, `Reports`, `Settings`, `Demo`, `Customer`) — Minimal APIs, โปรเจกต์เดียว + โปรเจกต์ทดสอบเดียว, ไม่มี MediatR
