@@ -140,6 +140,20 @@ public class DemoTests : IClassFixture<DemoAppFixture>
         Assert.Equal(0, counts.Sessions);
     }
 
+    /// <summary>รูปเมนูของ demo ต้องเปิดได้จริงจาก URL ที่เก็บไว้ ไม่ใช่แค่มีพาธในฐานข้อมูล</summary>
+    [Fact]
+    public async Task Seeded_menu_photos_are_served_as_images()
+    {
+        var app = Seeded();
+        var path = await app.WithDbAsync(db => db.MenuItems.Where(m => m.Name == "เนื้อวัวสไลซ์")
+            .Select(m => m.ImagePath).SingleAsync());
+
+        var response = await app.CreateClient().GetAsync(path);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("image/jpeg", response.Content.Headers.ContentType?.MediaType);
+    }
+
     // ------------------------------------------------------------------ ปุ่มเข้าใช้ (spec 104)
 
     [Fact]

@@ -3,6 +3,7 @@ using FoodQueue.Api.Data;
 using FoodQueue.Api.Data.Entities;
 using FoodQueue.Api.Features.Orders;
 using FoodQueue.Api.Features.Sessions;
+using FoodQueue.Api.Features.Uploads;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodQueue.Api.Features.Demo;
@@ -105,6 +106,22 @@ public sealed class DemoSeeder : IStartupTask
         ("เครื่องดื่ม", "เบียร์สิงห์", MenuItemKind.AlaCarte, null, 89m, null),
     ];
 
+    /// <summary>
+    /// เมนู → ไฟล์รูปใน <c>DemoAssets/menu</c> (ภาพ stand-in จาก Wikimedia Commons, เครดิตใน CREDITS.md ข้างไฟล์)
+    /// เมนูที่ไม่มีรูปตรงจริงไม่ถูกใส่รูปเพื่อไม่ให้ป้ายผิดอาหาร — หน้าจอแสดงไอคอนหมวดแทน
+    /// </summary>
+    private static readonly Dictionary<string, string> MenuPhotos = new()
+    {
+        ["น้ำซุปใส"] = "clear-soup", ["น้ำซุปต้มยำน้ำข้น"] = "tom-yum", ["น้ำซุปหมาล่า"] = "mala",
+        ["สันคอหมูสไลซ์"] = "pork-collar", ["หมูสามชั้นสไลซ์"] = "pork-belly", ["หมูนุ่มสไลซ์"] = "pork-soft",
+        ["เนื้อวัวสไลซ์"] = "beef", ["ริบอายสไลซ์"] = "ribeye", ["เนื้อวากิวสไลซ์"] = "wagyu",
+        ["กุ้งขาว"] = "shrimp", ["หมึกกล้วย"] = "squid", ["แซลมอนสไลซ์"] = "salmon", ["หอยเชลล์"] = "scallop",
+        ["ลูกชิ้นกุ้ง"] = "shrimp-ball", ["ลูกชิ้นปลา"] = "fishball", ["เกี๊ยวซ่าทอด"] = "gyoza-fried",
+        ["ผักกาดขาว"] = "napa", ["เห็ดรวม"] = "mushrooms", ["ผักบุ้งจีน"] = "morning-glory", ["ข้าวโพดอ่อน"] = "baby-corn",
+        ["ไอศกรีม"] = "ice-cream", ["น้ำเปล่า"] = "water", ["โค้ก"] = "coke", ["ชาไทยเย็น"] = "thai-tea",
+        ["เบียร์สิงห์"] = "beer",
+    };
+
     public async Task RunAsync(IServiceProvider services, IConfiguration config)
     {
         if (!DemoMode.IsEnabled(config))
@@ -165,6 +182,7 @@ public sealed class DemoSeeder : IStartupTask
 
         var categories = new Dictionary<string, Category>(StringComparer.Ordinal);
         var items = new List<MenuItem>();
+        var uploads = UploadStore.From(scope.ServiceProvider);
         var sortOrder = 0;
         foreach (var line in Menu)
         {
@@ -183,6 +201,10 @@ public sealed class DemoSeeder : IStartupTask
                 Kind = line.Kind,
                 MinPackageRank = line.MinRank,
                 Price = line.Price,
+                ImagePath = MenuPhotos.TryGetValue(line.Name, out var photo)
+                    ? uploads.CopyIn(Path.Combine(AppContext.BaseDirectory, "DemoAssets", "menu", photo + ".jpg"),
+                        $"menu-{photo}.jpg")
+                    : null,
                 SortOrder = ++sortOrder,
             });
         }

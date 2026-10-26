@@ -95,6 +95,23 @@ public sealed class UploadStore : IUploadStore
     }
 
     /// <summary>
+    /// คัดลอกไฟล์ที่มากับตัวแอป (รูปเมนูของ Demo) เข้าโฟลเดอร์อัปโหลดแล้วคืนพาธสาธารณะ — คืน null ถ้าไม่มีไฟล์ต้นทาง
+    /// ชื่อไฟล์ปลายทางต้องเป็นชื่อล้วนจากโค้ด (ไม่ผ่านการตรวจชนิดแบบ <see cref="SaveAsync"/> เพราะไม่ใช่ไฟล์จากผู้ใช้)
+    /// </summary>
+    public string? CopyIn(string sourcePath, string fileName)
+    {
+        if (!File.Exists(sourcePath) || fileName != Path.GetFileName(fileName))
+        {
+            return null;
+        }
+
+        var directory = ResolveUploadsDirectory();
+        Directory.CreateDirectory(directory);
+        File.Copy(sourcePath, Path.Combine(directory, fileName), overwrite: true);
+        return PublicPrefix + fileName;
+    }
+
+    /// <summary>
     /// ลบไฟล์ที่เคยบันทึกผ่าน store นี้ (เรียกหลังเขียนค่าลงฐานข้อมูลสำเร็จแล้วเท่านั้น)
     /// พาธอื่นนอกจาก /api/uploads/{ชื่อไฟล์} ถูกเมิน เพื่อไม่ให้ลบไฟล์นอกโฟลเดอร์อัปโหลดได้
     /// </summary>
