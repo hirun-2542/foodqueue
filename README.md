@@ -4,7 +4,7 @@
 
 UI ภาษาไทยทั้งหมด mobile-first สไตล์ Modern Minimal (ขาวสะอาด + ส้ม) รันในเครื่องได้ด้วย `docker compose` คำสั่งเดียว
 
-<img src="docs/screenshots/15-demo-split.png" width="900" alt="หน้าจอ Demo แบบ 3 มุมมองพร้อมกัน">
+<img src="docs/promo/promo-hero.png" width="900" alt="หน้าจอ Demo แบบ 3 มุมมองพร้อมกัน">
 
 ---
 
