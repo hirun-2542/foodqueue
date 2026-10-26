@@ -4,7 +4,7 @@
 
 UI ภาษาไทยทั้งหมด mobile-first สไตล์ Modern Minimal (ขาวสะอาด + ส้ม) รันในเครื่องได้ด้วย `docker compose` คำสั่งเดียว
 
-<img src="docs/promo/promo-hero.png" width="900" alt="หน้าจอ Demo แบบ 3 มุมมองพร้อมกัน">
+<img src="docs/promo/promo-hero.png" width="900" alt="FoodQueue — ระบบสั่งอาหารผ่าน QR สำหรับร้านชาบู / บุฟเฟ่ต์ แสดงหน้าจอลูกค้า ครัว และเจ้าของร้าน">
 
 ---
 
