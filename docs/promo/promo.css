@@ -1,0 +1,19 @@
+/* FoodQueue promo images. Colours from design/src/tokens.css; screenshots are real captures of the running stack. */
+:root{--bg:#FAFAF9;--surface:#fff;--line:#E7E5E4;--ink:#1C1917;--ink-2:#44403C;--muted:#6B6560;--orange:#F97316;--orange-strong:#CC4A0A;--orange-soft:#FFF3E8;--orange-ink:#A83A06;--orange-line:#FDBA74;
+--float:0 1px 2px rgba(28,25,23,.06),0 24px 56px -8px rgba(28,25,23,.18);}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans Thai",sans-serif;-webkit-font-smoothing:antialiased;position:relative;overflow:hidden}
+.brand{display:flex;align-items:center;gap:16px;font-weight:600;font-size:28px}
+.brand i{width:56px;height:56px;border-radius:14px;background:var(--orange-strong);display:grid;place-items:center}
+.brand svg{width:32px;height:32px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+h1{font-weight:700;letter-spacing:-.01em;line-height:1.35}
+h1 em{font-style:normal;color:var(--orange-ink)}
+.sub{color:var(--muted);line-height:1.6}
+.chips{display:flex;gap:12px}
+.chips span{padding:8px 20px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:22px;color:var(--ink-2)}
+.cta{display:inline-block;padding:14px 28px;border-radius:12px;background:var(--orange-strong);color:#fff;font-weight:600;font-size:26px}
+.shot{position:absolute;background:var(--surface);border:1px solid var(--line);box-shadow:var(--float);overflow:hidden}
+.shot img{display:block;width:100%;height:100%;object-fit:cover;object-position:top left}
+.win{border-radius:20px}
+.phone{border-radius:44px;border:10px solid var(--ink);background:var(--ink)}
+.phone img{border-radius:34px}
